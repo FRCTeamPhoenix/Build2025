@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -43,6 +44,9 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
+  private final PIDController steerPID = new PIDController(0.1, 0, 0);
+
+  private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -105,6 +109,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    steerPID.enableContinuousInput(-180, 180);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -132,6 +137,16 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.aimToTarget(
+                drive,
+                targetPose,
+                steerPID,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX()));
   }
 
   /**
