@@ -33,7 +33,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -109,7 +109,7 @@ public final class Constants {
     public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
     public static final double[] ENCODER_OFFSETS = {
-        2.888 + Math.PI, -2.246, -2.976 + Math.PI, -2.745 + Math.PI
+      2.888, -2.246 + Math.PI, -2.976, -2.745
     };
   }
 

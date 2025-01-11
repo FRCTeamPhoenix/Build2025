@@ -77,7 +77,7 @@ public class DriveCommands {
                             SwerveUtils.fromFieldRelativeSpeeds(
                                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    -omega * drive.getMaxAngularSpeedRadPerSec(),
+                                    omega * drive.getMaxAngularSpeedRadPerSec(),
                                     drive.getRotation()));
                 },
                 drive);

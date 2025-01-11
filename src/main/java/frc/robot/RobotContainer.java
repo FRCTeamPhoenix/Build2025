@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
@@ -47,12 +48,18 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
-  private final PIDController steerPID = new PIDController(0.1, 0, 0);
+  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
   private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+
+  // Triggers
+  private final Trigger xTrigger = controller.x();
+  private final Trigger bTrigger = controller.b();
+  private final Trigger aTrigger = controller.a();
+
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -141,9 +148,8 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    controller
-        .b()
+    xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    bTrigger
         .onTrue(
             Commands.runOnce(
                 () -> drive.setPose(
@@ -151,8 +157,7 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));
 
-    controller
-        .a()
+    aTrigger
         .whileTrue(
             DriveCommands.aimToTarget(
                 drive,

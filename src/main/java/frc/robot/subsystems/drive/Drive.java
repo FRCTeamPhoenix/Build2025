@@ -199,11 +199,7 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       // The module returns the optimized state, useful for logging
-      modules[i].runSetpoint(setpointStates[i]);
-      optimizedSetpointStates[i] = setpointStates[i];
-
-      //old code
-      //optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
+      optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
     }
 
     // Log setpoint states
