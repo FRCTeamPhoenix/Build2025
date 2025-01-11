@@ -12,7 +12,9 @@ public interface LimelightIO {
   }
 
   /** Represents a robot pose sample used for pose estimation. */
-  public static record ObjectObservation(double tx, double ty, double ta, Pose3d pose) {}
+  public static record ObjectObservation(double tx, double ty, double ta, Pose3d pose) {
+  }
 
-  public default void updateInputs(LimelightIOInputs inputs) {}
+  public default void updateInputs(LimelightIOInputs inputs) {
+  }
 }

@@ -17,9 +17,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.util.SwerveUtils;
 import frc.robot.util.SwerveUtils.PhoenixFF;
 import org.littletonrobotics.junction.Logger;
 
@@ -98,20 +98,25 @@ public class Module {
     }
   }
 
-  /** Runs the module with the specified setpoint state. Returns the optimized state. */
-  public SwerveModuleState runSetpoint(SwerveModuleState state) {
+  /**
+   * Runs the module with the specified setpoint state. Returns the optimized
+   * state.
+   */
+  public void runSetpoint(SwerveModuleState state) {
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
-    var optimizedState = SwerveUtils.optimize(state, getAngle());
+    state.optimize(getAngle());
+    //Old code
+    //var optimizedState = SwerveUtils.optimize(state, getAngle());
 
     // Update setpoints, controllers run in "periodic"
-    angleSetpoint = optimizedState.angle;
-    speedSetpoint = optimizedState.speedMetersPerSecond;
-
-    return optimizedState;
+    angleSetpoint = state.angle;
+    speedSetpoint = state.speedMetersPerSecond;
   }
 
-  /** Runs the module with the specified voltage while controlling to zero degrees. */
+  /**
+   * Runs the module with the specified voltage while controlling to zero degrees.
+   */
   public void runCharacterization(double volts) {
     // Closed loop turn control
     angleSetpoint = new Rotation2d();
@@ -169,5 +174,15 @@ public class Module {
   /** Returns the drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
+  }
+
+  /** Returns the module position in radians. */
+  public double getWheelRadiusCharacterizationPosition() {
+    return inputs.drivePositionRad;
+  }
+
+  /** Returns the module velocity in rotations/sec (Phoenix native units). */
+  public double getFFCharacterizationVelocity() {
+    return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
 }
