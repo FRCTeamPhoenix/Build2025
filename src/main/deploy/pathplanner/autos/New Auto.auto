@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "cage_side"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cage_to_station"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "station_to_rear"
           }
         }
       ]
