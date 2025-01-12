@@ -33,7 +33,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -111,6 +111,14 @@ public final class Constants {
     public static final double[] ENCODER_OFFSETS = {
       2.888, -2.246 + Math.PI, -2.976, -2.745
     };
+  }
+
+  public static final class ElevatorConstants {
+    public static final double gearRatio = 5.0;
+    public static final double carriageMass = Units.lbsToKilograms(25.0);
+    public static final double pulleyRadius = Units.inchesToMeters(1.75) / 2;
+    public static final double minHeight = Units.inchesToMeters(37.5);
+    public static final double maxHeight = Units.inchesToMeters(85.5);
   }
 
   public static final class CANConstants {

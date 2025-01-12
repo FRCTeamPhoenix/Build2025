@@ -14,6 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -31,6 +34,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -48,6 +54,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
+  private final Elevator elevator;
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
   private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
@@ -59,7 +66,6 @@ public class RobotContainer {
   private final Trigger xTrigger = controller.x();
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
-
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -80,6 +86,7 @@ public class RobotContainer {
         photon = new Photon(
             drive::addVisionMeasurement, 
             new PhotonIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
 
       case SIM:
@@ -94,6 +101,7 @@ public class RobotContainer {
         photon = new Photon(
             drive::addVisionMeasurement, 
             new PhotonIO() {});
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
       default:
@@ -107,6 +115,7 @@ public class RobotContainer {
         photon = new Photon(
             drive::addVisionMeasurement, 
             new PhotonIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -165,6 +174,12 @@ public class RobotContainer {
                 steerPID,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX())).onTrue(Commands.runOnce(steerPID::reset));
+
+    elevator.setDefaultCommand(Commands.run(() -> {
+      elevator.runSetpoint(
+        MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
+        0, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
+    }, elevator));
   }
 
   /**
