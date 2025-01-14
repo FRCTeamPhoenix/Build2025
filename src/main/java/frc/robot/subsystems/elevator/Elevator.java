@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
-public class Elevator extends SubsystemBase{
+public class Elevator extends SubsystemBase {
     
     private final ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
@@ -77,5 +77,13 @@ public class Elevator extends SubsystemBase{
     public void stop() {
         io.setVoltage(0.0);
         setpoint = null;
+    }
+
+    public boolean atSetpoint() {
+        boolean returnBool = false;
+        if (setpoint == inputs.height){
+            returnBool = true;
+        }
+        return returnBool;
     }
 }
