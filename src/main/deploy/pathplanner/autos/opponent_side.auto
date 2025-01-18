@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cage_side"
+            "pathName": "cage_side_o"
           }
         },
         {
@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cage_to_station"
+            "pathName": "cage_to_station_o"
           }
         },
         {
@@ -37,7 +37,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "station_to_rear"
+            "pathName": "station_to_rear_o"
           }
         },
         {

@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cage_side_c"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Elevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cage_to_coral_c"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "coral_to_rear_c"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Elevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "rear_to_coral2_c"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "coral_to_rear2_c"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Elevator"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
