@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -122,6 +124,10 @@ public class RobotContainer {
         break;
     }
 
+
+    // Configure PathPlanner commands
+    configureNamedCommands();
+    
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption(
@@ -183,6 +189,11 @@ public class RobotContainer {
         MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
         0, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
     }, elevator));
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("Raise Elevator Max", new MoveElevator(elevator, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
+    NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
   }
 
   /**

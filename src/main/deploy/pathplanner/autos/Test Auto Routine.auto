@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cage_side"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Elevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cage_to_station"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "station_to_rear"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Raise Elevator Max"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Elevator"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

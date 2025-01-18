@@ -5,7 +5,8 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -15,7 +16,7 @@ public class Elevator extends SubsystemBase {
     
     private final ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-    private final PIDController pidController;
+    private final ProfiledPIDController pidController;
     private final double kG;
     private Double setpoint = 0.0;
 
@@ -30,15 +31,18 @@ public class Elevator extends SubsystemBase {
 
         switch (Constants.CURRENT_MODE) {
             case REAL:
-                pidController = new PIDController(-1.0, -1.0, -1.0); 
+                pidController = new ProfiledPIDController(-1.0, -1.0, -1.0, 
+                        new TrapezoidProfile.Constraints(3, 3)); 
                 kG = 0.0;               
                 break;
             case SIM:
-                pidController = new PIDController(0.42, 0.730, 0.50);
+                pidController = new ProfiledPIDController(0.42, 0.730, 0.50, 
+                        new TrapezoidProfile.Constraints(3, 3));
                 kG = 0.4;
                 break;
             default:
-                pidController = new PIDController(0.0, 0.0, 0.0);
+                pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
+                        new TrapezoidProfile.Constraints(3, 3));
                 kG = 0.0;
         }
     }
@@ -47,22 +51,17 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Elevator", inputs);
-
-        if (setpoint != null) {
-            Logger.recordOutput("Elevator/Setpoint", setpoint);
-        }
-        else {
-            Logger.recordOutput("Elevator/Setpoint", -1);
-        }
-
         Logger.recordOutput("Elevator/Mech2D", mech);
+
+        if (setpoint != null) {Logger.recordOutput("Elevator/Setpoint", setpoint);}
+        else {Logger.recordOutput("Elevator/Setpoint", -1);}
 
         elevator.setLength(inputs.height + ElevatorConstants.minHeight);
 
         if (setpoint != null) {
-            //positionController.setGoal(setpoint);
+            pidController.setGoal(setpoint);
 
-            io.setVoltage(pidController.calculate(inputs.height, setpoint) + kG);
+            io.setVoltage(pidController.calculate(inputs.height) + kG);
         }
     }
 
