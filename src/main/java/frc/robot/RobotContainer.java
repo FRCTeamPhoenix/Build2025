@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.ZoneAlign;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -62,6 +64,10 @@ public class RobotContainer {
   private final Trigger xTrigger = controller.x();
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
+  private final Trigger yTrigger = controller.y();
+
+  private final Trigger leftDPadTrigger = controller.povLeft();
+  private final Trigger rightDPadTrigger = controller.povRight();
 
 
   // Dashboard inputs
@@ -159,6 +165,11 @@ public class RobotContainer {
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
                 .ignoringDisable(true));
+
+    yTrigger.whileTrue(new ZoneAlign());
+
+    leftDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(1));
+    rightDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(2));
 
     aTrigger
         .whileTrue(
