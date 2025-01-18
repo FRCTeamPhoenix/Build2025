@@ -51,6 +51,12 @@
           "data": {
             "name": "Lower Elevator"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "rear_to_station_a"
+          }
         }
       ]
     }
