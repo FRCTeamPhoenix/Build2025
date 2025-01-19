@@ -19,9 +19,9 @@ public class ZoneAlign extends Command {
               && DriverStation.getAlliance().get() == Alliance.Red;
         
         Pose2d[] zones = PathfindingConstants.blueReefPoses;
-        if (isRed) {zones = PathfindingConstants.redReefPoses;}
-
         Pose2d targetPose = PathfindingConstants.blueReefPoses[0];
+
+        if (isRed) {zones = PathfindingConstants.redReefPoses; targetPose = PathfindingConstants.redReefPoses[0];}
 
         int i;
         for (i = 0; i < zones.length; i++){
