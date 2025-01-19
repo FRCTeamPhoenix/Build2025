@@ -56,20 +56,13 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    public static final Transform3d test_Transform = new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
-    // Cam mounted facing forward, half a meter forward of center, half a meter up
-    // from center.
-    public static final Transform3d FRONT_TRANSFORM = new Transform3d(
-        new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(0), 0.0));
-    public static final Transform3d BACK_TRANSFORM = new Transform3d(
-        new Translation3d(-0.3048, 0.0, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), Math.PI));
-    public static final Transform3d LEFT_TRANSFORM = new Transform3d(
-        new Translation3d(0.0, -0.3048, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), (Math.PI / 2.0)));
-    public static final Transform3d RIGHT_TRANSFORM = new Transform3d(
-        new Translation3d(0.0, 0.3048, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), (-Math.PI / 2.0)));
+    public static final Transform3d FRONT_LEFT_TRANSFORM = new Transform3d(
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+
+    public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+
+
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
