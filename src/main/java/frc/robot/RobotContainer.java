@@ -17,17 +17,20 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.VisionConstants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindingCommands;
-import frc.robot.commands.ZoneAlign;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -37,6 +40,10 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOSim;
+import frc.robot.util.PhoenixUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -69,7 +76,6 @@ public class RobotContainer {
   private final Trigger leftDPadTrigger = controller.povLeft();
   private final Trigger rightDPadTrigger = controller.povRight();
 
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -87,8 +93,9 @@ public class RobotContainer {
             new ModuleIOTalonFX(2),
             new ModuleIOTalonFX(3));
         photon = new Photon(
-            drive::addVisionMeasurement, 
-            new PhotonIO() {});
+            drive::addVisionMeasurement,
+            new PhotonIO() {
+            });
         break;
 
       case SIM:
@@ -101,21 +108,28 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         photon = new Photon(
-            drive::addVisionMeasurement, 
-            new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_TRANSFORM, drive::getPose) {});
+            drive::addVisionMeasurement,
+            new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM, drive::getPose) {
+            });
         break;
 
       default:
         // Replayed robot, disable IO implementations
         drive = new Drive(
-            new GyroIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {});
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
         photon = new Photon(
-            drive::addVisionMeasurement, 
-            new PhotonIO() {});
+            drive::addVisionMeasurement,
+            new PhotonIO() {
+            });
         break;
     }
 
@@ -166,7 +180,11 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));
 
-    yTrigger.whileTrue(new ZoneAlign());
+    Set<Subsystem> sysSet = new HashSet<>();
+    sysSet.add(drive);
+
+    yTrigger.whileTrue(Commands.defer(
+        () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
     leftDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(1));
     rightDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(2));
@@ -178,7 +196,8 @@ public class RobotContainer {
                 targetPose,
                 steerPID,
                 () -> -controller.getLeftY(),
-                () -> -controller.getLeftX())).onTrue(Commands.runOnce(steerPID::reset));
+                () -> -controller.getLeftX()))
+        .onTrue(Commands.runOnce(steerPID::reset));
   }
 
   /**
@@ -200,5 +219,27 @@ public class RobotContainer {
 
   public CommandXboxController getController() {
     return controller;
+  }
+
+  public Pose2d determineZone() {
+    boolean isRed = DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red;
+
+    Pose2d[] zones = PathfindingConstants.blueReefPoses;
+    Pose2d targetPose = PathfindingConstants.blueReefPoses[0];
+
+    if (isRed) {
+      zones = PathfindingConstants.redReefPoses;
+      targetPose = PathfindingConstants.redReefPoses[0];
+    }
+
+    int i;
+    for (i = 0; i < zones.length; i++) {
+      if (PhoenixUtils.getDistance(drive.getPose(), zones[i]) < PhoenixUtils.getDistance(drive.getPose(), targetPose)) {
+        targetPose = zones[i];
+      }
+    }
+
+    return targetPose;
   }
 }
