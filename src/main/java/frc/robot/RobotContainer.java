@@ -31,6 +31,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.ZoneAlign;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -183,8 +184,7 @@ public class RobotContainer {
     Set<Subsystem> sysSet = new HashSet<>();
     sysSet.add(drive);
 
-    yTrigger.whileTrue(Commands.defer(
-        () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
+    yTrigger.whileTrue(new ZoneAlign());
 
     leftDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(1));
     rightDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(2));

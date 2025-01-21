@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +37,8 @@ public class ZoneAlign extends Command {
           "ZoneAlign/TargetPose",
           targetPose);
 
+        Logger.recordOutput("ZoneAlign/Active", true);
+
         //AutoBuilder.getCurrentPose();
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
         pathfindingCommand = AutoBuilder.pathfindToPose(
@@ -51,6 +52,7 @@ public class ZoneAlign extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        Logger.recordOutput("ZoneAlign/Active", false);
         pathfindingCommand.end(false);
         pathfindingCommand.cancel();
     }
