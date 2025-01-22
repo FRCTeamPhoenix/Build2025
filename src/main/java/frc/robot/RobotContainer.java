@@ -28,10 +28,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.VisionConstants.PathfindingConstants;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindingCommands;
-import frc.robot.commands.ZoneAlign;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -40,6 +39,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
+import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
 import frc.robot.util.PhoenixUtils;
 
@@ -95,8 +95,8 @@ public class RobotContainer {
             new ModuleIOTalonFX(3));
         photon = new Photon(
             drive::addVisionMeasurement,
-            new PhotonIO() {
-            });
+            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+            new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
         break;
 
       case SIM:
@@ -184,7 +184,8 @@ public class RobotContainer {
     Set<Subsystem> sysSet = new HashSet<>();
     sysSet.add(drive);
 
-    yTrigger.whileTrue(new ZoneAlign());
+    yTrigger.whileTrue(Commands.defer(
+        () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
     leftDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(1));
     rightDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(2));

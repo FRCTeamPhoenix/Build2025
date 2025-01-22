@@ -37,7 +37,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -60,7 +60,7 @@ public final class Constants {
         new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
 
     public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(
-        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, -Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
 
 
 
@@ -83,39 +83,40 @@ public final class Constants {
         1.0 // Camera 1
     };
 
-    public static final class PathfindingConstants {
-      public static PathConstraints constraints = new PathConstraints(
-          4.0, 6.0,
-          Units.degreesToRadians(720), Units.degreesToRadians(1080));
-
-      public static Pose2d[] blueReefPoses = new Pose2d[] {
-          new Pose2d(3, 4, Rotation2d.kZero),
-          new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
-          new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120))),
-          new Pose2d(6, 4, Rotation2d.k180deg),
-          new Pose2d(5.25, 2.75, new Rotation2d(Math.toRadians(120))),
-          new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60)))
-      };
-
-      public static Pose2d[] redReefPoses = new Pose2d[] {
-          new Pose2d(14.5, 4, Rotation2d.k180deg),
-          new Pose2d(13.75, 2.75, new Rotation2d(Math.toRadians(120))),
-          new Pose2d(12.3, 2.75, new Rotation2d(Math.toRadians(60))),
-          new Pose2d(11.5, 4, Rotation2d.kZero),
-          new Pose2d(12.3, 5.25, new Rotation2d(Math.toRadians(-60))),
-          new Pose2d(13.75, 5.25, new Rotation2d(Math.toRadians(-120)))
-      };
-
-      public static Pose2d[] bluePlayerStationPoses = new Pose2d[] {
-          new Pose2d(2, 6.25, new Rotation2d(Math.toRadians(125))),
-          new Pose2d(2, 1.75, new Rotation2d(Math.toRadians(-125))),
-      };
-    }
-
     // Multipliers to apply for MegaTag 2 observations
     public static double LINEAR_STD_DEV_MEGATAG2_FACTOR = 0.5; // More stable than full 3D solve
     public static double ANGULAR_STD_DEV_MEGATAG2_FACTOR = Double.POSITIVE_INFINITY; // No rotation data available
   }
+
+  public static final class PathfindingConstants {
+    public static PathConstraints constraints = new PathConstraints(
+        4.0, 6.0,
+        Units.degreesToRadians(720), Units.degreesToRadians(1080));
+
+    public static Pose2d[] blueReefPoses = new Pose2d[] {
+        new Pose2d(3, 4, Rotation2d.kZero),
+        new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
+        new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120))),
+        new Pose2d(6, 4, Rotation2d.k180deg),
+        new Pose2d(5.25, 2.75, new Rotation2d(Math.toRadians(120))),
+        new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60)))
+    };
+
+    public static Pose2d[] redReefPoses = new Pose2d[] {
+        new Pose2d(14.5, 4, Rotation2d.k180deg),
+        new Pose2d(13.75, 2.75, new Rotation2d(Math.toRadians(120))),
+        new Pose2d(12.3, 2.75, new Rotation2d(Math.toRadians(60))),
+        new Pose2d(11.5, 4, Rotation2d.kZero),
+        new Pose2d(12.3, 5.25, new Rotation2d(Math.toRadians(-60))),
+        new Pose2d(13.75, 5.25, new Rotation2d(Math.toRadians(-120)))
+    };
+
+    public static Pose2d[] bluePlayerStationPoses = new Pose2d[] {
+        new Pose2d(2, 6.25, new Rotation2d(Math.toRadians(125))),
+        new Pose2d(2, 1.75, new Rotation2d(Math.toRadians(-125))),
+    };
+  }
+
 
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
