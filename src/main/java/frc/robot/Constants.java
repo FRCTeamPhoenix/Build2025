@@ -56,13 +56,18 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
+    //Need to move cameras so they are 6.468 inches from the center of the robot is the y-axis
+    //You can use the ideal transform below for sim, but it isn't a real transform
+    public static final Transform3d FRONT_LEFT_IDEAL_TRANSFORM = new Transform3d(
+      new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(6.468), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+
     public static final Transform3d FRONT_LEFT_TRANSFORM = new Transform3d(
         new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
 
     public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(
         new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, -Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
 
-
+    public static final Transform3d[] CAMERA_TRANSFORMS = {FRONT_LEFT_TRANSFORM, FRONT_RIGHT_TRANSFORM};
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);

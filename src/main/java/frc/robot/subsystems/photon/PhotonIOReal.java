@@ -23,12 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /** IO implementation for real PhotonVision hardware. */
 public class PhotonIOReal implements PhotonIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
+  List<PhotonPipelineResult> results;
+
 
   /**
    * Creates a new VisionIOPhotonVision.
@@ -48,13 +50,14 @@ public class PhotonIOReal implements PhotonIO {
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
-    for (var result : camera.getAllUnreadResults()) {
+    results = camera.getAllUnreadResults();
+    for (var result : results) {
       // Update latest target observation
       if (result.hasTargets()) {
         inputs.latestTargetObservation = new TargetObservation(
             Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
             Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
-            result.getBestTarget().getBestCameraToTarget());
+            result.getBestTarget().bestCameraToTarget);
       } else {
         inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
       }
@@ -127,20 +130,5 @@ public class PhotonIOReal implements PhotonIO {
     for (int id : tagIds) {
       inputs.tagIds[i++] = id;
     }
-  }
-
-  @Override
-  public TargetObservation getTag(int id) {
-    var targets = camera.getAllUnreadResults().get(0).getTargets();
-    TargetObservation desiredTarget = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
-    for (PhotonTrackedTarget target : targets) {
-      if (target.getFiducialId() == id) {
-        desiredTarget = new TargetObservation(
-            Rotation2d.fromDegrees(target.getYaw()),
-            Rotation2d.fromDegrees(target.getPitch()),
-            target.getBestCameraToTarget());
-      }
-    }
-    return desiredTarget;
   }
 }

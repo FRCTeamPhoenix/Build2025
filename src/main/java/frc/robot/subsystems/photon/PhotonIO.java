@@ -48,6 +48,4 @@ public interface PhotonIO {
   }
 
   public default void updateInputs(PhotonIOInputs inputs) {}
-
-  public default TargetObservation getTag(int id) {return new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());}
 }

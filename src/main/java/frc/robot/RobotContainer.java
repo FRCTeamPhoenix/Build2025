@@ -105,8 +105,8 @@ public class RobotContainer {
             new ModuleIOSim());
         photon = new Photon(
             drive::addVisionMeasurement,
-            new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM, drive::getPose) {
-            });
+            new PhotonIOSim(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM, drive::getPose));
+            //new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM, drive::getPose));
         break;
 
       default:
@@ -183,7 +183,7 @@ public class RobotContainer {
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
     aTrigger
-        .whileTrue(new AlignToTag(0, 22, photon, drive));
+        .whileTrue(new AlignToTag(0, photon, drive));
   }
 
   /**

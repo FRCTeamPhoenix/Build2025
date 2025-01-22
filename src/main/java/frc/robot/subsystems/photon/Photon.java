@@ -55,13 +55,8 @@ public class Photon extends SubsystemBase {
     }
   }
 
-  /**
-   * Returns the observation of the best target for a certain camera
-   *
-   * @param cameraIndex The index of the camera to use.
-   */
-  public TargetObservation getTag(int cameraIndex, int tagID) {
-    return io[cameraIndex].getTag(tagID);
+  public TargetObservation getBestTarget(int cameraIndex) {
+    return inputs[cameraIndex].latestTargetObservation;
   }
 
   @Override
