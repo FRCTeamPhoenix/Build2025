@@ -187,9 +187,6 @@ public class RobotContainer {
     yTrigger.whileTrue(Commands.defer(
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
-    leftDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(1));
-    rightDPadTrigger.whileTrue(PathfindingCommands.pathToPlayerStation(2));
-
     aTrigger
         .whileTrue(
             DriveCommands.aimToTarget(
@@ -234,8 +231,7 @@ public class RobotContainer {
       targetPose = PathfindingConstants.redReefPoses[0];
     }
 
-    int i;
-    for (i = 0; i < zones.length; i++) {
+    for (int i = 0; i < zones.length; i++) {
       if (PhoenixUtils.getDistance(drive.getPose(), zones[i]) < PhoenixUtils.getDistance(drive.getPose(), targetPose)) {
         targetPose = zones[i];
       }

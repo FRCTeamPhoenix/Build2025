@@ -12,7 +12,7 @@ public class PathfindingCommands {
     public static Command pathToPlayerStation(int id) {
         boolean isRed = DriverStation.getAlliance().isPresent()
               && DriverStation.getAlliance().get() == Alliance.Red;
-        
+                
         Pose2d[] stations = PathfindingConstants.bluePlayerStationPoses;
         if (isRed) {stations = PathfindingConstants.bluePlayerStationPoses;}
 
