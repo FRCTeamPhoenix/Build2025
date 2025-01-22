@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** IO implementation for real PhotonVision hardware. */
 public class PhotonIOReal implements PhotonIO {
@@ -32,7 +33,7 @@ public class PhotonIOReal implements PhotonIO {
   /**
    * Creates a new VisionIOPhotonVision.
    *
-   * @param name The configured name of the camera.
+   * @param name             The configured name of the camera.
    * @param rotationSupplier The 3D position of the camera relative to the robot.
    */
   public PhotonIOReal(String name, Transform3d robotToCamera) {
@@ -50,12 +51,12 @@ public class PhotonIOReal implements PhotonIO {
     for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation
       if (result.hasTargets()) {
-        inputs.latestTargetObservation =
-            new TargetObservation(
-                Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+        inputs.latestTargetObservation = new TargetObservation(
+            Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
+            Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
+            result.getBestTarget().getBestCameraToTarget());
       } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
+        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
       }
 
       // Add pose observation
@@ -92,8 +93,7 @@ public class PhotonIOReal implements PhotonIO {
         // Calculate robot pose
         var tagPose = VisionConstants.TAG_LAYOUT.getTagPose(target.fiducialId);
         if (tagPose.isPresent()) {
-          Transform3d fieldToTarget =
-              new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
+          Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
           Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
@@ -127,5 +127,20 @@ public class PhotonIOReal implements PhotonIO {
     for (int id : tagIds) {
       inputs.tagIds[i++] = id;
     }
+  }
+
+  @Override
+  public TargetObservation getTag(int id) {
+    var targets = camera.getAllUnreadResults().get(0).getTargets();
+    TargetObservation desiredTarget = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
+    for (PhotonTrackedTarget target : targets) {
+      if (target.getFiducialId() == id) {
+        desiredTarget = new TargetObservation(
+            Rotation2d.fromDegrees(target.getYaw()),
+            Rotation2d.fromDegrees(target.getPitch()),
+            target.getBestCameraToTarget());
+      }
+    }
+    return desiredTarget;
   }
 }

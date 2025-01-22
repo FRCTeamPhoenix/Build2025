@@ -29,8 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
+import frc.robot.commands.AlignToTag;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.PathfindingCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -63,8 +63,6 @@ public class RobotContainer {
   private final Photon photon;
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
-  private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
-
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -73,9 +71,6 @@ public class RobotContainer {
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
-
-  private final Trigger leftDPadTrigger = controller.povLeft();
-  private final Trigger rightDPadTrigger = controller.povRight();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -188,14 +183,7 @@ public class RobotContainer {
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
     aTrigger
-        .whileTrue(
-            DriveCommands.aimToTarget(
-                drive,
-                targetPose,
-                steerPID,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX()))
-        .onTrue(Commands.runOnce(steerPID::reset));
+        .whileTrue(new AlignToTag(0, 22, photon, drive));
   }
 
   /**
