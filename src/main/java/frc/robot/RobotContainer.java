@@ -39,7 +39,6 @@ import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
 import frc.robot.subsystems.claw.ClawIOTalonFX;
-import frc.robot.commands.PathfindingCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -73,14 +72,10 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
-
-  private final Elevator elevator;
-  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
-
   private final Claw claw;
+  private final Elevator elevator;
 
-
-
+  //PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
   // Controller
@@ -91,10 +86,6 @@ public class RobotContainer {
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
-
-  private final Trigger leftDPadTrigger = controller.povLeft();
-  private final Trigger rightDPadTrigger = controller.povRight();
-
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
