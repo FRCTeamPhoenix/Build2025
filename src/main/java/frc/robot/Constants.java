@@ -13,8 +13,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -52,20 +56,13 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    public static final Transform3d test_Transform = new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
-    // Cam mounted facing forward, half a meter forward of center, half a meter up
-    // from center.
-    public static final Transform3d FRONT_TRANSFORM = new Transform3d(
-        new Translation3d(0.3048, 0.0, 0.12065), new Rotation3d(0, Math.toRadians(20), 0.0));
-    public static final Transform3d BACK_TRANSFORM = new Transform3d(
-        new Translation3d(-0.3048, 0.0, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), Math.PI));
-    public static final Transform3d LEFT_TRANSFORM = new Transform3d(
-        new Translation3d(0.0, -0.3048, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), (Math.PI / 2.0)));
-    public static final Transform3d RIGHT_TRANSFORM = new Transform3d(
-        new Translation3d(0.0, 0.3048, 0.12065),
-        new Rotation3d(0, Math.toRadians(20), (-Math.PI / 2.0)));
+    public static final Transform3d FRONT_LEFT_TRANSFORM = new Transform3d(
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+
+    public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, -Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+
+
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
@@ -91,6 +88,36 @@ public final class Constants {
     public static double ANGULAR_STD_DEV_MEGATAG2_FACTOR = Double.POSITIVE_INFINITY; // No rotation data available
   }
 
+  public static final class PathfindingConstants {
+    public static PathConstraints constraints = new PathConstraints(
+        4.0, 6.0,
+        Units.degreesToRadians(720), Units.degreesToRadians(1080));
+
+    public static Pose2d[] blueReefPoses = new Pose2d[] {
+        new Pose2d(3, 4, Rotation2d.kZero),
+        new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
+        new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120))),
+        new Pose2d(6, 4, Rotation2d.k180deg),
+        new Pose2d(5.25, 2.75, new Rotation2d(Math.toRadians(120))),
+        new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60)))
+    };
+
+    public static Pose2d[] redReefPoses = new Pose2d[] {
+        new Pose2d(14.5, 4, Rotation2d.k180deg),
+        new Pose2d(13.75, 2.75, new Rotation2d(Math.toRadians(120))),
+        new Pose2d(12.3, 2.75, new Rotation2d(Math.toRadians(60))),
+        new Pose2d(11.5, 4, Rotation2d.kZero),
+        new Pose2d(12.3, 5.25, new Rotation2d(Math.toRadians(-60))),
+        new Pose2d(13.75, 5.25, new Rotation2d(Math.toRadians(-120)))
+    };
+
+    public static Pose2d[] bluePlayerStationPoses = new Pose2d[] {
+        new Pose2d(2, 6.25, new Rotation2d(Math.toRadians(125))),
+        new Pose2d(2, 1.75, new Rotation2d(Math.toRadians(-125))),
+    };
+  }
+
+
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
     public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
@@ -109,9 +136,10 @@ public final class Constants {
     public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
     public static final double[] ENCODER_OFFSETS = {
-      2.888, -2.246 + Math.PI, -2.976, -2.745
+        2.888, -2.246 + Math.PI, -2.976, -2.745
     };
   }
+
 
   public static final class ElevatorConstants {
     public static final double GEAR_RATIO = 5.0;
@@ -120,6 +148,12 @@ public final class Constants {
     public static final double MIN_HEIGHT = Units.inchesToMeters(37.5);
     public static final double MAX_HEIGHT = Units.inchesToMeters(85.5);
     public static final double[] POSITIONS = { 0, 0.4, 0.8, 1.2};
+  }
+
+  public static final class ClawConstants {
+    public static final int CLAW_ID = 15;
+    public static final double GEAR_RATIO = 5;
+    public static final double INNER_WHEEL_RADIUS = 4.0;
   }
 
   public static final class CANConstants {

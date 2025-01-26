@@ -3,11 +3,12 @@ package frc.robot.util;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-public class SwerveUtils {
+public class PhoenixUtils {
 
   /**
    * Minimize the change in heading the desired swerve module state would require
@@ -101,6 +102,11 @@ public class SwerveUtils {
     return new ChassisSpeeds(rotated.getX(), rotated.getY(), omegaRadiansPerSecond);
   }
 
+  public static double getDistance(Pose2d poseA, Pose2d poseB) {
+    Transform2d poseDelta = poseB.minus(poseA);
+    
+    return Math.sqrt(Math.pow(poseDelta.getX(), 2) + Math.pow(poseDelta.getY(), 2));
+  }
   /*
    * Extended feedforward class to keep calculate using double input
    */
