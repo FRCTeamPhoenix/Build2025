@@ -14,6 +14,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,9 +30,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
@@ -41,6 +46,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
@@ -65,7 +73,12 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
+
+  private final Elevator elevator;
+  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
+
   private final Claw claw;
+
 
 
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -81,6 +94,7 @@ public class RobotContainer {
 
   private final Trigger leftDPadTrigger = controller.povLeft();
   private final Trigger rightDPadTrigger = controller.povRight();
+
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -102,6 +116,8 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
             new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
+        elevator = new Elevator(new ElevatorIO() {});
+
         claw = new Claw(new ClawIOTalonFX());
         break;
 
@@ -115,10 +131,13 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         photon = new Photon(
+
             drive::addVisionMeasurement,
             new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM, drive::getPose) {
             });
         claw = new Claw(new ClawIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
+
         break;
 
       default:
@@ -139,9 +158,15 @@ public class RobotContainer {
             new PhotonIO() {
             });
         claw = new Claw(new ClawIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
+
         break;
     }
 
+
+    // Configure PathPlanner commands
+    configureNamedCommands();
+    
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption(
@@ -196,6 +221,17 @@ public class RobotContainer {
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
     aTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
+
+    elevator.setDefaultCommand(Commands.run(() -> {
+      elevator.runSetpoint(
+        MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
+        0, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
+    }, elevator));
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("Raise Elevator Max", new MoveElevator(elevator, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
+    NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
   }
 
   /**

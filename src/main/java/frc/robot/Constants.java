@@ -140,9 +140,18 @@ public final class Constants {
     };
   }
 
+
+  public static final class ElevatorConstants {
+    public static final double GEAR_RATIO = 5.0;
+    public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);
+    public static final double PULLEY_RADIUS = Units.inchesToMeters(1.75) / 2;
+    public static final double MIN_HEIGHT = Units.inchesToMeters(37.5);
+    public static final double MAX_HEIGHT = Units.inchesToMeters(85.5);
+    public static final double[] POSITIONS = { 0, 0.4, 0.8, 1.2};
+  }
+
   public static final class ClawConstants {
     public static final int CLAW_ID = 15;
-
     public static final double GEAR_RATIO = 5;
     public static final double INNER_WHEEL_RADIUS = 4.0;
   }
