@@ -28,11 +28,14 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
+import frc.robot.subsystems.claw.ClawIOSim;
 import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOSim;
@@ -56,8 +59,6 @@ public class RobotContainer {
 
 
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
-
-  private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -103,7 +104,7 @@ public class RobotContainer {
         photon = new Photon(
             drive::addVisionMeasurement, 
             new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_TRANSFORM, drive::getPose) {});
-        claw = new Claw(new ClawIO() {});
+        claw = new Claw(new ClawIOSim());
         break;
 
       default:
@@ -168,9 +169,9 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));
 
-    yTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::stop, claw));
+    yTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
 
-    aTrigger.whileTrue(Commands.runOnce(claw::runReverse, claw)).whileFalse(Commands.runOnce(claw::stop, claw));
+    aTrigger.whileTrue(Commands.runOnce(claw::runReverse, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
   }
 
   /**

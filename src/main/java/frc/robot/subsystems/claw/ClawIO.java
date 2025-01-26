@@ -18,8 +18,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClawIO {
     @AutoLog
     public static class ClawIOInputs {
-        public double positionRad = 0.0;
-        public double velocityRadPerSec = 0.0;
+        public double positionMeters = 0.0;
+        public double velocityMetersPerSec = 0.0;
         public double appliedVolts = 0.0;
         public double[] currentAmps = new double[] {};
     }

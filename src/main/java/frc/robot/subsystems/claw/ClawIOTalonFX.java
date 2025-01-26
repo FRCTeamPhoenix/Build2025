@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -55,10 +54,10 @@ public class ClawIOTalonFX implements ClawIO {
                 velocity,
                 appliedVolts,
                 current);
-        inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble())
-                / ClawConstants.GEAR_RATIO;
-        inputs.velocityRadPerSec = Units.rotationsToRadians(velocity.getValueAsDouble())
-                / ClawConstants.GEAR_RATIO;
+        inputs.positionMeters = position.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO * ClawConstants.INNER_WHEEL_RADIUS;
+        inputs.velocityMetersPerSec = velocity.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO * ClawConstants.INNER_WHEEL_RADIUS;
         inputs.appliedVolts = appliedVolts.getValueAsDouble();
         inputs.currentAmps = new double[] { current.getValueAsDouble() };
     }
