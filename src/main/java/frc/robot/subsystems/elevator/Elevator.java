@@ -23,7 +23,7 @@ public class Elevator extends SubsystemBase {
     //Mechanism2D
     private final LoggedMechanism2d mech = new LoggedMechanism2d(24, 24);
     private final LoggedMechanismRoot2d root = mech.getRoot("root", 12, 0);
-    private final LoggedMechanismLigament2d elevator = root.append(new LoggedMechanismLigament2d("elevator", ElevatorConstants.minHeight, 90, 10, new Color8Bit(135, 140, 148)));
+    private final LoggedMechanismLigament2d elevator = root.append(new LoggedMechanismLigament2d("elevator", ElevatorConstants.MIN_HEIGHT, 90, 10, new Color8Bit(135, 140, 148)));
 
 
     public Elevator(ElevatorIO io) {
@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
         if (setpoint != null) {Logger.recordOutput("Elevator/Setpoint", setpoint);}
         else {Logger.recordOutput("Elevator/Setpoint", -1);}
 
-        elevator.setLength(inputs.height + ElevatorConstants.minHeight);
+        elevator.setLength(inputs.height + ElevatorConstants.MIN_HEIGHT);
 
         if (setpoint != null) {
             pidController.setGoal(setpoint);
@@ -65,8 +65,8 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    public void settest(int position) {
-        this.setpoint = Constants.ElevatorConstants.setpoints[position];
+    public void goToPosition(int positionIndex) {
+        this.setpoint = ElevatorConstants.POSITIONS[positionIndex];
     }
 
     public void runSetpoint(double setpoint) {

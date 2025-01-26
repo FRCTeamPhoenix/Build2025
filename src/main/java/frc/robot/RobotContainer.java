@@ -66,16 +66,11 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandXboxController operatorcontroller = new CommandXboxController(1);
 
   // Triggers
   private final Trigger xTrigger = controller.x();
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
-  
-
-  private final Trigger xTrigger2 = operatorcontroller.x();
-  private final Trigger yTrigger2 = operatorcontroller.y();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -192,16 +187,12 @@ public class RobotContainer {
     elevator.setDefaultCommand(Commands.run(() -> {
       elevator.runSetpoint(
         MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
-        0, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
+        0, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
     }, elevator));
-
-
-    xTrigger2.whileTrue(Commands.run(() -> elevator.settest(1), elevator));
-    yTrigger2.whileTrue(Commands.run(() -> elevator.settest(0), elevator));
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("Raise Elevator Max", new MoveElevator(elevator, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
+    NamedCommands.registerCommand("Raise Elevator Max", new MoveElevator(elevator, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
     NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
   }
 

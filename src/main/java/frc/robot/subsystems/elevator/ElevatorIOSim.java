@@ -7,9 +7,9 @@ import frc.robot.Constants.ElevatorConstants;
 public class ElevatorIOSim implements ElevatorIO {
 
     public final DCMotor gearbox = DCMotor.getKrakenX60(2);
-    public final ElevatorSim elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.gearRatio,
-            ElevatorConstants.pulleyRadius, ElevatorConstants.carriageMass,
-            0.0, ElevatorConstants.maxHeight - ElevatorConstants.minHeight, true, 0.0);
+    public final ElevatorSim elevatorSim = new ElevatorSim(gearbox, ElevatorConstants.GEAR_RATIO,
+            ElevatorConstants.PULLEY_RADIUS, ElevatorConstants.CARRIAGE_MASS,
+            0.0, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT, true, 0.0);
 
     private double appliedVolts = 0.0;
 
