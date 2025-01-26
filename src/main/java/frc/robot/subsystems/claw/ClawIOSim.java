@@ -14,8 +14,8 @@ public class ClawIOSim implements ClawIO {
     public void updateInputs(ClawIOInputs inputs) {
         motorSim.update(0.02);
 
-        inputs.positionMeters = motorSim.getAngularPositionRotations() * ClawConstants.INNER_WHEEL_RADIUS;
-        inputs.velocityMetersPerSec = motorSim.getAngularVelocityRPM() * ClawConstants.INNER_WHEEL_RADIUS;
+        inputs.positionRotations = motorSim.getAngularPositionRotations();
+        inputs.velocityRotationsPerSec = motorSim.getAngularVelocityRPM();
         inputs.appliedVolts = motorSim.getInputVoltage();
         inputs.currentAmps = new double[] { motorSim.getCurrentDrawAmps() };
     }

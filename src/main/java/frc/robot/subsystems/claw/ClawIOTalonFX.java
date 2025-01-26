@@ -54,10 +54,10 @@ public class ClawIOTalonFX implements ClawIO {
                 velocity,
                 appliedVolts,
                 current);
-        inputs.positionMeters = position.getValueAsDouble()
-                / ClawConstants.GEAR_RATIO * ClawConstants.INNER_WHEEL_RADIUS;
-        inputs.velocityMetersPerSec = velocity.getValueAsDouble()
-                / ClawConstants.GEAR_RATIO * ClawConstants.INNER_WHEEL_RADIUS;
+        inputs.positionRotations = position.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO;
+        inputs.velocityRotationsPerSec = velocity.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO;
         inputs.appliedVolts = appliedVolts.getValueAsDouble();
         inputs.currentAmps = new double[] { current.getValueAsDouble() };
     }
