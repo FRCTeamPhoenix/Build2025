@@ -20,8 +20,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.util.SwerveUtils;
-import frc.robot.util.SwerveUtils.PhoenixFF;
+import frc.robot.util.PhoenixUtils;
+import frc.robot.util.PhoenixUtils.PhoenixFF;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -108,7 +108,7 @@ public class Module {
     // Controllers run in "periodic" when the setpoint is not null
     //state.optimize(getAngle());
     //Old code
-    var optimizedState = SwerveUtils.optimize(state, getAngle());
+    var optimizedState = PhoenixUtils.optimize(state, getAngle());
 
     // Update setpoints, controllers run in "periodic"
     angleSetpoint = optimizedState.angle;
