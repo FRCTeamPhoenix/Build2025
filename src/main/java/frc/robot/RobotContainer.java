@@ -30,6 +30,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.claw.Claw;
+import frc.robot.subsystems.claw.ClawIO;
+import frc.robot.subsystems.claw.ClawIOSim;
+import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.commands.PathfindingCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -61,9 +65,10 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
-  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
+  private final Claw claw;
 
-  private final Pose2d targetPose = new Pose2d(3.6576, 4.0259, new Rotation2d(0));
+
+  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -95,8 +100,9 @@ public class RobotContainer {
             new ModuleIOTalonFX(3));
         photon = new Photon(
             drive::addVisionMeasurement,
-            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-            new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
+            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
+            new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
+        claw = new Claw(new ClawIOTalonFX());
         break;
 
       case SIM:
@@ -112,6 +118,7 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM, drive::getPose) {
             });
+        claw = new Claw(new ClawIOSim());
         break;
 
       default:
@@ -131,6 +138,7 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new PhotonIO() {
             });
+        claw = new Claw(new ClawIO() {});
         break;
     }
 
@@ -187,15 +195,7 @@ public class RobotContainer {
     yTrigger.whileTrue(Commands.defer(
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
 
-    aTrigger
-        .whileTrue(
-            DriveCommands.aimToTarget(
-                drive,
-                targetPose,
-                steerPID,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX()))
-        .onTrue(Commands.runOnce(steerPID::reset));
+    aTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
   }
 
   /**

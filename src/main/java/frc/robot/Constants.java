@@ -140,6 +140,13 @@ public final class Constants {
     };
   }
 
+  public static final class ClawConstants {
+    public static final int CLAW_ID = 15;
+
+    public static final double GEAR_RATIO = 5;
+    public static final double INNER_WHEEL_RADIUS = 4.0;
+  }
+
   public static final class CANConstants {
     public static final int PIGEON_ID = 1;
 
