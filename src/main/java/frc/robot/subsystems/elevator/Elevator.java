@@ -65,6 +65,10 @@ public class Elevator extends SubsystemBase {
         }
     }
 
+    public void settest(int position) {
+        this.setpoint = Constants.ElevatorConstants.setpoints[position];
+    }
+
     public void runSetpoint(double setpoint) {
         this.setpoint = setpoint;
     }
@@ -85,4 +89,5 @@ public class Elevator extends SubsystemBase {
         }
         return returnBool;
     }
+
 }

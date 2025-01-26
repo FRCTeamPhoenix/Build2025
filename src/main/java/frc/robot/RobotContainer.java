@@ -66,11 +66,16 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController operatorcontroller = new CommandXboxController(1);
 
   // Triggers
   private final Trigger xTrigger = controller.x();
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
+  
+
+  private final Trigger xTrigger2 = operatorcontroller.x();
+  private final Trigger yTrigger2 = operatorcontroller.y();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -189,6 +194,10 @@ public class RobotContainer {
         MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
         0, ElevatorConstants.maxHeight - ElevatorConstants.minHeight));
     }, elevator));
+
+
+    xTrigger2.whileTrue(Commands.run(() -> elevator.settest(1), elevator));
+    yTrigger2.whileTrue(Commands.run(() -> elevator.settest(0), elevator));
   }
 
   private void configureNamedCommands() {

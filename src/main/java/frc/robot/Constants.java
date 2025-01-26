@@ -119,6 +119,7 @@ public final class Constants {
     public static final double pulleyRadius = Units.inchesToMeters(1.75) / 2;
     public static final double minHeight = Units.inchesToMeters(37.5);
     public static final double maxHeight = Units.inchesToMeters(85.5);
+    public static final double[] setpoints = { 0, 0.4, 0.8, 1.2};
   }
 
   public static final class CANConstants {
