@@ -206,4 +206,12 @@ public final class Constants {
 
     public static final int[][] MODULE_IDS = { FL_IDS, FR_IDS, BL_IDS, BR_IDS };
   }
+
+  public static final class CANdleConstants{
+    public static final int LED_RED = 255;
+    public static final int LED_BLUE = 255;
+    public static final int LED_GREEN = 255;
+
+    public static final int COLOR_OFF = 0;
+  }
 }
