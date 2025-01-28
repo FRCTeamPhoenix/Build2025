@@ -47,6 +47,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.Logger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -90,8 +92,8 @@ public class RobotContainer {
             new ModuleIOTalonFX(3));
         photon = new Photon(
             drive::addVisionMeasurement,
-            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-            new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
+            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
+           // new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
         break;
 
       case SIM:
@@ -187,6 +189,7 @@ public class RobotContainer {
   }
 
   /**
+   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

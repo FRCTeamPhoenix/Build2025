@@ -15,8 +15,8 @@ import frc.robot.subsystems.photon.PhotonIO.TargetObservation;
 public class AlignToTag extends Command {
 
     //TODO: Tune PIDs for real bot, add PIDs for sim bot
-    PIDController turnController = new PIDController(0.001, 0, 0);
-    PIDController strafeController = new PIDController(0.5, 0, 0);
+    PIDController turnController = new PIDController(0.01, 0, 0);
+    PIDController strafeController = new PIDController(1.08, 0.6, 0.1);
 
     Photon photonSubsystem;
     int cameraID;
@@ -48,9 +48,11 @@ public class AlignToTag extends Command {
         double thetaDifference = tagPose.getRotation().minus(pose.getRotation()).getZ();
         Logger.recordOutput("TagAlignment/Y", yDifference);
         Logger.recordOutput("TagAlignment/Theta", thetaDifference);
+    
 
         ChassisSpeeds speeds = new ChassisSpeeds(0, strafeController.calculate(-yDifference, 0),
                 turnController.calculate(thetaDifference, 0));
+                Logger.recordOutput("TagAlignment/Speeds", speeds);
         drive.runVelocity(speeds);
     }
 
