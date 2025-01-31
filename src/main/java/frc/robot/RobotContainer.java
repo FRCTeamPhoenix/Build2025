@@ -113,7 +113,7 @@ public class RobotContainer {
             new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
         elevator = new Elevator(new ElevatorIO() {});
 
-        claw = new Claw(new ClawIOTalonFX());
+        claw = new Claw(new ClawIO() {});
         break;
 
       case SIM:

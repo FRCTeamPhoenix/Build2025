@@ -31,8 +31,8 @@ public class Elevator extends SubsystemBase {
 
         switch (Constants.CURRENT_MODE) {
             case REAL:
-                pidController = new ProfiledPIDController(-1.0, -1.0, -1.0, 
-                        new TrapezoidProfile.Constraints(3, 3)); 
+            pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
+            new TrapezoidProfile.Constraints(3, 3)); 
                 kG = 0.0;               
                 break;
             case SIM:

@@ -21,8 +21,8 @@ public class Claw extends SubsystemBase {
 
         switch (Constants.CURRENT_MODE) {
             case REAL:
-                controller = new PIDController(-1.0, -1.0, -1.0);
-                feedforward = new PhoenixFF(-1, -1);
+            controller = new PIDController(0, 0, 0);
+            feedforward = new PhoenixFF(0, 0);
                 break;
             case SIM:
                 controller = new PIDController(0.002, 0.1, 0.000002);
