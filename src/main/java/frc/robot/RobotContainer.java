@@ -14,9 +14,14 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -27,23 +32,31 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.AlignToTag;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.MoveElevator;
+import frc.robot.subsystems.claw.Claw;
+import frc.robot.subsystems.claw.ClawIO;
+import frc.robot.subsystems.claw.ClawIOSim;
+import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
-import frc.robot.subsystems.photon.PhotonIOSim;
-import frc.robot.util.PhoenixUtils;
-
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -63,6 +76,10 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Photon photon;
+  private final Claw claw;
+  private final Elevator elevator;
+
+  //PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
 
   // Controller
@@ -73,6 +90,9 @@ public class RobotContainer {
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
+
+  //Subsystem sets
+  private final Set<Subsystem> driveSet = new HashSet<Subsystem>();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -92,8 +112,10 @@ public class RobotContainer {
             new ModuleIOTalonFX(3));
         photon = new Photon(
             drive::addVisionMeasurement,
-            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
-           // new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
+            new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
+            new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
+        elevator = new Elevator(new ElevatorIO() {});
+        claw = new Claw(new ClawIO() {});
         break;
 
       case SIM:
@@ -106,9 +128,14 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         photon = new Photon(
+
             drive::addVisionMeasurement,
             new PhotonIOSim(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM, drive::getPose));
             //new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM, drive::getPose));
+
+        claw = new Claw(new ClawIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
+
         break;
 
       default:
@@ -128,9 +155,15 @@ public class RobotContainer {
             drive::addVisionMeasurement,
             new PhotonIO() {
             });
+        claw = new Claw(new ClawIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
+
         break;
     }
 
+    // Configure PathPlanner commands
+    configureNamedCommands();
+    
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption(
@@ -150,6 +183,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     steerPID.enableContinuousInput(-180, 180);
+    driveSet.add(drive);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -178,14 +212,21 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));
 
-    Set<Subsystem> sysSet = new HashSet<>();
-    sysSet.add(drive);
-
     yTrigger.whileTrue(Commands.defer(
-        () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), sysSet));
+        () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), driveSet));
 
-    aTrigger
-        .whileTrue(new AlignToTag(0, photon, drive));
+    aTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
+
+    elevator.setDefaultCommand(Commands.run(() -> {
+      elevator.runSetpoint(
+        MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
+        0, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
+    }, elevator));
+  }
+
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("Raise Elevator Max", new MoveElevator(elevator, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
+    NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
   }
 
   /**
@@ -214,20 +255,48 @@ public class RobotContainer {
     boolean isRed = DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == Alliance.Red;
 
-    Pose2d[] zones = PathfindingConstants.blueReefPoses;
-    Pose2d targetPose = PathfindingConstants.blueReefPoses[0];
+    Pose2d targetPose = drive.getPose();
+    Pose2d[] reefPoses = isRed ? PathfindingConstants.redReefPoses
+        : PathfindingConstants.blueReefPoses;
 
-    if (isRed) {
-      zones = PathfindingConstants.redReefPoses;
-      targetPose = PathfindingConstants.redReefPoses[0];
-    }
+    Pose2d reefCenter = isRed ? PathfindingConstants.redReefCenter
+        : PathfindingConstants.blueReefCenter;
 
-    for (int i = 0; i < zones.length; i++) {
-      if (PhoenixUtils.getDistance(drive.getPose(), zones[i]) < PhoenixUtils.getDistance(drive.getPose(), targetPose)) {
-        targetPose = zones[i];
+    Transform2d translatedRobot = targetPose.minus(reefCenter);
+
+    double theta = Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
+
+    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.xLimit
+        && Math.abs(translatedRobot.getY()) < PathfindingConstants.yLimit) {
+      if (-30 < theta && theta < 30) {
+        targetPose = reefPoses[0];
+      } else if (-30 > theta && theta > -90) {
+        targetPose = reefPoses[1];
+      } else if (-90 > theta && theta > -150) {
+        targetPose = reefPoses[2];
+      } else if ((-150 > theta && theta > -180) || (150 < theta && theta < 180)) {
+        targetPose = reefPoses[3];
+      } else if (90 < theta && theta < 150) {
+        targetPose = reefPoses[4];
+      } else if (30 < theta && theta < 90) {
+        targetPose = reefPoses[5];
       }
     }
 
     return targetPose;
+  }
+
+  public Pose2d[] generateZone() {
+    boolean isRed = DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red;
+    Pose2d reefCenter = isRed ? PathfindingConstants.redReefCenter
+        : PathfindingConstants.blueReefCenter;
+
+    List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
+
+    for (Transform2d transform : PathfindingConstants.zoneTransforms) {
+      zoneTrajectory.add(reefCenter.plus(transform));
+    }
+    return zoneTrajectory.toArray(new Pose2d[0]);
   }
 }

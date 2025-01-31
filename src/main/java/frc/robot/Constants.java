@@ -20,6 +20,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -62,7 +63,8 @@ public final class Constants {
       new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(6.468), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
 
     public static final Transform3d FRONT_LEFT_TRANSFORM = new Transform3d(
-        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
+        new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)),
+        new Rotation3d(0, 0.0, 0.0));
 
     public static final Transform3d FRONT_RIGHT_TRANSFORM = new Transform3d(
         new Translation3d(DriveConstants.TRACK_WIDTH_X / 2, -Units.inchesToMeters(3), Units.inchesToMeters(5)), new Rotation3d(0, 0.0, 0.0));
@@ -99,13 +101,16 @@ public final class Constants {
         Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
     public static Pose2d[] blueReefPoses = new Pose2d[] {
-        new Pose2d(3, 4, Rotation2d.kZero),
-        new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
-        new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120))),
         new Pose2d(6, 4, Rotation2d.k180deg),
         new Pose2d(5.25, 2.75, new Rotation2d(Math.toRadians(120))),
-        new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60)))
+        new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60))),
+        new Pose2d(3, 4, Rotation2d.kZero),
+        new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
+        new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120)))
+
     };
+
+    public static Pose2d blueReefCenter = new Pose2d(4.489323, 4.0259, new Rotation2d());
 
     public static Pose2d[] redReefPoses = new Pose2d[] {
         new Pose2d(14.5, 4, Rotation2d.k180deg),
@@ -116,12 +121,44 @@ public final class Constants {
         new Pose2d(13.75, 5.25, new Rotation2d(Math.toRadians(-120)))
     };
 
+    public static Pose2d redReefCenter = new Pose2d(13.058902, 4.0259, new Rotation2d());
+
     public static Pose2d[] bluePlayerStationPoses = new Pose2d[] {
         new Pose2d(2, 6.25, new Rotation2d(Math.toRadians(125))),
         new Pose2d(2, 1.75, new Rotation2d(Math.toRadians(-125))),
     };
-  }
 
+    public static double xLimit = 2.75;
+    public static double yLimit = 3.5;
+
+    public static double slope = 0.61261261261261;
+
+    public static Transform2d[] zoneTransforms = new Transform2d[] {
+        new Transform2d(-xLimit, yLimit, Rotation2d.kZero),
+        new Transform2d(xLimit, yLimit, Rotation2d.kZero),
+        new Transform2d(xLimit, -yLimit, Rotation2d.kZero),
+        new Transform2d(-xLimit, -yLimit, Rotation2d.kZero),
+        new Transform2d(-xLimit, yLimit, Rotation2d.kZero),
+        new Transform2d(-xLimit, slope * xLimit, Rotation2d.kZero),
+        new Transform2d(-1.14, 0.68, Rotation2d.kZero),
+        new Transform2d(0, 1.32, Rotation2d.kZero),
+        new Transform2d(0, yLimit, Rotation2d.kZero),
+        new Transform2d(0, 1.32, Rotation2d.kZero),
+        new Transform2d(1.14, 0.68, Rotation2d.kZero),
+        new Transform2d(xLimit, slope * xLimit, Rotation2d.kZero),
+        new Transform2d(1.14, 0.68, Rotation2d.kZero),
+        new Transform2d(1.14, -0.68, Rotation2d.kZero),
+        new Transform2d(xLimit, -slope * xLimit, Rotation2d.kZero),
+        new Transform2d(1.14, -0.68, Rotation2d.kZero),
+        new Transform2d(0, -1.32, Rotation2d.kZero),
+        new Transform2d(0, -yLimit, Rotation2d.kZero),
+        new Transform2d(0, -1.32, Rotation2d.kZero),
+        new Transform2d(-1.14, -0.68, Rotation2d.kZero),
+        new Transform2d(-xLimit, -slope * xLimit, Rotation2d.kZero),
+        new Transform2d(-1.14, -0.68, Rotation2d.kZero),
+        new Transform2d(-1.14, 0.68, Rotation2d.kZero),
+    };
+  }
 
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
@@ -143,6 +180,22 @@ public final class Constants {
     public static final double[] ENCODER_OFFSETS = {
         2.888, -2.246 + Math.PI, -2.976, -2.745
     };
+  }
+
+
+  public static final class ElevatorConstants {
+    public static final double GEAR_RATIO = 5.0;
+    public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);
+    public static final double PULLEY_RADIUS = Units.inchesToMeters(1.75) / 2;
+    public static final double MIN_HEIGHT = Units.inchesToMeters(37.5);
+    public static final double MAX_HEIGHT = Units.inchesToMeters(85.5);
+    public static final double[] POSITIONS = { 0, 0.4, 0.8, 1.2};
+  }
+
+  public static final class ClawConstants {
+    public static final int CLAW_ID = 15;
+    public static final double GEAR_RATIO = 5;
+    public static final double INNER_WHEEL_RADIUS = 4.0;
   }
 
   public static final class CANConstants {
