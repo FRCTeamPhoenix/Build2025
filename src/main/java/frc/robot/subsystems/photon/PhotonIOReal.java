@@ -23,16 +23,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /** IO implementation for real PhotonVision hardware. */
 public class PhotonIOReal implements PhotonIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
+  List<PhotonPipelineResult> results;
+
 
   /**
    * Creates a new VisionIOPhotonVision.
    *
-   * @param name The configured name of the camera.
+   * @param name             The configured name of the camera.
    * @param rotationSupplier The 3D position of the camera relative to the robot.
    */
   public PhotonIOReal(String name, Transform3d robotToCamera) {
@@ -47,15 +50,16 @@ public class PhotonIOReal implements PhotonIO {
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
-    for (var result : camera.getAllUnreadResults()) {
+    results = camera.getAllUnreadResults();
+    for (var result : results) {
       // Update latest target observation
       if (result.hasTargets()) {
-        inputs.latestTargetObservation =
-            new TargetObservation(
-                Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+        inputs.latestTargetObservation = new TargetObservation(
+            Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
+            Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
+            result.getBestTarget().bestCameraToTarget);
       } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
+        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
       }
 
       // Add pose observation
@@ -92,8 +96,7 @@ public class PhotonIOReal implements PhotonIO {
         // Calculate robot pose
         var tagPose = VisionConstants.TAG_LAYOUT.getTagPose(target.fiducialId);
         if (tagPose.isPresent()) {
-          Transform3d fieldToTarget =
-              new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
+          Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
           Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());

@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
+import frc.robot.commands.AlignToTag;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.claw.Claw;
@@ -59,6 +60,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.Logger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -112,7 +115,6 @@ public class RobotContainer {
             new PhotonIOReal(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
             new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
         elevator = new Elevator(new ElevatorIO() {});
-
         claw = new Claw(new ClawIO() {});
         break;
 
@@ -128,10 +130,9 @@ public class RobotContainer {
         photon = new Photon(
 
             drive::addVisionMeasurement,
-            new PhotonIO() {
-              // new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME,
-              // VisionConstants.FRONT_LEFT_TRANSFORM, drive::getPose) {
-            });
+            new PhotonIOSim(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM, drive::getPose));
+            //new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM, drive::getPose));
+
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
 
@@ -229,6 +230,7 @@ public class RobotContainer {
   }
 
   /**
+   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
