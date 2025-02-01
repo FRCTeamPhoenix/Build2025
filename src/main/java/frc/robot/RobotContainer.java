@@ -19,7 +19,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -53,6 +52,7 @@ import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
+import frc.robot.subsystems.visualizer.Visualizer;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSim;
@@ -79,6 +79,7 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
+  private final Visualizer visualizer;
   private final Wrist wrist;
 
   //PID Controller
@@ -92,6 +93,8 @@ public class RobotContainer {
   private final Trigger bTrigger = controller.b();
   private final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
+
+  public int elevatorSetpoint = 0;
 
   //Subsystem sets
   private final Set<Subsystem> driveSet = new HashSet<Subsystem>();
@@ -118,6 +121,7 @@ public class RobotContainer {
             new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
         elevator = new Elevator(new ElevatorIO() {});
         claw = new Claw(new ClawIO() {});
+        visualizer = new Visualizer(elevator);
         wrist = new Wrist(new WristIO() {});
         break;
 
@@ -131,15 +135,13 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         photon = new Photon(
-
             drive::addVisionMeasurement,
             new PhotonIOSim(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM, drive::getPose));
             //new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM, drive::getPose));
-
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
-
+        visualizer = new Visualizer(elevator);
         break;
 
       default:
@@ -161,8 +163,8 @@ public class RobotContainer {
             });
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
+        visualizer = new Visualizer(elevator);
         wrist = new Wrist(new WristIO() {});
-
         break;
     }
 
@@ -208,6 +210,14 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
+    // xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // bTrigger
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> drive.setPose(
+    //                 new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+    //             drive)
+    //             .ignoringDisable(true));
    /* xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     bTrigger
         .onTrue(
@@ -216,20 +226,15 @@ public class RobotContainer {
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
                 .ignoringDisable(true));*/
-      
-    xTrigger.whileTrue(Commands.runOnce(() ->     wrist.setSetpoint(Math.PI), wrist));
-    bTrigger.whileTrue(Commands.runOnce(() ->     wrist.setSetpoint(0), wrist));
-
     yTrigger.whileTrue(Commands.defer(
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), driveSet));
 
     aTrigger.whileTrue(Commands.runOnce(claw::runForward, claw)).whileFalse(Commands.runOnce(claw::holdPosition, claw));
 
-    elevator.setDefaultCommand(Commands.run(() -> {
-      elevator.runSetpoint(
-        MathUtil.clamp(elevator.getSetpoint() - controller.getLeftTriggerAxis() * 0.1 + controller.getRightTriggerAxis() * 0.1,
-        0, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
-    }, elevator));
+    bTrigger.onTrue(Commands.runOnce(() -> elevatorSetpoint = MathUtil.clamp(elevatorSetpoint + 1, 0, ElevatorConstants.POSITIONS.length - 1)));
+    xTrigger.onTrue(Commands.runOnce(() -> elevatorSetpoint = MathUtil.clamp(elevatorSetpoint - 1, 0, ElevatorConstants.POSITIONS.length - 1)));
+
+    elevator.setDefaultCommand(Commands.run(() -> elevator.goToPosition(() -> elevatorSetpoint), elevator));
   }
 
   private void configureNamedCommands() {

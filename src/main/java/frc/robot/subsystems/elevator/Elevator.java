@@ -1,10 +1,13 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.function.IntSupplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -65,8 +68,8 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    public void goToPosition(int positionIndex) {
-        this.setpoint = ElevatorConstants.POSITIONS[positionIndex];
+    public void goToPosition(IntSupplier positionIndex) {
+        this.setpoint = ElevatorConstants.POSITIONS[MathUtil.clamp(positionIndex.getAsInt(), 0, ElevatorConstants.POSITIONS.length - 1)];
     }
 
     public void runSetpoint(double setpoint) {
@@ -75,6 +78,10 @@ public class Elevator extends SubsystemBase {
 
     public double getSetpoint() {
         return setpoint;
+    }
+    
+    public double getPosition() {
+        return inputs.height;
     }
 
     public void stop() {
