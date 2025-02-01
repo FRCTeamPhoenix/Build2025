@@ -9,6 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -18,6 +20,7 @@ import frc.robot.Constants.ClawConstants;
 public class ClawIOTalonFX implements ClawIO {
 
     private TalonFX clawTalon = new TalonFX(ClawConstants.CLAW_ID);
+    private LaserCan laserCan = new LaserCan(ClawConstants.LASERCAN_ID);
 
     private final StatusSignal<Angle> position;
     private final StatusSignal<AngularVelocity> velocity;
@@ -32,6 +35,14 @@ public class ClawIOTalonFX implements ClawIO {
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         clawTalon.getConfigurator().apply(config);
         setBrakeMode(true);
+
+        try {
+            laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
+            laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+            laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+        } catch (ConfigurationFailedException e) {
+            System.err.println("Configuration failed: " + e.getMessage());
+        }
 
         position = clawTalon.getPosition();
         velocity = clawTalon.getVelocity();
@@ -60,6 +71,7 @@ public class ClawIOTalonFX implements ClawIO {
                 / ClawConstants.GEAR_RATIO;
         inputs.appliedVolts = appliedVolts.getValueAsDouble();
         inputs.currentAmps = new double[] { current.getValueAsDouble() };
+        inputs.intakeSensor = laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
     }
 
     @Override
