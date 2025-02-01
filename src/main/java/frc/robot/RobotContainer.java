@@ -35,13 +35,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
-import frc.robot.commands.AlignToTag;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
-import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -55,14 +53,16 @@ import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
+import frc.robot.subsystems.wrist.Wrist;
+import frc.robot.subsystems.wrist.WristIO;
+import frc.robot.subsystems.wrist.WristIOSim;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.Logger;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -79,6 +79,7 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
+  private final Wrist wrist;
 
   //PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -117,6 +118,7 @@ public class RobotContainer {
             new PhotonIOReal(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
         elevator = new Elevator(new ElevatorIO() {});
         claw = new Claw(new ClawIO() {});
+        wrist = new Wrist(new WristIO() {});
         break;
 
       case SIM:
@@ -136,6 +138,7 @@ public class RobotContainer {
 
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
+        wrist = new Wrist(new WristIOSim());
 
         break;
 
@@ -158,6 +161,7 @@ public class RobotContainer {
             });
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
+        wrist = new Wrist(new WristIO() {});
 
         break;
     }
@@ -204,14 +208,17 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+   /* xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     bTrigger
         .onTrue(
             Commands.runOnce(
                 () -> drive.setPose(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
-                .ignoringDisable(true));
+                .ignoringDisable(true));*/
+      
+    xTrigger.whileTrue(Commands.runOnce(() ->     wrist.setSetpoint(Math.PI), wrist));
+    bTrigger.whileTrue(Commands.runOnce(() ->     wrist.setSetpoint(0), wrist));
 
     yTrigger.whileTrue(Commands.defer(
         () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), driveSet));

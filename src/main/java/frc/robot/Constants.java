@@ -38,7 +38,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -196,6 +196,13 @@ public final class Constants {
     public static final int CLAW_ID = 15;
     public static final double GEAR_RATIO = 5;
     public static final double INNER_WHEEL_RADIUS = 4.0;
+  }
+
+  public static final class WristConstants {
+    public static final double GEAR_RATIO = 12;
+    public static final double CLAW_LENGTH = Units.inchesToMeters(16.6);
+    public static final double MIN_ANGLE = 0;
+    public static final double MAX_ANGLE = 2 * Math.PI;
   }
 
   public static final class CANConstants {
