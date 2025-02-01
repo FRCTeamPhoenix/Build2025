@@ -33,20 +33,14 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 
 /**
- * Module IO implementation for Talon FX drive motor controller, Talon FX turn
- * motor controller, and CANcoder
+ * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
+ * CANcoder
  *
- * <p>
- * NOTE: This implementation should be used as a starting point and adapted to
- * different hardware
- * configurations (e.g. If using an analog encoder, copy from
- * "ModuleIOSparkMax")
+ * <p>NOTE: This implementation should be used as a starting point and adapted to different hardware
+ * configurations (e.g. If using an analog encoder, copy from "ModuleIOSparkMax")
  *
- * <p>
- * To calibrate the absolute encoder offsets, point the modules straight (such
- * that forward
- * motion on the drive motor will propel the robot forward) and copy the
- * reported values from the
+ * <p>To calibrate the absolute encoder offsets, point the modules straight (such that forward
+ * motion on the drive motor will propel the robot forward) and copy the reported values from the
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
@@ -128,20 +122,24 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnAppliedVolts,
         turnCurrent);
 
-    inputs.drivePositionRad = Units.rotationsToRadians(drivePosition.getValueAsDouble())
-        / DriveConstants.DRIVE_GEAR_RATIO;
-    inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble())
-        / DriveConstants.DRIVE_GEAR_RATIO;
+    inputs.drivePositionRad =
+        Units.rotationsToRadians(drivePosition.getValueAsDouble())
+            / DriveConstants.DRIVE_GEAR_RATIO;
+    inputs.driveVelocityRadPerSec =
+        Units.rotationsToRadians(driveVelocity.getValueAsDouble())
+            / DriveConstants.DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveCurrentAmps = new double[] { driveCurrent.getValueAsDouble() };
+    inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
 
-    inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
-        .minus(absoluteEncoderOffset);
-    inputs.turnPosition = Rotation2d.fromRotations(turnPosition.getValueAsDouble() / DriveConstants.TURN_GEAR_RATIO);
-    inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble())
-        / DriveConstants.TURN_GEAR_RATIO;
+    inputs.turnAbsolutePosition =
+        Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
+            .minus(absoluteEncoderOffset);
+    inputs.turnPosition =
+        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / DriveConstants.TURN_GEAR_RATIO);
+    inputs.turnVelocityRadPerSec =
+        Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / DriveConstants.TURN_GEAR_RATIO;
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
-    inputs.turnCurrentAmps = new double[] { turnCurrent.getValueAsDouble() };
+    inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
   }
 
   @Override
@@ -165,9 +163,10 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setTurnBrakeMode(boolean enable) {
     var config = new MotorOutputConfigs();
-    config.Inverted = isTurnMotorInverted
-        ? InvertedValue.Clockwise_Positive
-        : InvertedValue.CounterClockwise_Positive;
+    config.Inverted =
+        isTurnMotorInverted
+            ? InvertedValue.Clockwise_Positive
+            : InvertedValue.CounterClockwise_Positive;
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnTalon.getConfigurator().apply(config);
   }

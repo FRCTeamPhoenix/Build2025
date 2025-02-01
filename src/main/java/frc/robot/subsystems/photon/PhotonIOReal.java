@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants.VisionConstants;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,11 +30,10 @@ public class PhotonIOReal implements PhotonIO {
   protected final Transform3d robotToCamera;
   List<PhotonPipelineResult> results;
 
-
   /**
    * Creates a new VisionIOPhotonVision.
    *
-   * @param name             The configured name of the camera.
+   * @param name The configured name of the camera.
    * @param rotationSupplier The 3D position of the camera relative to the robot.
    */
   public PhotonIOReal(String name, Transform3d robotToCamera) {
@@ -54,12 +52,14 @@ public class PhotonIOReal implements PhotonIO {
     for (var result : results) {
       // Update latest target observation
       if (result.hasTargets()) {
-        inputs.latestTargetObservation = new TargetObservation(
-            Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-            Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
-            result.getBestTarget().bestCameraToTarget);
+        inputs.latestTargetObservation =
+            new TargetObservation(
+                Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
+                Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
+                result.getBestTarget().bestCameraToTarget);
       } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
+        inputs.latestTargetObservation =
+            new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
       }
 
       // Add pose observation
@@ -96,7 +96,8 @@ public class PhotonIOReal implements PhotonIO {
         // Calculate robot pose
         var tagPose = VisionConstants.TAG_LAYOUT.getTagPose(target.fiducialId);
         if (tagPose.isPresent()) {
-          Transform3d fieldToTarget = new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
+          Transform3d fieldToTarget =
+              new Transform3d(tagPose.get().getTranslation(), tagPose.get().getRotation());
           Transform3d cameraToTarget = target.bestCameraToTarget;
           Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
           Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());
