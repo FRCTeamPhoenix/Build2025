@@ -43,9 +43,7 @@ public class Wrist extends SubsystemBase {
     Logger.processInputs("Wrist", inputs);
     if (setpoint != null) {
       Logger.recordOutput("Wrist/Setpoint", setpoint);
-      io.setVoltage(
-          controller.calculate(inputs.angleRad, setpoint)
-              + ff.calculate(inputs.angleRad, inputs.velocityRad));
+      io.setVoltage(controller.calculate(inputs.angleRad, setpoint));
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
       io.setVoltage(0.0);

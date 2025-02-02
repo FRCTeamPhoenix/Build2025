@@ -8,7 +8,7 @@ public interface WristIO {
     public double angleRad = 0;
     public double velocityRad = 0;
     public double appliedVolts = 0;
-    public double[] currentAmps = new double[] {};
+    public double currentAmps = 0;
   }
 
   public default void updateInputs(WristIOInputs inputs) {}

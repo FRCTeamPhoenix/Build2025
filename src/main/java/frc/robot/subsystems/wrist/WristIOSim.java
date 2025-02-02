@@ -27,7 +27,7 @@ public class WristIOSim implements WristIO {
     inputs.angleRad = sim.getAngleRads();
     inputs.velocityRad = sim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(sim.getCurrentDrawAmps())};
+    inputs.currentAmps = Math.abs(sim.getCurrentDrawAmps());
   }
 
   @Override
