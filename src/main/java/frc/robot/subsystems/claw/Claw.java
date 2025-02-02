@@ -45,9 +45,6 @@ public class Claw extends SubsystemBase {
             Logger.recordOutput("Claw/SetpointRotations", rotationsPerSec);
             io.setVoltage(controller.calculate(inputs.velocityRotationsPerSec, rotationsPerSec) + feedforward.calculate(rotationsPerSec));
         }
-        else {
-            io.setVoltage(0);
-        }
     }
 
     public void runForward() {

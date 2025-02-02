@@ -15,12 +15,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ClawConstants;
 
 public class ClawIOTalonFX implements ClawIO {
 
-    private TalonFX clawTalon = new TalonFX(ClawConstants.CLAW_ID);
-    private LaserCan laserCan = new LaserCan(ClawConstants.LASERCAN_ID);
+    private TalonFX clawTalon = new TalonFX(CANConstants.CLAW_ID);
+    private LaserCan laserCan = new LaserCan(CANConstants.LASERCAN_ID);
 
     private final StatusSignal<Angle> position;
     private final StatusSignal<AngularVelocity> velocity;

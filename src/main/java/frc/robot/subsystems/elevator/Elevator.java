@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -17,7 +18,7 @@ public class Elevator extends SubsystemBase {
     private final ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ProfiledPIDController pidController;
-    private final double kG;
+    private final ElevatorFeedforward feedforward;
     private Double setpoint = 0.0;
 
     //Mechanism2D
@@ -33,17 +34,17 @@ public class Elevator extends SubsystemBase {
             case REAL:
             pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
             new TrapezoidProfile.Constraints(3, 3)); 
-                kG = 0.0;               
+            feedforward = new ElevatorFeedforward(0, 0, 0);               
                 break;
             case SIM:
                 pidController = new ProfiledPIDController(0.42, 0.730, 0.50, 
                         new TrapezoidProfile.Constraints(3, 3));
-                kG = 0.4;
+                feedforward = new ElevatorFeedforward(0, 0.4, 0);               
                 break;
             default:
                 pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
                         new TrapezoidProfile.Constraints(3, 3));
-                kG = 0.0;
+                feedforward = new ElevatorFeedforward(0, 0, 0);               
         }
     }
 
@@ -54,14 +55,14 @@ public class Elevator extends SubsystemBase {
         Logger.recordOutput("Elevator/Mech2D", mech);
 
         if (setpoint != null) {Logger.recordOutput("Elevator/Setpoint", setpoint);}
-        else {Logger.recordOutput("Elevator/Setpoint", -1);}
+        else {Logger.recordOutput("Elevator/Setpoint", -1.0);}
 
-        elevator.setLength(inputs.height + ElevatorConstants.MIN_HEIGHT);
+        elevator.setLength(inputs.heightMeters + ElevatorConstants.MIN_HEIGHT);
 
         if (setpoint != null) {
             pidController.setGoal(setpoint);
 
-            io.setVoltage(pidController.calculate(inputs.height) + kG);
+            io.setVoltage(pidController.calculate(inputs.heightMeters) + feedforward.calculate(pidController.getSetpoint().velocity));
         }
     }
 
@@ -82,12 +83,21 @@ public class Elevator extends SubsystemBase {
         setpoint = null;
     }
 
-    public boolean atSetpoint() {
-        boolean returnBool = false;
-        if (setpoint == inputs.height){
-            returnBool = true;
+    public void runCharacterization(double volts) {
+        setpoint = null;
+        if (inputs.heightMeters < ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT){
+            io.setVoltage(volts);
         }
-        return returnBool;
+        else {
+            io.setVoltage(0.0);
+        }
     }
 
+    public double getFFCharacterizationVelocity() {
+        return inputs.velocityRotationsPerSec;
+    }
+
+    public boolean atSetpoint() {
+        return pidController.atGoal();
+    }
 }

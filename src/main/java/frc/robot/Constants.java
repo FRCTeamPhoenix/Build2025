@@ -38,7 +38,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -193,8 +193,6 @@ public final class Constants {
   }
 
   public static final class ClawConstants {
-    public static final int CLAW_ID = 15;
-    public static final int LASERCAN_ID = 16;
     public static final double LASERCAN_TRIGGER_DISTANCE = 1;
     public static final double GEAR_RATIO = 5;
     public static final double INNER_WHEEL_RADIUS = 4.0;
@@ -213,5 +211,10 @@ public final class Constants {
     public static final int[] BR_IDS = { 8, 6, 7 };
 
     public static final int[][] MODULE_IDS = { FL_IDS, FR_IDS, BL_IDS, BR_IDS };
+
+    public static final int ELEVATOR_ID = 15;
+    public static final int WRIST_ID = 16;
+    public static final int CLAW_ID = 17;
+    public static final int LASERCAN_ID = 18;
   }
 }
