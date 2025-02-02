@@ -71,7 +71,7 @@ public class ClawIOTalonFX implements ClawIO {
         inputs.velocityRotationsPerSec = velocity.getValueAsDouble()
                 / ClawConstants.GEAR_RATIO;
         inputs.appliedVolts = appliedVolts.getValueAsDouble();
-        inputs.currentAmps = new double[] { current.getValueAsDouble() };
+        inputs.currentAmps = current.getValueAsDouble();
         inputs.intakeSensor = laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
     }
 

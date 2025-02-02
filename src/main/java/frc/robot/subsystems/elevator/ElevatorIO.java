@@ -8,7 +8,7 @@ public interface ElevatorIO {
         public double heightMeters = 0;
         public double velocityMetersPerSec = 0;
         public double velocityRotationsPerSec = 0;
-        public double appliedVolts = 0;
+        public double[] appliedVolts = new double[] {};
         public double[] currentAmps = new double[] {};
     }
 

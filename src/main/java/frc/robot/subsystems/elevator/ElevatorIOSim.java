@@ -19,7 +19,7 @@ public class ElevatorIOSim implements ElevatorIO {
         inputs.heightMeters = elevatorSim.getPositionMeters();
         inputs.velocityMetersPerSec = elevatorSim.getVelocityMetersPerSecond();
         inputs.velocityRotationsPerSec = elevatorSim.getVelocityMetersPerSecond() * ElevatorConstants.GEAR_RATIO / (Math.PI * ElevatorConstants.PULLEY_RADIUS) / 2;
-        inputs.appliedVolts = appliedVolts;
+        inputs.appliedVolts = new double[] {appliedVolts};
         inputs.currentAmps = new double[] {elevatorSim.getCurrentDrawAmps()};
     }
 
