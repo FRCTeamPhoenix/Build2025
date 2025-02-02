@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -16,7 +18,8 @@ import frc.robot.Constants.ClawConstants;
 
 public class ClawIOTalonFX implements ClawIO {
 
-  private TalonFX clawTalon = new TalonFX(ClawConstants.CLAW_ID);
+    private LaserCan laserCan = new LaserCan(ClawConstants.LASERCAN_ID);
+    private TalonFX clawTalon = new TalonFX(ClawConstants.CLAW_ID);
 
   private final StatusSignal<Angle> position;
   private final StatusSignal<AngularVelocity> velocity;
@@ -32,23 +35,38 @@ public class ClawIOTalonFX implements ClawIO {
     clawTalon.getConfigurator().apply(config);
     setBrakeMode(true);
 
-    position = clawTalon.getPosition();
-    velocity = clawTalon.getVelocity();
-    appliedVolts = clawTalon.getMotorVoltage();
-    current = clawTalon.getSupplyCurrent();
+        try {
+            laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
+            laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+            laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+        } catch (ConfigurationFailedException e) {
+            System.err.println("Configuration failed: " + e.getMessage());
+        }
+
+        position = clawTalon.getPosition();
+        velocity = clawTalon.getVelocity();
+        appliedVolts = clawTalon.getMotorVoltage();
+        current = clawTalon.getSupplyCurrent();
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     clawTalon.optimizeBusUtilization();
   }
 
-  @Override
-  public void updateInputs(ClawIOInputs inputs) {
-    BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
-    inputs.positionRotations = position.getValueAsDouble() / ClawConstants.GEAR_RATIO;
-    inputs.velocityRotationsPerSec = velocity.getValueAsDouble() / ClawConstants.GEAR_RATIO;
-    inputs.appliedVolts = appliedVolts.getValueAsDouble();
-    inputs.currentAmps = new double[] {current.getValueAsDouble()};
-  }
+    @Override
+    public void updateInputs(ClawIOInputs inputs) {
+        BaseStatusSignal.refreshAll(
+                position,
+                velocity,
+                appliedVolts,
+                current);
+        inputs.positionRotations = position.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO;
+        inputs.velocityRotationsPerSec = velocity.getValueAsDouble()
+                / ClawConstants.GEAR_RATIO;
+        inputs.appliedVolts = appliedVolts.getValueAsDouble();
+        inputs.currentAmps = new double[] { current.getValueAsDouble() };
+        inputs.intakeSensor = laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+    }
 
   @Override
   public void setVoltage(double voltage) {
