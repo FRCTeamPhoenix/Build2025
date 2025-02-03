@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -65,6 +66,8 @@ public class Elevator extends SubsystemBase {
 
             io.setVoltage(pidController.calculate(inputs.heightMeters) + feedforward.calculate(pidController.getSetpoint().velocity));
         }
+
+        SmartDashboard.putData("Elevator PID", pidController);
     }
 
     public void goToPosition(int positionIndex) {
