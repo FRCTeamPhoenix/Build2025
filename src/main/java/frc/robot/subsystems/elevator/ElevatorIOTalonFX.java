@@ -31,11 +31,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private final StatusSignal<Current> followerCurrent;
 
     private final boolean isInverted = true;
-    private final boolean brakeEnabled = false;
+    private final boolean brakeEnabled = true;
 
     public ElevatorIOTalonFX() {
-        followerTalon.setControl(new Follower(elevatorTalon.getDeviceID(), true));
-
+        followerTalon.setControl(new Follower(elevatorTalon.getDeviceID(), false));
+        
         var config = new TalonFXConfiguration();
         config.CurrentLimits.SupplyCurrentLimit = 40.0;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -47,6 +47,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 : InvertedValue.CounterClockwise_Positive;
         motorConfig.NeutralMode = brakeEnabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
         elevatorTalon.getConfigurator().apply(config);
+
+        elevatorTalon.setPosition(0);
 
         position = elevatorTalon.getPosition();
         velocity = elevatorTalon.getVelocity();
@@ -61,7 +63,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 position,
                 velocity,
                 appliedVolts,
-                current);
+                current,
+                followerAppliedVolts,
+                followerCurrent);
         elevatorTalon.optimizeBusUtilization();
         followerTalon.optimizeBusUtilization();
     }

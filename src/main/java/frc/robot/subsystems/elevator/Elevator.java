@@ -13,13 +13,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
+
 public class Elevator extends SubsystemBase {
     
     private final ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ProfiledPIDController pidController;
     private final ElevatorFeedforward feedforward;
-    private Double setpoint = 0.0;
+    private Double setpoint = null;
 
     //Mechanism2D
     private final LoggedMechanism2d mech = new LoggedMechanism2d(24, 24);
@@ -32,9 +33,9 @@ public class Elevator extends SubsystemBase {
 
         switch (Constants.CURRENT_MODE) {
             case REAL:
-            pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
+            pidController = new ProfiledPIDController(11, 0.0, 0.0, 
             new TrapezoidProfile.Constraints(3, 3)); 
-            feedforward = new ElevatorFeedforward(0, 0, 0);               
+            feedforward = new ElevatorFeedforward(0, 0.26, 0);               
                 break;
             case SIM:
                 pidController = new ProfiledPIDController(0.42, 0.730, 0.50, 
@@ -78,19 +79,18 @@ public class Elevator extends SubsystemBase {
         return setpoint;
     }
 
+    public double getHeight() {
+        return inputs.heightMeters;
+    }
+
     public void stop() {
-        io.setVoltage(0.0);
+        io.setVoltage(feedforward.calculate(0));
         setpoint = null;
     }
 
     public void runCharacterization(double volts) {
         setpoint = null;
-        if (inputs.heightMeters < ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT){
-            io.setVoltage(volts);
-        }
-        else {
-            io.setVoltage(0.0);
-        }
+        io.setVoltage(volts);
     }
 
     public double getFFCharacterizationVelocity() {
