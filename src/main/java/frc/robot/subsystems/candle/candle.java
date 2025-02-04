@@ -9,8 +9,8 @@ import frc.robot.Constants.CANdleConstants;
 public class candle extends SubsystemBase{
     private CANdle candle; 
 
-    public candle() {
-        CANdle candle = new CANdle(0); // TODO: Update CAN ID when wired in
+    public candle(int canID) {
+        CANdle candle = new CANdle(canID); // TODO: Update CAN ID when wired in
         CANdleConfiguration config = new CANdleConfiguration();
         candle.configAllSettings(config);
     }
