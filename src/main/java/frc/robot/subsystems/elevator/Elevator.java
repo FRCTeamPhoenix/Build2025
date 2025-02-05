@@ -1,5 +1,7 @@
 package frc.robot.subsystems.elevator;
 
+import java.util.function.IntSupplier;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -21,7 +23,7 @@ public class Elevator extends SubsystemBase {
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ProfiledPIDController pidController;
     private final ElevatorFeedforward feedforward;
-    private Double setpoint = null;
+    private Double setpoint = 0.0;
 
     //Mechanism2D
     private final LoggedMechanism2d mech = new LoggedMechanism2d(24, 24);
@@ -71,8 +73,8 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putData("Elevator PID", pidController);
     }
 
-    public void goToPosition(int positionIndex) {
-        this.setpoint = ElevatorConstants.POSITIONS[positionIndex];
+    public void goToPosition(IntSupplier positionIndex) {
+        this.setpoint = ElevatorConstants.POSITIONS[positionIndex.getAsInt()];
     }
 
     public void runSetpoint(double setpoint) {
