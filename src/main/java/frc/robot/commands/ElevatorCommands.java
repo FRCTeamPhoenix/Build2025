@@ -13,7 +13,7 @@ import frc.robot.subsystems.elevator.Elevator;
 
 public class ElevatorCommands {
     private static final double FF_START_DELAY = 2.0; // Secs
-    private static final double FF_RAMP_RATE = 0.05; // Volts/Sec
+    private static final double FF_RAMP_RATE = 0.005; // Volts/Sec
   
     /**
    * Measures the velocity feedforward constants for the elevator motors.
@@ -55,11 +55,12 @@ public class ElevatorCommands {
             },
             elevator)
 
-            .until(() -> elevator.getHeight() >= ElevatorConstants.CHARACTERIZATION_CUTOFF_HEIGHT)
+            .until(() -> elevator.getHeight() >= ElevatorConstants.CHARACTERIZATION_CUTOFF_HEIGHT || elevator.getVelocity() >= 1.5)
 
             // When cancelled, calculate and print results
             .finallyDo(
                 () -> {
+                  elevator.stop();
                   int n = velocitySamples.size();
                   double sumX = 0.0;
                   double sumY = 0.0;

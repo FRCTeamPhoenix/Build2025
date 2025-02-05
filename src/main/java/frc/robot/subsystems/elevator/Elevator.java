@@ -34,9 +34,9 @@ public class Elevator extends SubsystemBase {
 
         switch (Constants.CURRENT_MODE) {
             case REAL:
-            pidController = new ProfiledPIDController(11, 0.0, 0.0, 
-            new TrapezoidProfile.Constraints(3, 3)); 
-            feedforward = new ElevatorFeedforward(0, 0.26, 0);               
+            pidController = new ProfiledPIDController(11, 1, 0.0, 
+            new TrapezoidProfile.Constraints(1.5, 0.5)); 
+            feedforward = new ElevatorFeedforward(0.316, 0.565, 0.506);               
                 break;
             case SIM:
                 pidController = new ProfiledPIDController(0.42, 0.730, 0.50, 
@@ -46,7 +46,8 @@ public class Elevator extends SubsystemBase {
             default:
                 pidController = new ProfiledPIDController(0.0, 0.0, 0.0, 
                         new TrapezoidProfile.Constraints(3, 3));
-                feedforward = new ElevatorFeedforward(0, 0, 0);               
+                feedforward = new
+                 ElevatorFeedforward(0, 0, 0);               
         }
     }
 
@@ -84,6 +85,10 @@ public class Elevator extends SubsystemBase {
 
     public double getHeight() {
         return inputs.heightMeters;
+    }
+
+    public double getVelocity() {
+        return inputs.velocityMetersPerSec;
     }
 
     public void stop() {

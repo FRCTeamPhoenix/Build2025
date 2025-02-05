@@ -215,7 +215,7 @@ public class RobotContainer {
     //yTrigger.whileTrue(Commands.defer(
        // () -> AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.constraints, 0.0), driveSet));
     
-    aTrigger.whileTrue(Commands.run(() -> elevator.runSetpoint(0.5), elevator)).whileFalse(Commands.run(() -> elevator.stop(), elevator));
+    aTrigger.whileTrue(Commands.run(() -> elevator.runSetpoint(Units.inchesToMeters(25)), elevator)).whileFalse(Commands.run(() -> elevator.stop(), elevator));
 
     yTrigger.whileTrue(Commands.run(() -> elevator.runCharacterization(-0.5), elevator)).whileFalse(Commands.run(() -> elevator.stop()));
   }
