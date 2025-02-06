@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -38,12 +37,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    elevatorTalon.getConfigurator().apply(config);
-
-    var motorConfig = new MotorOutputConfigs();
-    motorConfig.Inverted =
+    config.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-    motorConfig.NeutralMode = brakeEnabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = brakeEnabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     elevatorTalon.getConfigurator().apply(config);
 
     elevatorTalon.setPosition(0);

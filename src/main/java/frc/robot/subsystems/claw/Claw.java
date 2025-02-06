@@ -1,10 +1,6 @@
 package frc.robot.subsystems.claw;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.ClawConstants;
-import frc.robot.util.PhoenixUtils.PhoenixFF;
 import org.littletonrobotics.junction.Logger;
 
 public class Claw extends SubsystemBase {

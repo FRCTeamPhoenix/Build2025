@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.PathfindingCommands;
@@ -90,6 +91,7 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     PathfindingCommands.warmupCommand().schedule();
+    SmartDashboard.putNumber("WristKG", 0);
   }
 
   /** This function is called periodically during all modes. */

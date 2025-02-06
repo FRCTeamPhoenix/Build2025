@@ -35,7 +35,6 @@ import frc.robot.commands.ElevatorCommands;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
-import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -43,7 +42,6 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOSim;
@@ -108,8 +106,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
-        elevator = new Elevator(new ElevatorIOTalonFX());
-        claw = new Claw(new ClawIOTalonFX());
+        elevator = new Elevator(new ElevatorIO() {});
+        claw = new Claw(new ClawIO() {});
         wrist = new Wrist(new WristIOTalonFX());
         visualizer = new Visualizer(elevator, wrist);
         break;
@@ -206,11 +204,15 @@ public class RobotContainer {
                 drive)
                 .ignoringDisable(true));*/
 
-    yTrigger.whileTrue(
-        Commands.defer(
-            () ->
-                AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
-            driveSet));
+    // yTrigger.whileTrue(
+    //   Commands.defer(
+    //     () ->
+    //       AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
+    // driveSet));
+
+    aTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(Math.PI / 4), wrist));
+    yTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(-Math.PI / 4), wrist));
+    bTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(0), wrist));
   }
 
   private void configureNamedCommands() {}
