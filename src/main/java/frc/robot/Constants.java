@@ -189,7 +189,7 @@ public final class Constants {
     public static final double PULLEY_RADIUS = Units.inchesToMeters(1.751) / 2;
     public static final double MIN_HEIGHT = Units.inchesToMeters(34.875);
     public static final double MAX_HEIGHT = MIN_HEIGHT + 1.75;
-    public static double cons = Units.inchesToMeters(2.56718);
+    public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
     public static final double[] POSITIONS = { 0, 0.5, 0.9, 1.3, 1.7};
   }
