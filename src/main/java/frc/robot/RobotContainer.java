@@ -49,6 +49,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.MoveElevator;
+import frc.robot.commands.cmd_candle_blink;
 import frc.robot.commands.cmd_candle_on;
 import frc.robot.subsystems.candle.candle;
 import frc.robot.subsystems.claw.Claw;
@@ -89,7 +90,7 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
-  public final candle m_candle = new candle(6);
+  private final candle m_candle = new candle(6);
 
   //PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -176,8 +177,9 @@ public class RobotContainer {
     }
 
     SmartDashboard.putData("lights", new cmd_candle_on(m_candle));
+    SmartDashboard.putData("blink_lights", new cmd_candle_blink(m_candle)); 
      // Example usage of a CANdle
- CANdle candle = new CANdle(6); // creates a new CANdle with ID 0
+ CANdle candle = new CANdle(6);
 
  CANdleConfiguration config = new CANdleConfiguration();
  config.stripType = LEDStripType.RGB; // set the strip type to RGB
