@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,9 +33,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PathfindingConstants;
-import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
@@ -48,6 +49,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
@@ -86,12 +88,12 @@ public class RobotContainer {
   // Triggers
   private final Trigger xTrigger = controller.x();
   private final Trigger bTrigger = controller.b();
-  private final Trigger aTrigger = controller.a();
+  public final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
-  private final Trigger lbTrigger = controller.leftBumper();
+  public final Trigger lbTrigger = controller.leftBumper();
   private final Trigger rbTrigger = controller.rightBumper();
 
-  public int superstructureState = 0;
+  public int elevatorState = 0;
 
   // Subsystem sets
   private final Set<Subsystem> driveSet = new HashSet<Subsystem>();
@@ -104,23 +106,24 @@ public class RobotContainer {
     switch (Constants.CURRENT_MODE) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(0),
-                new ModuleIOTalonFX(1),
-                new ModuleIOTalonFX(2),
-                new ModuleIOTalonFX(3));
-        photon =
-            new Photon(
-                drive::addVisionMeasurement,
-                new PhotonIOReal(
-                    VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
-                new PhotonIOReal(
-                    VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
-        elevator = new Elevator(new ElevatorIO() {});
-        claw = new Claw(new ClawIO() {});
-        wrist = new Wrist(new WristIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
+        photon = new Photon(
+            drive::addVisionMeasurement,
+            new PhotonIO() {
+            });
+        elevator = new Elevator(new ElevatorIOTalonFX());
+        claw = new Claw(new ClawIO() {
+        });
         visualizer = new Visualizer(elevator, wrist);
         break;
 
@@ -185,6 +188,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
 
     steerPID.enableContinuousInput(-180, 180);
     driveSet.add(drive);

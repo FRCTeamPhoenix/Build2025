@@ -45,8 +45,6 @@ public class Claw extends SubsystemBase {
       io.setVoltage(
           controller.calculate(inputs.velocityRotationsPerSec, rotationsPerSec)
               + feedforward.calculate(rotationsPerSec));
-    } else {
-      io.setVoltage(0);
     }
   }
 

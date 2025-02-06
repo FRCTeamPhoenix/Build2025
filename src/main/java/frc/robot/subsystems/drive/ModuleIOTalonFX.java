@@ -129,17 +129,15 @@ public class ModuleIOTalonFX implements ModuleIO {
         Units.rotationsToRadians(driveVelocity.getValueAsDouble())
             / DriveConstants.DRIVE_GEAR_RATIO;
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
+    inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
 
-    inputs.turnAbsolutePosition =
-        Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
-            .minus(absoluteEncoderOffset);
-    inputs.turnPosition =
-        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / DriveConstants.TURN_GEAR_RATIO);
-    inputs.turnVelocityRadPerSec =
-        Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / DriveConstants.TURN_GEAR_RATIO;
+    inputs.turnAbsolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
+        .minus(absoluteEncoderOffset);
+    inputs.turnPosition = Rotation2d.fromRotations(turnPosition.getValueAsDouble() / DriveConstants.TURN_GEAR_RATIO);
+    inputs.turnVelocityRadPerSec = Units.rotationsToRadians(turnVelocity.getValueAsDouble())
+        / DriveConstants.TURN_GEAR_RATIO;
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
-    inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
+    inputs.turnCurrentAmps = turnCurrent.getValueAsDouble();
   }
 
   @Override

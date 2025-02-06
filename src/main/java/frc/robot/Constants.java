@@ -191,17 +191,17 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final double GEAR_RATIO = 5.0;
+    public static final double GEAR_RATIO = 62.0 / 8.0;
     public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);
-    public static final double PULLEY_RADIUS = Units.inchesToMeters(1.75) / 2;
-    public static final double MIN_HEIGHT = Units.inchesToMeters(37.5);
-    public static final double MAX_HEIGHT = Units.inchesToMeters(85.5);
-    public static final double[] POSITIONS = {0, 0.4, 0.8, 1.2};
+    public static final double PULLEY_RADIUS = Units.inchesToMeters(1.751) / 2;
+    public static final double MIN_HEIGHT = Units.inchesToMeters(34.875);
+    public static final double MAX_HEIGHT = MIN_HEIGHT + 1.75;
+    public static double cons = Units.inchesToMeters(2.56718);
+    public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
+    public static final double[] POSITIONS = { 0, 0.5, 0.9, 1.3, 1.7};
   }
 
   public static final class ClawConstants {
-    public static final int CLAW_ID = 15;
-    public static final int LASERCAN_ID = 16;
     public static final double LASERCAN_TRIGGER_DISTANCE = 1;
     public static final double GEAR_RATIO = 5;
     public static final double INNER_WHEEL_RADIUS = 4.0;
@@ -212,15 +212,6 @@ public final class Constants {
     public static final double CLAW_LENGTH = Units.inchesToMeters(16.6);
     public static final double MIN_ANGLE = 0;
     public static final double MAX_ANGLE = 2 * Math.PI;
-  }
-
-  public static final class SuperstructureConstants {
-    // Order of setpoints:
-    // Zero, Intaking, L1, L2, L3, L4
-    public static final double[] ELEVATOR_HEIGHTS = {0, 0, 0.2, 0.4, 0.8, 1.2};
-    public static final double[] CLAW_ANGLES = {
-      Math.PI, Math.PI * 0.75, Math.PI / 2, Math.PI / 4, Math.PI / 4, Math.PI / 6
-    };
   }
 
   public static final class CANConstants {
@@ -234,7 +225,12 @@ public final class Constants {
     public static final int[] FR_IDS = {5, 3, 4};
     public static final int[] BL_IDS = {11, 9, 10};
     public static final int[] BR_IDS = {8, 6, 7};
+    public static final int[][] MODULE_IDS = { FL_IDS, FR_IDS, BL_IDS, BR_IDS };
 
-    public static final int[][] MODULE_IDS = {FL_IDS, FR_IDS, BL_IDS, BR_IDS};
+    public static final int ELEVATOR_ID = 15;
+    public static final int ELEVATOR_FOLLOWER_ID = 16;
+    public static final int WRIST_ID = 17;
+    public static final int CLAW_ID = 18;
+    public static final int LASERCAN_ID = 19;
   }
 }
