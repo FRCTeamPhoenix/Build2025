@@ -99,15 +99,12 @@ public class Module {
     }
   }
 
-  /**
-   * Runs the module with the specified setpoint state. Returns the optimized
-   * state.
-   */
+  /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
-    //state.optimize(getAngle());
-    //Old code
+    // state.optimize(getAngle());
+    // Old code
     var optimizedState = PhoenixUtils.optimize(state, getAngle());
 
     // Update setpoints, controllers run in "periodic"
@@ -117,9 +114,7 @@ public class Module {
     return optimizedState;
   }
 
-  /**
-   * Runs the module with the specified voltage while controlling to zero degrees.
-   */
+  /** Runs the module with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {
     // Closed loop turn control
     angleSetpoint = new Rotation2d();

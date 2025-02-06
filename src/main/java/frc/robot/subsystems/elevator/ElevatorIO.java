@@ -12,6 +12,7 @@ public interface ElevatorIO {
         public double[] currentAmps = new double[] {};
     }
 
-    public default void updateInputs(ElevatorIOInputs inputs) {}
-    public default void setVoltage(double voltage) {}
+  public default void updateInputs(ElevatorIOInputs inputs) {}
+
+  public default void setVoltage(double voltage) {}
 }

@@ -15,11 +15,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -34,8 +32,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.MoveElevator;
@@ -56,20 +54,20 @@ import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
+import frc.robot.subsystems.visualizer.Visualizer;
+import frc.robot.subsystems.wrist.Wrist;
+import frc.robot.subsystems.wrist.WristIO;
+import frc.robot.subsystems.wrist.WristIOSim;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -78,6 +76,8 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
+  private final Visualizer visualizer;
+  private final Wrist wrist;
 
   // PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -101,9 +101,7 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.CURRENT_MODE) {
       case REAL:
@@ -126,52 +124,47 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIO() {
         });
+        visualizer = new Visualizer(elevator, wrist);
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim());
-        photon = new Photon(
-
-            drive::addVisionMeasurement,
-            new PhotonIOSim(VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM,
-                drive::getPose));
-        // new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME,
-        // VisionConstants.FRONT_RIGHT_TRANSFORM, drive::getPose));
-
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        photon =
+            new Photon(
+                drive::addVisionMeasurement,
+                new PhotonIOSim(
+                    VisionConstants.RIGHT_CAMERA_NAME,
+                    VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM,
+                    drive::getPose));
+        // new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM,
+        // drive::getPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
-
+        wrist = new Wrist(new WristIOSim());
+        visualizer = new Visualizer(elevator, wrist);
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            });
-        photon = new Photon(
-            drive::addVisionMeasurement,
-            new PhotonIO() {
-            });
-        claw = new Claw(new ClawIO() {
-        });
-        elevator = new Elevator(new ElevatorIO() {
-        });
-
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
+        claw = new Claw(new ClawIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
+        wrist = new Wrist(new WristIO() {});
+        visualizer = new Visualizer(elevator, wrist);
         break;
     }
 
@@ -204,11 +197,9 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
+   * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -218,43 +209,56 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    /* xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     bTrigger
         .onTrue(
             Commands.runOnce(
                 () -> drive.setPose(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
-                .ignoringDisable(true));
+                .ignoringDisable(true));*/
 
-    // yTrigger.whileTrue(Commands.defer(
-    // () -> AutoBuilder.pathfindToPose(determineZone(),
-    // PathfindingConstants.constraints, 0.0), driveSet));
+    yTrigger.whileTrue(
+        Commands.defer(
+            () ->
+                AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
+            driveSet));
+
+    aTrigger
+        .whileTrue(Commands.runOnce(claw::runForward, claw))
+        .whileFalse(Commands.runOnce(claw::holdPosition, claw));
 
     lbTrigger.onTrue(
         Commands.runOnce(
-            () -> elevatorState = MathUtil.clamp(
-                elevatorState - 1,
-                0,
-                ElevatorConstants.POSITIONS.length - 1)));
+            () ->
+                superstructureState =
+                    MathUtil.clamp(
+                        superstructureState - 1,
+                        0,
+                        SuperstructureConstants.CLAW_ANGLES.length - 1)));
     rbTrigger.onTrue(
         Commands.runOnce(
-            () -> elevatorState = MathUtil.clamp(
-                elevatorState + 1,
-                0,
-                ElevatorConstants.POSITIONS.length - 1)));
+            () ->
+                superstructureState =
+                    MathUtil.clamp(
+                        superstructureState + 1,
+                        0,
+                        SuperstructureConstants.CLAW_ANGLES.length - 1)));
+
+    wrist.setDefaultCommand(
+        Commands.run(() -> wrist.goToPosition(() -> superstructureState), wrist));
     elevator.setDefaultCommand(
-        Commands.run(() -> elevator.goToPosition(() -> elevatorState), elevator));
+        Commands.run(() -> elevator.goToPosition(() -> superstructureState), elevator));
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("Raise Elevator Max",
+    NamedCommands.registerCommand(
+        "Raise Elevator Max",
         new MoveElevator(elevator, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
     NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
   }
 
   /**
-   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
@@ -276,22 +280,24 @@ public class RobotContainer {
   }
 
   public Pose2d determineZone() {
-    boolean isRed = DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == Alliance.Red;
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
 
     Pose2d targetPose = drive.getPose();
-    Pose2d[] reefPoses = isRed ? PathfindingConstants.redReefPoses
-        : PathfindingConstants.blueReefPoses;
+    Pose2d[] reefPoses =
+        isRed ? PathfindingConstants.RED_REEF_POSES : PathfindingConstants.BLUE_REEF_POSES;
 
-    Pose2d reefCenter = isRed ? PathfindingConstants.redReefCenter
-        : PathfindingConstants.blueReefCenter;
+    Pose2d reefCenter =
+        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
 
     Transform2d translatedRobot = targetPose.minus(reefCenter);
 
-    double theta = Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
+    double theta =
+        Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
 
-    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.xLimit
-        && Math.abs(translatedRobot.getY()) < PathfindingConstants.yLimit) {
+    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.X_LIMIT
+        && Math.abs(translatedRobot.getY()) < PathfindingConstants.Y_LIMIT) {
       if (-30 < theta && theta < 30) {
         targetPose = reefPoses[0];
       } else if (-30 > theta && theta > -90) {
@@ -311,10 +317,11 @@ public class RobotContainer {
   }
 
   public Pose2d[] generateZone() {
-    boolean isRed = DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == Alliance.Red;
-    Pose2d reefCenter = isRed ? PathfindingConstants.redReefCenter
-        : PathfindingConstants.blueReefCenter;
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    Pose2d reefCenter =
+        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
 
     List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
 

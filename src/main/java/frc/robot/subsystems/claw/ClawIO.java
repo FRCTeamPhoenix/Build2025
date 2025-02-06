@@ -24,13 +24,10 @@ public interface ClawIO {
         public double currentAmps = 0.0;
         public boolean intakeSensor = false;
     }
+  
+  public default void updateInputs(ClawIOInputs inputs) {}
 
-    public default void updateInputs(ClawIOInputs inputs) {
-    }
+  public default void setVoltage(double volts) {}
 
-    public default void setVoltage(double volts) {
-    }
-
-    public default void setBrakeMode(boolean enabled) {
-    }
+  public default void setBrakeMode(boolean enabled) {}
 }

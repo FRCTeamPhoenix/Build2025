@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,10 +16,16 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.SuperstructureConstants;
+import java.util.function.IntSupplier;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 
 public class Elevator extends SubsystemBase {
-    
+  
     private final ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
     private final ProfiledPIDController pidController;
@@ -77,15 +84,12 @@ public class Elevator extends SubsystemBase {
         this.setpoint = ElevatorConstants.POSITIONS[positionIndex.getAsInt()];
     }
 
-    public void runSetpoint(double setpoint) {
-        this.setpoint = setpoint;
-    }
+    elevator.setLength(inputs.height + ElevatorConstants.MIN_HEIGHT);
 
-    public double getSetpoint() {
-        return setpoint;
-    }
+    if (setpoint != null) {
+      pidController.setGoal(setpoint);
 
-    public double getHeight() {
+      public double getHeight() {
         return inputs.heightMeters;
     }
 
