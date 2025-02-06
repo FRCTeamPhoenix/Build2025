@@ -136,12 +136,12 @@ public final class Constants {
 
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
 
-    public static double X_LIMIT = 2.75;
-    public static double Y_LIMIT = 3.5;
+    public static final double X_LIMIT = 2.75;
+    public static final double Y_LIMIT = 3.5;
 
-    public static double SLOPE = 0.61261261261261;
+    public static final double SLOPE = 0.61261261261261;
 
-    public static Transform2d[] zoneTransforms =
+    public static final Transform2d[] ZONE_TRANSFORMS =
         new Transform2d[] {
           new Transform2d(-X_LIMIT, Y_LIMIT, Rotation2d.kZero),
           new Transform2d(X_LIMIT, Y_LIMIT, Rotation2d.kZero),
@@ -196,9 +196,9 @@ public final class Constants {
     public static final double PULLEY_RADIUS = Units.inchesToMeters(1.751) / 2;
     public static final double MIN_HEIGHT = Units.inchesToMeters(34.875);
     public static final double MAX_HEIGHT = MIN_HEIGHT + 1.75;
-    public static double cons = Units.inchesToMeters(2.56718);
+    public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
-    public static final double[] POSITIONS = { 0, 0.5, 0.9, 1.3, 1.7};
+    public static final double[] POSITIONS = {0, 0.5, 0.9, 1.3, 1.7};
   }
 
   public static final class ClawConstants {
@@ -225,7 +225,7 @@ public final class Constants {
     public static final int[] FR_IDS = {5, 3, 4};
     public static final int[] BL_IDS = {11, 9, 10};
     public static final int[] BR_IDS = {8, 6, 7};
-    public static final int[][] MODULE_IDS = { FL_IDS, FR_IDS, BL_IDS, BR_IDS };
+    public static final int[][] MODULE_IDS = {FL_IDS, FR_IDS, BL_IDS, BR_IDS};
 
     public static final int ELEVATOR_ID = 15;
     public static final int ELEVATOR_FOLLOWER_ID = 16;

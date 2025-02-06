@@ -1,25 +1,23 @@
 package frc.robot.commands;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.elevator.Elevator;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ElevatorCommands {
-    private static final double FF_START_DELAY = 2.0; // Secs
-    private static final double FF_RAMP_RATE = 0.005; // Volts/Sec
-  
-    /**
+  private static final double FF_START_DELAY = 2.0; // Secs
+  private static final double FF_RAMP_RATE = 0.005; // Volts/Sec
+
+  /**
    * Measures the velocity feedforward constants for the elevator motors.
    *
-   * <p>
-   * This command should only be used in voltage control mode.
+   * <p>This command should only be used in voltage control mode.
    */
   public static Command feedforwardCharacterization(Elevator elevator) {
     List<Double> velocitySamples = new LinkedList<>();
@@ -36,10 +34,10 @@ public class ElevatorCommands {
 
         // Allow modules to orient
         Commands.run(
-            () -> {
-                elevator.runCharacterization(0.0);
-            },
-            elevator)
+                () -> {
+                  elevator.runCharacterization(0.0);
+                },
+                elevator)
             .withTimeout(FF_START_DELAY),
 
         // Start timer
@@ -47,15 +45,17 @@ public class ElevatorCommands {
 
         // Accelerate and gather data
         Commands.run(
-            () -> {
-              double voltage = timer.get() * FF_RAMP_RATE;
-              elevator.runCharacterization(voltage);
-              velocitySamples.add(elevator.getFFCharacterizationVelocity());
-              voltageSamples.add(voltage);
-            },
-            elevator)
-
-            .until(() -> elevator.getHeight() >= ElevatorConstants.CHARACTERIZATION_CUTOFF_HEIGHT || elevator.getVelocity() >= 1.5)
+                () -> {
+                  double voltage = timer.get() * FF_RAMP_RATE;
+                  elevator.runCharacterization(voltage);
+                  velocitySamples.add(elevator.getFFCharacterizationVelocity());
+                  voltageSamples.add(voltage);
+                },
+                elevator)
+            .until(
+                () ->
+                    elevator.getHeight() >= ElevatorConstants.CHARACTERIZATION_CUTOFF_HEIGHT
+                        || elevator.getVelocity() >= 1.5)
 
             // When cancelled, calculate and print results
             .finallyDo(

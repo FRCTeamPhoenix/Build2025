@@ -5,9 +5,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
-import java.util.function.IntSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends SubsystemBase {
@@ -52,13 +50,6 @@ public class Wrist extends SubsystemBase {
 
   public void setSetpoint(double setpoint) {
     this.setpoint = MathUtil.clamp(setpoint, WristConstants.MIN_ANGLE, WristConstants.MAX_ANGLE);
-  }
-
-  public void goToPosition(IntSupplier positionIndex) {
-    this.setpoint =
-        SuperstructureConstants.CLAW_ANGLES[
-            MathUtil.clamp(
-                positionIndex.getAsInt(), 0, SuperstructureConstants.CLAW_ANGLES.length - 1)];
   }
 
   public double getAngle() {

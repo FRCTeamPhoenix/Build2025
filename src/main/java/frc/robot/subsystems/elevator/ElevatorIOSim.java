@@ -20,15 +20,19 @@ public class ElevatorIOSim implements ElevatorIO {
 
   private double appliedVolts = 0.0;
 
-    @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        elevatorSim.update(0.02);
-        inputs.heightMeters = elevatorSim.getPositionMeters();
-        inputs.velocityMetersPerSec = elevatorSim.getVelocityMetersPerSecond();
-        inputs.velocityRotationsPerSec = elevatorSim.getVelocityMetersPerSecond() * ElevatorConstants.GEAR_RATIO / (Math.PI * ElevatorConstants.PULLEY_RADIUS) / 2;
-        inputs.appliedVolts = new double[] {appliedVolts};
-        inputs.currentAmps = new double[] {elevatorSim.getCurrentDrawAmps()};
-    }
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
+    elevatorSim.update(0.02);
+    inputs.heightMeters = elevatorSim.getPositionMeters();
+    inputs.velocityMetersPerSec = elevatorSim.getVelocityMetersPerSecond();
+    inputs.velocityRotationsPerSec =
+        elevatorSim.getVelocityMetersPerSecond()
+            * ElevatorConstants.GEAR_RATIO
+            / (Math.PI * ElevatorConstants.PULLEY_RADIUS)
+            / 2;
+    inputs.appliedVolts = new double[] {appliedVolts};
+    inputs.currentAmps = new double[] {elevatorSim.getCurrentDrawAmps()};
+  }
 
   @Override
   public void setVoltage(double voltage) {

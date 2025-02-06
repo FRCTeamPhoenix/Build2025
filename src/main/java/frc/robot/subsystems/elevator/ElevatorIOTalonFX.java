@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -19,78 +18,72 @@ import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-    private TalonFX elevatorTalon = new TalonFX(CANConstants.ELEVATOR_ID);
-    private TalonFX followerTalon = new TalonFX(CANConstants.ELEVATOR_FOLLOWER_ID);
+  private TalonFX elevatorTalon = new TalonFX(CANConstants.ELEVATOR_ID);
+  private TalonFX followerTalon = new TalonFX(CANConstants.ELEVATOR_FOLLOWER_ID);
 
-    private final StatusSignal<Angle> position;
-    private final StatusSignal<AngularVelocity> velocity;
-    private final StatusSignal<Voltage> appliedVolts;
-    private final StatusSignal<Current> current;
+  private final StatusSignal<Angle> position;
+  private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Voltage> appliedVolts;
+  private final StatusSignal<Current> current;
 
-    private final StatusSignal<Voltage> followerAppliedVolts;
-    private final StatusSignal<Current> followerCurrent;
+  private final StatusSignal<Voltage> followerAppliedVolts;
+  private final StatusSignal<Current> followerCurrent;
 
-    private final boolean isInverted = true;
-    private final boolean brakeEnabled = true;
+  private final boolean isInverted = true;
+  private final boolean brakeEnabled = true;
 
-    public ElevatorIOTalonFX() {
-        followerTalon.setControl(new Follower(elevatorTalon.getDeviceID(), false));
-        
-        var config = new TalonFXConfiguration();
-        config.CurrentLimits.SupplyCurrentLimit = 40.0;
-        config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        elevatorTalon.getConfigurator().apply(config);
+  public ElevatorIOTalonFX() {
+    followerTalon.setControl(new Follower(elevatorTalon.getDeviceID(), false));
 
-        var motorConfig = new MotorOutputConfigs();
-        motorConfig.Inverted = isInverted
-                ? InvertedValue.Clockwise_Positive
-                : InvertedValue.CounterClockwise_Positive;
-        motorConfig.NeutralMode = brakeEnabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-        elevatorTalon.getConfigurator().apply(config);
+    var config = new TalonFXConfiguration();
+    config.CurrentLimits.SupplyCurrentLimit = 40.0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    elevatorTalon.getConfigurator().apply(config);
 
-        elevatorTalon.setPosition(0);
+    var motorConfig = new MotorOutputConfigs();
+    motorConfig.Inverted =
+        isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    motorConfig.NeutralMode = brakeEnabled ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    elevatorTalon.getConfigurator().apply(config);
 
-        position = elevatorTalon.getPosition();
-        velocity = elevatorTalon.getVelocity();
-        appliedVolts = elevatorTalon.getMotorVoltage();
-        current = elevatorTalon.getSupplyCurrent();
+    elevatorTalon.setPosition(0);
 
-        followerAppliedVolts = followerTalon.getMotorVoltage();
-        followerCurrent = followerTalon.getSupplyCurrent();
+    position = elevatorTalon.getPosition();
+    velocity = elevatorTalon.getVelocity();
+    appliedVolts = elevatorTalon.getMotorVoltage();
+    current = elevatorTalon.getSupplyCurrent();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(
-                50.0,
-                position,
-                velocity,
-                appliedVolts,
-                current,
-                followerAppliedVolts,
-                followerCurrent);
-        elevatorTalon.optimizeBusUtilization();
-        followerTalon.optimizeBusUtilization();
-    }
+    followerAppliedVolts = followerTalon.getMotorVoltage();
+    followerCurrent = followerTalon.getSupplyCurrent();
 
-    @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-                position,
-                velocity,
-                appliedVolts,
-                current,
-                followerAppliedVolts,
-                followerCurrent);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0, position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
+    elevatorTalon.optimizeBusUtilization();
+    followerTalon.optimizeBusUtilization();
+  }
 
-        inputs.heightMeters = position.getValueAsDouble()
-                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
-        inputs.velocityMetersPerSec = velocity.getValueAsDouble()
-                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
-        inputs.velocityRotationsPerSec = velocity.getValueAsDouble();
-        inputs.appliedVolts = new double[] { appliedVolts.getValueAsDouble(), followerAppliedVolts.getValueAsDouble() };
-        inputs.currentAmps = new double[] { current.getValueAsDouble(), followerCurrent.getValueAsDouble() };
-    }
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
+    BaseStatusSignal.refreshAll(
+        position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
 
-    @Override
-    public void setVoltage(double voltage) {
-        elevatorTalon.setControl(new VoltageOut(voltage));
-    }
+    inputs.heightMeters =
+        position.getValueAsDouble()
+            / ElevatorConstants.GEAR_RATIO
+            * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
+    inputs.velocityMetersPerSec =
+        velocity.getValueAsDouble()
+            / ElevatorConstants.GEAR_RATIO
+            * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
+    inputs.velocityRotationsPerSec = velocity.getValueAsDouble();
+    inputs.appliedVolts =
+        new double[] {appliedVolts.getValueAsDouble(), followerAppliedVolts.getValueAsDouble()};
+    inputs.currentAmps =
+        new double[] {current.getValueAsDouble(), followerCurrent.getValueAsDouble()};
+  }
+
+  @Override
+  public void setVoltage(double voltage) {
+    elevatorTalon.setControl(new VoltageOut(voltage));
+  }
 }

@@ -53,21 +53,16 @@ public class ClawIOTalonFX implements ClawIO {
     clawTalon.optimizeBusUtilization();
   }
 
-    @Override
-    public void updateInputs(ClawIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-                position,
-                velocity,
-                appliedVolts,
-                current);
-        inputs.positionRotations = position.getValueAsDouble()
-                / ClawConstants.GEAR_RATIO;
-        inputs.velocityRotationsPerSec = velocity.getValueAsDouble()
-                / ClawConstants.GEAR_RATIO;
-        inputs.appliedVolts = appliedVolts.getValueAsDouble();
-        inputs.currentAmps = current.getValueAsDouble();
-        inputs.intakeSensor = laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
-    }
+  @Override
+  public void updateInputs(ClawIOInputs inputs) {
+    BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
+    inputs.positionRotations = position.getValueAsDouble() / ClawConstants.GEAR_RATIO;
+    inputs.velocityRotationsPerSec = velocity.getValueAsDouble() / ClawConstants.GEAR_RATIO;
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.currentAmps = current.getValueAsDouble();
+    inputs.intakeSensor =
+        laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+  }
 
   @Override
   public void setVoltage(double voltage) {

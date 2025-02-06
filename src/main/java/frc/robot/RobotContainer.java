@@ -14,8 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -25,39 +23,35 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
-import frc.robot.commands.MoveElevator;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
+import frc.robot.subsystems.claw.ClawIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
-import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
 import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSim;
+import frc.robot.subsystems.wrist.WristIOTalonFX;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -106,24 +100,17 @@ public class RobotContainer {
     switch (Constants.CURRENT_MODE) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            });
-        photon = new Photon(
-            drive::addVisionMeasurement,
-            new PhotonIO() {
-            });
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
         elevator = new Elevator(new ElevatorIOTalonFX());
-        claw = new Claw(new ClawIO() {
-        });
+        claw = new Claw(new ClawIOTalonFX());
+        wrist = new Wrist(new WristIOTalonFX());
         visualizer = new Visualizer(elevator, wrist);
         break;
 
@@ -188,7 +175,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption("Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
+    autoChooser.addOption(
+        "Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
 
     steerPID.enableContinuousInput(-180, 180);
     driveSet.add(drive);
@@ -223,40 +211,9 @@ public class RobotContainer {
             () ->
                 AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
             driveSet));
-
-    aTrigger
-        .whileTrue(Commands.runOnce(claw::runForward, claw))
-        .whileFalse(Commands.runOnce(claw::holdPosition, claw));
-
-    lbTrigger.onTrue(
-        Commands.runOnce(
-            () ->
-                superstructureState =
-                    MathUtil.clamp(
-                        superstructureState - 1,
-                        0,
-                        SuperstructureConstants.CLAW_ANGLES.length - 1)));
-    rbTrigger.onTrue(
-        Commands.runOnce(
-            () ->
-                superstructureState =
-                    MathUtil.clamp(
-                        superstructureState + 1,
-                        0,
-                        SuperstructureConstants.CLAW_ANGLES.length - 1)));
-
-    wrist.setDefaultCommand(
-        Commands.run(() -> wrist.goToPosition(() -> superstructureState), wrist));
-    elevator.setDefaultCommand(
-        Commands.run(() -> elevator.goToPosition(() -> superstructureState), elevator));
   }
 
-  private void configureNamedCommands() {
-    NamedCommands.registerCommand(
-        "Raise Elevator Max",
-        new MoveElevator(elevator, ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT));
-    NamedCommands.registerCommand("Lower Elevator", new MoveElevator(elevator, 0));
-  }
+  private void configureNamedCommands() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -325,7 +282,7 @@ public class RobotContainer {
 
     List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
 
-    for (Transform2d transform : PathfindingConstants.zoneTransforms) {
+    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
       zoneTrajectory.add(reefCenter.plus(transform));
     }
     return zoneTrajectory.toArray(new Pose2d[0]);

@@ -47,7 +47,7 @@ public class Visualizer extends SubsystemBase {
     Logger.recordOutput("Mechanism3d/Testing/TunablePose", tunable);
 
     // Elevator
-    double height = elevator.getPosition();
+    double height = elevator.getHeight();
     Pose3d firstStage = new Pose3d(0, 0, height / 2 + 0.070668, Rotation3d.kZero);
     Pose3d secondStage = new Pose3d(0, 0, height + 0.070668, Rotation3d.kZero);
     Logger.recordOutput("Mechanism3d/Elevator/FirstStage", firstStage);
