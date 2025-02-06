@@ -21,7 +21,7 @@ public interface ClawIO {
         public double positionRotations = 0.0;
         public double velocityRotationsPerSec = 0.0;
         public double appliedVolts = 0.0;
-        public double[] currentAmps = new double[] {};
+        public double currentAmps = 0.0;
         public boolean intakeSensor = false;
     }
 
