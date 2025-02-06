@@ -1,10 +1,8 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -62,52 +60,51 @@ public class PhoenixUtils {
     return new ChassisSpeeds(twist.dx / dtSeconds, twist.dy / dtSeconds, twist.dtheta / dtSeconds);
   }
 
-  /**
-   * Converts a user provided field-relative set of speeds into a robot-relative ChassisSpeeds
-   * object.
-   *
-   * @param vxMetersPerSecond The component of speed in the x direction relative to the field.
-   *     Positive x is away from your alliance wall.
-   * @param vyMetersPerSecond The component of speed in the y direction relative to the field.
-   *     Positive y is to your left when standing behind the alliance wall.
-   * @param omegaRadiansPerSecond The angular rate of the robot.
-   * @param robotAngle The angle of the robot as measured by a gyroscope. The robot's angle is
-   *     considered to be zero when it is facing directly away from your alliance station wall.
-   *     Remember that this should be CCW positive.
-   * @return ChassisSpeeds object representing the speeds in the robot's frame of reference.
-   */
-  public static ChassisSpeeds fromFieldRelativeSpeeds(
-      double vxMetersPerSecond,
-      double vyMetersPerSecond,
-      double omegaRadiansPerSecond,
-      Rotation2d robotAngle) {
-    // CW rotation into chassis frame
-    var rotated =
-        new Translation2d(vxMetersPerSecond, vyMetersPerSecond).rotateBy(robotAngle.unaryMinus());
-    return new ChassisSpeeds(rotated.getX(), rotated.getY(), omegaRadiansPerSecond);
-  }
-
   public static double getDistance(Pose2d poseA, Pose2d poseB) {
     Transform2d poseDelta = poseB.minus(poseA);
 
     return Math.sqrt(Math.pow(poseDelta.getX(), 2) + Math.pow(poseDelta.getY(), 2));
   }
-  /*
-   * Extended feedforward class to keep calculate using double input
-   */
-  public static class PhoenixFF extends SimpleMotorFeedforward {
+
+  /* Custom feedforward class */
+  public static class PhoenixFF {
 
     double ks;
     double kv;
+    double ka;
 
-    public PhoenixFF(double ks, double kv) {
-      super(ks, kv);
+    public PhoenixFF(double ks, double kv, double ka) {
       this.ks = ks;
       this.kv = kv;
+      this.ka = ka;
+      if (kv < 0.0) {
+        throw new IllegalArgumentException("kv must be a non-negative number, got " + kv + "!");
+      }
+      if (ka < 0.0) {
+        throw new IllegalArgumentException("ka must be a non-negative number, got " + ka + "!");
+      }
     }
 
-    public double simpleCalculate(double velocity) {
-      return ks * Math.signum(velocity) + kv * velocity;
+    public double calculate(double velocity, double acceleration) {
+      return ks * Math.signum(velocity) + (kv * velocity) + (ka * acceleration);
+    }
+  }
+
+  /* Extended custom feedforward to add gravity feedforward */
+  public static class PhoenixGravFF extends PhoenixFF {
+
+    double kg;
+
+    public PhoenixGravFF(double ks, double kv, double ka, double kg) {
+      super(ks, kv, 0);
+      this.kg = kg;
+    }
+
+    public double calculate(double velocity, double acceleration, double angleRad) {
+      return ks * Math.signum(velocity)
+          + (kv * velocity)
+          + (ka * acceleration)
+          + (kg * Math.cos(angleRad));
     }
   }
 }

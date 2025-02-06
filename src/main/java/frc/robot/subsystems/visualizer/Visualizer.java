@@ -53,17 +53,6 @@ public class Visualizer extends SubsystemBase {
     Logger.recordOutput("Mechanism3d/Elevator/FirstStage", firstStage);
     Logger.recordOutput("Mechanism3d/Elevator/SecondStage", secondStage);
 
-    // Claw
-    /*if (clawGoingUp){
-        clawSetpoint = MathUtil.clamp(clawSetpoint - 0.01, -Math.PI / 8, Math.PI / 8);
-    }
-    else {
-        clawSetpoint = MathUtil.clamp(clawSetpoint + 0.01, -Math.PI / 8, Math.PI / 8);
-    }
-
-    if (Math.abs(clawSetpoint) == Math.PI / 8){
-        clawGoingUp = !clawGoingUp;
-    }*/
     double elevatorExtension = ElevatorConstants.MAX_HEIGHT - ElevatorConstants.MIN_HEIGHT;
     Pose3d claw =
         new Pose3d(

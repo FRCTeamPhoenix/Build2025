@@ -1,13 +1,16 @@
 package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import java.util.function.IntSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -18,8 +21,10 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
+
   private final ProfiledPIDController pidController;
-  private final ElevatorFeedforward feedforward;
+  private final PhoenixGravFF feedforward;
+
   private Double setpoint = 0.0;
 
   // Mechanism2D
@@ -37,17 +42,17 @@ public class Elevator extends SubsystemBase {
       case REAL:
         pidController =
             new ProfiledPIDController(11, 1, 0.0, new TrapezoidProfile.Constraints(1.5, 0.5));
-        feedforward = new ElevatorFeedforward(0.316, 0.565, 0.506);
+        feedforward = new PhoenixGravFF(0.316, 0.506, 0.0, 0.565);
         break;
       case SIM:
         pidController =
             new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 3));
-        feedforward = new ElevatorFeedforward(0, 0.4, 0);
+        feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.4);
         break;
       default:
         pidController =
             new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 3));
-        feedforward = new ElevatorFeedforward(0, 0, 0);
+        feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
     }
   }
 
@@ -70,7 +75,7 @@ public class Elevator extends SubsystemBase {
 
       io.setVoltage(
           pidController.calculate(inputs.heightMeters)
-              + feedforward.calculate(pidController.getSetpoint().velocity));
+              + feedforward.calculate(pidController.getSetpoint().velocity, 0, 0));
     }
 
     SmartDashboard.putData("Elevator PID", pidController);
@@ -78,6 +83,10 @@ public class Elevator extends SubsystemBase {
 
   public void goToPosition(IntSupplier positionIndex) {
     this.setpoint = ElevatorConstants.POSITIONS[positionIndex.getAsInt()];
+  }
+
+  public void runSetpoint(double setpoint) {
+    this.setpoint = MathUtil.clamp(setpoint, 0, ElevatorConstants.MAX_EXTENSION);
   }
 
   public double getVelocity() {
@@ -89,7 +98,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void stop() {
-    io.setVoltage(feedforward.calculate(0));
+    io.setVoltage(feedforward.calculate(0, 0, 0));
     setpoint = null;
   }
 
@@ -104,5 +113,9 @@ public class Elevator extends SubsystemBase {
 
   public boolean atSetpoint() {
     return pidController.atGoal();
+  }
+
+  public Command moveElevator(double height) {
+    return Commands.run(() -> this.runSetpoint(height), this).until(this::atSetpoint);
   }
 }

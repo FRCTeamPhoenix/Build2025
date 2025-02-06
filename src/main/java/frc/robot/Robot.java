@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.PathfindingCommands;
@@ -91,7 +90,6 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     PathfindingCommands.warmupCommand().schedule();
-    SmartDashboard.putNumber("WristKG", 0);
   }
 
   /** This function is called periodically during all modes. */
@@ -103,7 +101,6 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    Logger.recordOutput("ElevatorState", robotContainer.elevatorState);
   }
 
   /** This function is called once when the robot is disabled. */

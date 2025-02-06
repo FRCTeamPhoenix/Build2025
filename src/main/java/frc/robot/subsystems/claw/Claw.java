@@ -1,5 +1,7 @@
 package frc.robot.subsystems.claw;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -23,12 +25,12 @@ public class Claw extends SubsystemBase {
     }
   }
 
-  public void runForward() {
-    this.setpoint = 3.0;
+  public Command runForward() {
+    return Commands.runOnce(() -> setpoint = 3.0, this);
   }
 
-  public void runReverse() {
-    this.setpoint = -3.0;
+  public Command runReverse() {
+    return Commands.runOnce(() -> setpoint = 0.0, this);
   }
 
   public void stop() {

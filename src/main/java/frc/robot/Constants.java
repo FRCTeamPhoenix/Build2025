@@ -195,7 +195,8 @@ public final class Constants {
     public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);
     public static final double PULLEY_RADIUS = Units.inchesToMeters(1.751) / 2;
     public static final double MIN_HEIGHT = Units.inchesToMeters(34.875);
-    public static final double MAX_HEIGHT = MIN_HEIGHT + 1.75;
+    public static final double MAX_EXTENSION = 1.75;
+    public static final double MAX_HEIGHT = MIN_HEIGHT + MAX_EXTENSION;
     public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
     public static final double[] POSITIONS = {0, 0.5, 0.9, 1.3, 1.7};
@@ -210,6 +211,7 @@ public final class Constants {
   public static final class WristConstants {
     public static final double GEAR_RATIO = 12;
     public static final double CLAW_LENGTH = Units.inchesToMeters(16.6);
+    public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(84);
     public static final double MIN_ANGLE = -0.96;
     public static final double MAX_ANGLE = 1.44;
   }

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.PhoenixUtils;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -125,7 +124,7 @@ public class DriveCommands {
                   .getTranslation();
 
           ChassisSpeeds speeds =
-              PhoenixUtils.fromFieldRelativeSpeeds(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   0,

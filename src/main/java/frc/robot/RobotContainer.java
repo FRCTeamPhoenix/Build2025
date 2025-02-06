@@ -16,6 +16,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -51,7 +51,6 @@ import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -82,13 +81,6 @@ public class RobotContainer {
   private final Trigger bTrigger = controller.b();
   public final Trigger aTrigger = controller.a();
   private final Trigger yTrigger = controller.y();
-  public final Trigger lbTrigger = controller.leftBumper();
-  private final Trigger rbTrigger = controller.rightBumper();
-
-  public int elevatorState = 0;
-
-  // Subsystem sets
-  private final Set<Subsystem> driveSet = new HashSet<Subsystem>();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -177,7 +169,6 @@ public class RobotContainer {
         "Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
 
     steerPID.enableContinuousInput(-180, 180);
-    driveSet.add(drive);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -195,24 +186,18 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    /* xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    bTrigger
-        .onTrue(
-            Commands.runOnce(
-                () -> drive.setPose(
-                    new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+    xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    bTrigger.onTrue(
+        Commands.runOnce(
+                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
-                .ignoringDisable(true));*/
+            .ignoringDisable(true));
 
-    // yTrigger.whileTrue(
-    //   Commands.defer(
-    //     () ->
-    //       AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
-    // driveSet));
-
-    aTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(Math.PI / 4), wrist));
-    yTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(-Math.PI / 4), wrist));
-    bTrigger.whileTrue(Commands.run(() -> wrist.setSetpoint(0), wrist));
+    yTrigger.whileTrue(
+        Commands.defer(
+            () ->
+                AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
+              Set.of()));
   }
 
   private void configureNamedCommands() {}
@@ -232,6 +217,22 @@ public class RobotContainer {
 
   public Photon getPhoton() {
     return photon;
+  }
+
+  public Elevator getElevator() {
+    return elevator;
+  }
+
+  public Wrist geWrist() {
+    return wrist;
+  }
+
+  public Claw getClaw() {
+    return claw;
+  }
+
+  public Visualizer getVisualizer() {
+    return visualizer;
   }
 
   public CommandXboxController getController() {

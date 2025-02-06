@@ -45,17 +45,17 @@ public class Module {
     switch (Constants.CURRENT_MODE) {
       case REAL:
       case REPLAY:
-        driveFeedforward = new PhoenixFF(0.1, 0.13);
+        driveFeedforward = new PhoenixFF(0.1, 0.13, 0.0);
         driveFeedback = new PIDController(0.05, 0.0, 0.0);
         turnFeedback = new PIDController(7.0, 0.0, 0.0);
         break;
       case SIM:
-        driveFeedforward = new PhoenixFF(0.0, 0.13);
+        driveFeedforward = new PhoenixFF(0.0, 0.13, 0.0);
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
         break;
       default:
-        driveFeedforward = new PhoenixFF(0.0, 0.0);
+        driveFeedforward = new PhoenixFF(0.0, 0.0, 0.0);
         driveFeedback = new PIDController(0.0, 0.0, 0.0);
         turnFeedback = new PIDController(0.0, 0.0, 0.0);
         break;
@@ -93,7 +93,7 @@ public class Module {
         // Run drive controller
         double velocityRadPerSec = adjustSpeedSetpoint / DriveConstants.WHEEL_RADIUS;
         io.setDriveVoltage(
-            driveFeedforward.simpleCalculate(velocityRadPerSec)
+            driveFeedforward.calculate(velocityRadPerSec, 0)
                 + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
       }
     }

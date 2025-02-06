@@ -32,8 +32,6 @@ public class WristIOTalonFX implements WristIO {
   private final boolean isInverted = true;
   private final boolean brakeMode = true;
 
-  private final Rotation2d offset = Rotation2d.fromDegrees(84);
-
   public WristIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
@@ -56,7 +54,7 @@ public class WristIOTalonFX implements WristIO {
   @Override
   public void updateInputs(WristIOInputs inputs) {
     BaseStatusSignal.refreshAll(velocity, appliedVolts, current);
-    inputs.angle = Rotation2d.fromRotations(encoder.getPosition()).plus(offset);
+    inputs.angle = Rotation2d.fromRotations(encoder.getPosition()).plus(WristConstants.ANGLE_OFFSET);
     inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / WristConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
