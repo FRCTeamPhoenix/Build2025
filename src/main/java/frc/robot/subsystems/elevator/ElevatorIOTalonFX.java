@@ -81,9 +81,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 followerCurrent);
 
         inputs.heightMeters = position.getValueAsDouble()
-                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.cons);
+                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
         inputs.velocityMetersPerSec = velocity.getValueAsDouble()
-                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.cons);
+                / ElevatorConstants.GEAR_RATIO * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
         inputs.velocityRotationsPerSec = velocity.getValueAsDouble();
         inputs.appliedVolts = new double[] { appliedVolts.getValueAsDouble(), followerAppliedVolts.getValueAsDouble() };
         inputs.currentAmps = new double[] { current.getValueAsDouble(), followerCurrent.getValueAsDouble() };
