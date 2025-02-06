@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.candle.candle;
+import frc.robot.subsystems.candle.Candle;
 
 public class cmd_candle_blink extends Command {
-    private final candle m_candle;
+    private final Candle m_candle;
 
-    public cmd_candle_blink(candle CANdle) {
+    public cmd_candle_blink(Candle CANdle) {
         m_candle = CANdle;
       }
 
