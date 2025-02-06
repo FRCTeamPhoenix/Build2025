@@ -12,27 +12,10 @@ public class Claw extends SubsystemBase {
 
     private final ClawIO io;
     private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
-    private final PIDController controller;
-    private final PhoenixFF feedforward;
     private Double setpoint = null;
 
     public Claw(ClawIO io) {
         this.io = io;
-
-        switch (Constants.CURRENT_MODE) {
-            case REAL:
-            controller = new PIDController(0, 0, 0);
-            feedforward = new PhoenixFF(0, 0);
-                break;
-            case SIM:
-                controller = new PIDController(0.002, 0.1, 0.000002);
-                feedforward = new PhoenixFF(0.0, 0.0075);
-                break;
-            default:
-                controller = new PIDController(0, 0, 0);
-                feedforward = new PhoenixFF(0, 0);
-                break;
-        }
     }
 
     @Override
@@ -41,9 +24,7 @@ public class Claw extends SubsystemBase {
         Logger.processInputs("Claw", inputs);
 
         if (setpoint != null) {
-            double rotationsPerSec = setpoint / ClawConstants.INNER_WHEEL_RADIUS;
-            Logger.recordOutput("Claw/SetpointRotations", rotationsPerSec);
-            io.setVoltage(controller.calculate(inputs.velocityRotationsPerSec, rotationsPerSec) + feedforward.calculate(rotationsPerSec));
+            io.setVoltage(setpoint);
         }
     }
 
