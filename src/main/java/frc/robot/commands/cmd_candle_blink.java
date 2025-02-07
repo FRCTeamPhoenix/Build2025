@@ -15,7 +15,7 @@ public class cmd_candle_blink extends Command {
     
       @Override
       public void execute() {
-        m_candle.blinkLights(1.5, 255, 255, 255); // TODO: finalize off time and on time
+        m_candle.blinkLights(1.5, 255, 255, 255); // TODO: finalize off time and on time. 
       }
     
       @Override
