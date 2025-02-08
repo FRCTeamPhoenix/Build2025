@@ -14,13 +14,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,10 +23,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.PathfindingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.PathfindingCommands;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
@@ -50,8 +45,6 @@ import frc.robot.subsystems.wrist.Wrist;
 import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSim;
 import frc.robot.subsystems.wrist.WristIOTalonFX;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -70,17 +63,15 @@ public class RobotContainer {
   private final Visualizer visualizer;
   private final Wrist wrist;
 
-  // PID Controller
-  private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
-
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Triggers
-  private final Trigger xTrigger = controller.x();
-  private final Trigger bTrigger = controller.b();
-  public final Trigger aTrigger = controller.a();
-  private final Trigger yTrigger = controller.y();
+  private final Trigger driverXTrigger = driverController.x();
+  private final Trigger driverBTrigger = driverController.b();
+  public final Trigger driverATrigger = driverController.a();
+  private final Trigger driverYTrigger = driverController.y();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -118,10 +109,8 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new PhotonIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
-                    VisionConstants.FRONT_LEFT_IDEAL_TRANSFORM,
+                    VisionConstants.FRONT_RIGHT_TRANSFORM,
                     drive::getPose));
-        // new PhotonIOSim(VisionConstants.FRONT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM,
-        // drive::getPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
@@ -168,7 +157,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
 
-    steerPID.enableContinuousInput(-180, 180);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -183,21 +171,18 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    xTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    bTrigger.onTrue(
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
+    driverXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverBTrigger.onTrue(
         Commands.runOnce(
                 () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
             .ignoringDisable(true));
 
-    yTrigger.whileTrue(
-        Commands.defer(
-            () ->
-                AutoBuilder.pathfindToPose(determineZone(), PathfindingConstants.CONSTRAINTS, 0.0),
-              Set.of()));
+    driverYTrigger.whileTrue(
+        Commands.defer(() -> PathfindingCommands.zoneAlign(drive.getPose()), Set.of()));
   }
 
   private void configureNamedCommands() {}
@@ -223,7 +208,7 @@ public class RobotContainer {
     return elevator;
   }
 
-  public Wrist geWrist() {
+  public Wrist getWrist() {
     return wrist;
   }
 
@@ -235,59 +220,11 @@ public class RobotContainer {
     return visualizer;
   }
 
-  public CommandXboxController getController() {
-    return controller;
+  public CommandXboxController getDriverController() {
+    return driverController;
   }
 
-  public Pose2d determineZone() {
-    boolean isRed =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-
-    Pose2d targetPose = drive.getPose();
-    Pose2d[] reefPoses =
-        isRed ? PathfindingConstants.RED_REEF_POSES : PathfindingConstants.BLUE_REEF_POSES;
-
-    Pose2d reefCenter =
-        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
-
-    Transform2d translatedRobot = targetPose.minus(reefCenter);
-
-    double theta =
-        Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
-
-    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.X_LIMIT
-        && Math.abs(translatedRobot.getY()) < PathfindingConstants.Y_LIMIT) {
-      if (-30 < theta && theta < 30) {
-        targetPose = reefPoses[0];
-      } else if (-30 > theta && theta > -90) {
-        targetPose = reefPoses[1];
-      } else if (-90 > theta && theta > -150) {
-        targetPose = reefPoses[2];
-      } else if ((-150 > theta && theta > -180) || (150 < theta && theta < 180)) {
-        targetPose = reefPoses[3];
-      } else if (90 < theta && theta < 150) {
-        targetPose = reefPoses[4];
-      } else if (30 < theta && theta < 90) {
-        targetPose = reefPoses[5];
-      }
-    }
-
-    return targetPose;
-  }
-
-  public Pose2d[] generateZone() {
-    boolean isRed =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-    Pose2d reefCenter =
-        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
-
-    List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
-
-    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
-      zoneTrajectory.add(reefCenter.plus(transform));
-    }
-    return zoneTrajectory.toArray(new Pose2d[0]);
+  public CommandXboxController getOperatorController() {
+    return operatorController;
   }
 }

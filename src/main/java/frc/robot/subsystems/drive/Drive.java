@@ -198,16 +198,17 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAX_LINEAR_SPEED);
 
+    // Log non-mutated setpoints
+    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+
     // Send setpoints to modules
-    SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       // The module returns the optimized state, useful for logging
-      optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
+      modules[i].runSetpoint(setpointStates[i]);
     }
 
-    // Log setpoint states
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+    // Log mutated setpoint states
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
   }
 
   /** Stops the drive. */

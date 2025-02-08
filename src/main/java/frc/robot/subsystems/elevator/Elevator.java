@@ -3,7 +3,6 @@ package frc.robot.subsystems.elevator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -62,23 +61,19 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
     Logger.recordOutput("Elevator/Mech2D", mech);
 
-    if (setpoint != null) {
-      Logger.recordOutput("Elevator/Setpoint", setpoint);
-    } else {
-      Logger.recordOutput("Elevator/Setpoint", -1.0);
-    }
-
     elevator.setLength(inputs.heightMeters + ElevatorConstants.MIN_HEIGHT);
 
     if (setpoint != null) {
+      Logger.recordOutput("Elevator/Setpoint", setpoint);
+
       pidController.setGoal(setpoint);
 
       io.setVoltage(
           pidController.calculate(inputs.heightMeters)
               + feedforward.calculate(pidController.getSetpoint().velocity, 0, 0));
+    } else {
+      Logger.recordOutput("Elevator/Setpoint", -1.0);
     }
-
-    SmartDashboard.putData("Elevator PID", pidController);
   }
 
   public void goToPosition(IntSupplier positionIndex) {

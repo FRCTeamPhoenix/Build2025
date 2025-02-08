@@ -19,7 +19,7 @@ public class WristIOSim implements WristIO {
           WristConstants.MIN_ANGLE,
           WristConstants.MAX_ANGLE,
           true,
-          0);
+          WristConstants.MAX_ANGLE);
   private double appliedVolts = 0.0;
 
   @Override

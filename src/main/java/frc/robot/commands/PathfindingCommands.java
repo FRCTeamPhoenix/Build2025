@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -8,10 +9,17 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.PathfindingConstants;
+import java.util.ArrayList;
+import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PathfindingCommands {
@@ -38,5 +46,57 @@ public class PathfindingCommands {
                 0.55))
         .andThen(Commands.runOnce(() -> Logger.recordOutput("Pathfinding Ready", true)))
         .ignoringDisable(true);
+  }
+
+  public static Command zoneAlign(Pose2d currentPose) {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+
+    Pose2d targetPose = currentPose;
+    Pose2d[] reefPoses =
+        isRed ? PathfindingConstants.RED_REEF_POSES : PathfindingConstants.BLUE_REEF_POSES;
+
+    Pose2d reefCenter =
+        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
+
+    Transform2d translatedRobot = targetPose.minus(reefCenter);
+
+    double theta =
+        Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
+
+    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.X_LIMIT
+        && Math.abs(translatedRobot.getY()) < PathfindingConstants.Y_LIMIT) {
+      if (-30 < theta && theta < 30) {
+        targetPose = reefPoses[0];
+      } else if (-30 > theta && theta > -90) {
+        targetPose = reefPoses[1];
+      } else if (-90 > theta && theta > -150) {
+        targetPose = reefPoses[2];
+      } else if ((-150 > theta && theta > -180) || (150 < theta && theta < 180)) {
+        targetPose = reefPoses[3];
+      } else if (90 < theta && theta < 150) {
+        targetPose = reefPoses[4];
+      } else if (30 < theta && theta < 90) {
+        targetPose = reefPoses[5];
+      }
+    }
+
+    return AutoBuilder.pathfindToPose(targetPose, PathfindingConstants.CONSTRAINTS, 0.0);
+  }
+
+  public static Pose2d[] generateZone() {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    Pose2d reefCenter =
+        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
+
+    List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
+
+    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
+      zoneTrajectory.add(reefCenter.plus(transform));
+    }
+    return zoneTrajectory.toArray(new Pose2d[0]);
   }
 }

@@ -20,7 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.util.PhoenixUtils;
 import frc.robot.util.PhoenixUtils.PhoenixFF;
 import org.littletonrobotics.junction.Logger;
 
@@ -100,18 +99,15 @@ public class Module {
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
-  public SwerveModuleState runSetpoint(SwerveModuleState state) {
+  public void runSetpoint(SwerveModuleState state) {
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
-    // state.optimize(getAngle());
-    // Old code
-    var optimizedState = PhoenixUtils.optimize(state, getAngle());
+    state.optimize(getAngle());
+    state.cosineScale(getAngle());
 
     // Update setpoints, controllers run in "periodic"
-    angleSetpoint = optimizedState.angle;
-    speedSetpoint = optimizedState.speedMetersPerSecond;
-
-    return optimizedState;
+    angleSetpoint = state.angle;
+    speedSetpoint = state.speedMetersPerSecond;
   }
 
   /** Runs the module with the specified voltage while controlling to zero degrees. */

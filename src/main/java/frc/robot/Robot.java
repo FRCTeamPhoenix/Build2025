@@ -136,7 +136,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    Logger.recordOutput("ZoneSnapping/ZoneMap", robotContainer.generateZone());
+    Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingCommands.generateZone());
   }
 
   /** This function is called periodically during operator control. */
