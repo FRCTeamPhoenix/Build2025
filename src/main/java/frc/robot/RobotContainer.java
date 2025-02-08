@@ -27,24 +27,25 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.PathfindingCommands;
-import frc.robot.subsystems.claw.Claw;
-import frc.robot.subsystems.claw.ClawIO;
-import frc.robot.subsystems.claw.ClawIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOSim;
+import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.claw.Claw;
+import frc.robot.subsystems.superstructure.claw.ClawIO;
+import frc.robot.subsystems.superstructure.claw.ClawIOSim;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.wrist.Wrist;
+import frc.robot.subsystems.superstructure.wrist.WristIO;
+import frc.robot.subsystems.superstructure.wrist.WristIOSim;
+import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
-import frc.robot.subsystems.wrist.Wrist;
-import frc.robot.subsystems.wrist.WristIO;
-import frc.robot.subsystems.wrist.WristIOSim;
-import frc.robot.subsystems.wrist.WristIOTalonFX;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -61,6 +62,7 @@ public class RobotContainer {
   private final Claw claw;
   private final Elevator elevator;
   private final Visualizer visualizer;
+  private final Superstructure superstructure;
   private final Wrist wrist;
 
   // Controller
@@ -70,8 +72,11 @@ public class RobotContainer {
   // Triggers
   private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverBTrigger = driverController.b();
-  public final Trigger driverATrigger = driverController.a();
+  private final Trigger driverATrigger = driverController.a();
   private final Trigger driverYTrigger = driverController.y();
+
+  private final Trigger operatorLBTrigger = operatorController.leftBumper();
+  private final Trigger operatorRBTrigger = operatorController.rightBumper();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -92,7 +97,6 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         claw = new Claw(new ClawIO() {});
         wrist = new Wrist(new WristIOTalonFX());
-        visualizer = new Visualizer(elevator, wrist);
         break;
 
       case SIM:
@@ -114,7 +118,6 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
-        visualizer = new Visualizer(elevator, wrist);
         break;
 
       default:
@@ -130,9 +133,11 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
-        visualizer = new Visualizer(elevator, wrist);
         break;
     }
+
+    visualizer = new Visualizer(elevator, wrist);
+    superstructure = new Superstructure(elevator, wrist);
 
     // Configure PathPlanner commands
     configureNamedCommands();
@@ -183,6 +188,11 @@ public class RobotContainer {
 
     driverYTrigger.whileTrue(
         Commands.defer(() -> PathfindingCommands.zoneAlign(drive.getPose()), Set.of()));
+
+    operatorLBTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.cycleState(-1), elevator, superstructure, wrist));
+    operatorRBTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.cycleState(1), elevator, superstructure, wrist));
   }
 
   private void configureNamedCommands() {}
@@ -218,6 +228,10 @@ public class RobotContainer {
 
   public Visualizer getVisualizer() {
     return visualizer;
+  }
+
+  public Superstructure getSuperstructure() {
+    return superstructure;
   }
 
   public CommandXboxController getDriverController() {

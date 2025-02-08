@@ -1,4 +1,4 @@
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.superstructure.claw;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;

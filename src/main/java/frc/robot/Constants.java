@@ -190,6 +190,14 @@ public final class Constants {
     public static final double[] ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
   }
 
+  public static final class SuperstructureConstants {
+    public static final double[] elevatorStates = {0, 0, 0.2, 0.8, 1.2, 1.7};
+    public static final double[] wristStates = {
+      WristConstants.MIN_ANGLE, -Math.PI / 4, Math.PI / 4, Math.PI / 4, Math.PI / 4, Math.PI / 4
+    };
+    public static final String[] stateNames = {"STOWED", "HUMAN INTAKE", "L1", "L2", "L3", "L4"};
+  }
+
   public static final class ElevatorConstants {
     public static final double GEAR_RATIO = 62.0 / 8.0;
     public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);

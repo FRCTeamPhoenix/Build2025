@@ -1,11 +1,9 @@
-package frc.robot.subsystems.elevator;
+package frc.robot.subsystems.superstructure.elevator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -108,9 +106,5 @@ public class Elevator extends SubsystemBase {
 
   public boolean atSetpoint() {
     return pidController.atGoal();
-  }
-
-  public Command moveElevator(double height) {
-    return Commands.run(() -> this.runSetpoint(height), this).until(this::atSetpoint);
   }
 }

@@ -5,8 +5,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.wrist.Wrist;
+import frc.robot.subsystems.superstructure.elevator.Elevator;
+import frc.robot.subsystems.superstructure.wrist.Wrist;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -59,7 +59,7 @@ public class Visualizer extends SubsystemBase {
             0.178779,
             0,
             height + 0.235 + 0.070668 + (height / elevatorExtension * 0.5),
-            new Rotation3d(0, -wrist.getAngle() + Math.PI / 2, 0));
+            new Rotation3d(0, -wrist.getAngle() - Math.PI / 2, 0));
     Logger.recordOutput("Mechanism3d/Claw", claw);
 
     // Climber

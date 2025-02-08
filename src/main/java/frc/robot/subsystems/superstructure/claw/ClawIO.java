@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.superstructure.claw;
 
 import org.littletonrobotics.junction.AutoLog;
 

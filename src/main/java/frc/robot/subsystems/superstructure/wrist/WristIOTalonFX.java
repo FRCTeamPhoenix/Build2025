@@ -1,4 +1,4 @@
-package frc.robot.subsystems.wrist;
+package frc.robot.subsystems.superstructure.wrist;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 

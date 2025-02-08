@@ -1,4 +1,4 @@
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.superstructure.claw;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;

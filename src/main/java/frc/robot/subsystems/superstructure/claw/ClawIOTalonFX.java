@@ -1,4 +1,4 @@
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.superstructure.claw;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
