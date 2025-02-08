@@ -27,6 +27,9 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.PathfindingCommands;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -64,6 +67,7 @@ public class RobotContainer {
   private final Visualizer visualizer;
   private final Superstructure superstructure;
   private final Wrist wrist;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -97,6 +101,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         claw = new Claw(new ClawIO() {});
         wrist = new Wrist(new WristIOTalonFX());
+        climber = new Climber(new ClimberIO() {});
         break;
 
       case SIM:
@@ -118,6 +123,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
+        climber = new Climber(new ClimberIOSim());
         break;
 
       default:
@@ -133,10 +139,11 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
+        climber = new Climber(new ClimberIO() {});
         break;
     }
 
-    visualizer = new Visualizer(elevator, wrist);
+    visualizer = new Visualizer(elevator, wrist, climber);
     superstructure = new Superstructure(elevator, wrist);
 
     // Configure PathPlanner commands
@@ -188,6 +195,8 @@ public class RobotContainer {
 
     driverYTrigger.whileTrue(
         Commands.defer(() -> PathfindingCommands.zoneAlign(drive.getPose()), Set.of()));
+
+    driverATrigger.whileTrue(Commands.run(() -> climber.setSetpoint(Math.PI / 4), climber));
 
     operatorLBTrigger.onTrue(
         Commands.runOnce(() -> superstructure.cycleState(-1), elevator, superstructure, wrist));

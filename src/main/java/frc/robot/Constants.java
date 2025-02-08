@@ -224,6 +224,14 @@ public final class Constants {
     public static final double MAX_ANGLE = 1.44;
   }
 
+  public static final class ClimberConstants {
+    public static final double GEAR_RATIO = 144;
+    public static final double ARM_LENGTH = Units.inchesToMeters(16.6);
+    public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(0);
+    public static final double MIN_ANGLE = -Math.PI;
+    public static final double MAX_ANGLE = Math.PI;
+  }
+
   public static final class CANConstants {
     public static final int PIGEON_ID = 1;
 
@@ -243,5 +251,6 @@ public final class Constants {
     public static final int WRIST_SPARK = 18;
     public static final int CLAW_ID = 19;
     public static final int LASERCAN_ID = 20;
+    public static final int CLIMBER_ID = 21;
   }
 }

@@ -1,10 +1,10 @@
 package frc.robot.subsystems.visualizer;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import org.littletonrobotics.junction.Logger;
@@ -14,6 +14,7 @@ public class Visualizer extends SubsystemBase {
 
   private final Elevator elevator;
   private final Wrist wrist;
+  private final Climber climber;
 
   private LoggedNetworkNumber x;
   private LoggedNetworkNumber y;
@@ -23,12 +24,10 @@ public class Visualizer extends SubsystemBase {
   private LoggedNetworkNumber pitch;
   private LoggedNetworkNumber yaw;
 
-  private double climberSetpoint = Math.PI / 4;
-  private boolean climberGoingUp = true;
-
-  public Visualizer(Elevator elevator, Wrist wrist) {
+  public Visualizer(Elevator elevator, Wrist wrist, Climber climber) {
     this.elevator = elevator;
     this.wrist = wrist;
+    this.climber = climber;
 
     x = new LoggedNetworkNumber("Mechanism3d/Testing/Tunable/X", 0);
     y = new LoggedNetworkNumber("Mechanism3d/Testing/Tunable/Y", 0);
@@ -63,17 +62,8 @@ public class Visualizer extends SubsystemBase {
     Logger.recordOutput("Mechanism3d/Claw", claw);
 
     // Climber
-    if (climberGoingUp) {
-      climberSetpoint = MathUtil.clamp(climberSetpoint - 0.05, -Math.PI / 4, Math.PI / 4);
-    } else {
-      climberSetpoint = MathUtil.clamp(climberSetpoint + 0.05, -Math.PI / 4, Math.PI / 4);
-    }
-
-    if (Math.abs(climberSetpoint) == Math.PI / 4) {
-      climberGoingUp = !climberGoingUp;
-    }
-    Pose3d climber =
-        new Pose3d(0, 0.276527, 0.417863 + 0.070668, new Rotation3d(climberSetpoint, 0, 0));
-    Logger.recordOutput("Mechanism3d/Climber", climber);
+    Pose3d climberPose =
+        new Pose3d(0, 0.276527, 0.417863 + 0.070668, new Rotation3d(climber.getAngle(), 0, 0));
+    Logger.recordOutput("Mechanism3d/Climber", climberPose);
   }
 }
