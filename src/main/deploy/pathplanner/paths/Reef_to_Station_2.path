@@ -8,20 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/Reef_to_Station_2.path
         "x": 2.931633121016674,
         "y": 5.22348846350188
+========
+        "x": 2.3210707922815526,
+        "y": 2.0544306223629327
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/station_to_rear.path
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/Reef_to_Station_2.path
         "x": 1.385,
         "y": 7.211
       },
       "prevControl": {
         "x": 2.532175541331478,
         "y": 5.568932480217953
+========
+        "x": 3.13,
+        "y": 3.849
+      },
+      "prevControl": {
+        "x": 2.86993852856604,
+        "y": 3.6562962532018397
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/station_to_rear.path
       },
       "nextControl": null,
       "isLocked": false,

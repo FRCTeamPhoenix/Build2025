@@ -7,7 +7,11 @@
         {
           "type": "path",
           "data": {
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
             "pathName": "cage_side_o"
+========
+            "pathName": "Center_Starting_to_Reef"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -25,7 +29,11 @@
         {
           "type": "path",
           "data": {
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
             "pathName": "cage_to_station_o"
+========
+            "pathName": "Reef_to_Station"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -37,7 +45,11 @@
         {
           "type": "path",
           "data": {
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
             "pathName": "station_to_rear_o"
+========
+            "pathName": "Station_to_Reef"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -51,11 +63,20 @@
           "data": {
             "name": "Lower Elevator"
           }
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
+========
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef_to_Station_2"
+          }
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Autos",
   "choreoAuto": false
 }

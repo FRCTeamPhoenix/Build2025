@@ -7,8 +7,13 @@
         {
           "type": "path",
           "data": {
+<<<<<<< Updated upstream
 <<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
             "pathName": "cage_side_a"
+=======
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
+            "pathName": "cage_side_o"
+>>>>>>> Stashed changes
 ========
             "pathName": "Center_Starting_to_Reef"
 >>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
@@ -29,8 +34,13 @@
         {
           "type": "path",
           "data": {
+<<<<<<< Updated upstream
 <<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
             "pathName": "cage_to_station_a"
+=======
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
+            "pathName": "cage_to_station_o"
+>>>>>>> Stashed changes
 ========
             "pathName": "Reef_to_Station"
 >>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
@@ -45,8 +55,13 @@
         {
           "type": "path",
           "data": {
+<<<<<<< Updated upstream
 <<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
             "pathName": "station_to_rear_a"
+=======
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
+            "pathName": "station_to_rear_o"
+>>>>>>> Stashed changes
 ========
             "pathName": "Station_to_Reef"
 >>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
@@ -63,7 +78,11 @@
           "data": {
             "name": "Lower Elevator"
           }
+<<<<<<< Updated upstream
 <<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
+=======
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/opponent_side.auto
+>>>>>>> Stashed changes
 ========
         },
         {

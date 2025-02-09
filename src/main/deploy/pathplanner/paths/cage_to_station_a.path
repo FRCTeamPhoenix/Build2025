@@ -3,6 +3,7 @@
   "waypoints": [
     {
       "anchor": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/cage_to_station_a.path
         "x": 5.032,
         "y": 5.318
       },
@@ -10,6 +11,15 @@
       "nextControl": {
         "x": 2.8097730364118303,
         "y": 6.407938494001114
+=======
+        "x": 3.13,
+        "y": 3.849
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8796116690829536,
+        "y": 4.9179579463975385
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/rear_to_station_a.path
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +30,13 @@
         "y": 7.039
       },
       "prevControl": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/cage_to_station_a.path
         "x": 1.447026570104098,
         "y": 6.865534055052428
+=======
+        "x": 1.4956146139699327,
+        "y": 6.679005252234227
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/rear_to_station_a.path
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +60,7 @@
     "rotation": 127.00000000000001
   },
   "reversed": false,
-  "folder": "alliance",
+  "folder": "opposing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -119.99999999999999
