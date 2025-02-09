@@ -5,7 +5,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
+import frc.robot.subsystems.wrist.WristIOInputsAutoLogged;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Wrist extends SubsystemBase {
@@ -65,6 +68,7 @@ public class Wrist extends SubsystemBase {
     return setpoint;
   }
 
+  @AutoLogOutput(key = "Wrist/AtGoal")
   public boolean atSetpoint() {
     return controller.atSetpoint();
   }

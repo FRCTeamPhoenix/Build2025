@@ -31,9 +31,6 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput(
         "Superstructure/State", SuperstructureConstants.stateNames[superstructureState]);
 
-    elevatorSetpoint = SuperstructureConstants.elevatorStates[superstructureState];
-    wristSetpoint = SuperstructureConstants.wristStates[superstructureState];
-
     if (!manualControl) {
       elevatorSetpoint = SuperstructureConstants.elevatorStates[superstructureState];
       wristSetpoint = SuperstructureConstants.wristStates[superstructureState];

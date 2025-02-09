@@ -7,8 +7,11 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import java.util.function.IntSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -104,6 +107,7 @@ public class Elevator extends SubsystemBase {
     return inputs.velocityRotationsPerSec;
   }
 
+  @AutoLogOutput(key = "Elevator/AtGoal")
   public boolean atSetpoint() {
     return pidController.atGoal();
   }
