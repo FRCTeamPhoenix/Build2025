@@ -5,7 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
-import frc.robot.subsystems.wrist.WristIOInputsAutoLogged;
+import frc.robot.subsystems.superstructure.wrist.WristIOInputsAutoLogged;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 
 import org.littletonrobotics.junction.AutoLogOutput;

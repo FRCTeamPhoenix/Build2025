@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOInputsAutoLogged;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import java.util.function.IntSupplier;
 
