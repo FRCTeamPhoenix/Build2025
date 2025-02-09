@@ -10,10 +10,12 @@ import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.RgbFadeAnimation;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANdleConstants;
 
-public class Candle extends SubsystemBase {
+public class CANdleSubsystem extends SubsystemBase {
     private final CANdle candle; 
     private final CANdleConfiguration config;
 
@@ -27,7 +29,7 @@ public class Candle extends SubsystemBase {
      * Creates a new CANdle object with the supplied CANID
      * @param canID CANID for CANdle device
      */
-    public Candle(int canID) {
+    public CANdleSubsystem(int canID) {
         this.candle = new CANdle(canID);
         this.config = new CANdleConfiguration();
         candle.configAllSettings(config);
@@ -85,22 +87,21 @@ public class Candle extends SubsystemBase {
     /**
      * Uses preset fire animation and makes candle do it
      */
-    public void fireAnimate() {
-        candle.animate(fireAnimation);
+    public Command fireAnimate() {
+        return Commands.run(() -> candle.animate(fireAnimation), this);
     }
 
     /**
      * Uses preset rainbow animation and makes candle do it
      */
-    public void rainbowAnimate() {
-        candle.animate(rainbowAnimation);
+    public Command rainbowAnimate() {
+        return Commands.run(() -> candle.animate(rainbowAnimation), this);
     }
 
     /**
      * Uses preset rgbFade animation and makes candle do it
      */
-    public void rgbFade() {
-        candle.animate(rgbFadeAnimation);
-
+    public Command rgbFade() {
+        return Commands.run(() -> candle.animate(rgbFadeAnimation), this);
     }
 }

@@ -49,9 +49,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.MoveElevator;
-import frc.robot.commands.cmd_candle_blink;
-import frc.robot.commands.cmd_candle_on;
-import frc.robot.subsystems.candle.Candle;
+import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
@@ -90,7 +88,7 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
-  private final Candle candle = new Candle(6);
+  private final CANdleSubsystem candle = new CANdleSubsystem(6);
 
   //PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -177,16 +175,10 @@ public class RobotContainer {
     }
 
 
- SmartDashboard.putData("lights", new cmd_candle_on(candle));
- SmartDashboard.putData("blink_lights", new cmd_candle_blink(candle)); 
+    SmartDashboard.putData("CANdle FireAnimation", candle.fireAnimate());
+    SmartDashboard.putData("CANdle RainbowAnimation", candle.rainbowAnimate());
+    SmartDashboard.putData("CANdle RGBFade", candle.rgbFade());
 
-
- candle.rainbowAnimate();
-
- // create a rainbow animation:
- // - max brightness
- // - half speed
- // - 64 LEDs
 
     // Configure PathPlanner commands
     configureNamedCommands();
