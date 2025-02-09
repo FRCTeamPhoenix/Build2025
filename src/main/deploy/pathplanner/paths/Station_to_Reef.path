@@ -3,40 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/station_to_rear_a.path
-        "x": 1.267,
-        "y": 7.039
+        "x": 1.385,
+        "y": 7.211
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.549068965095178,
-        "y": 5.854549454472083
-=======
-        "x": 3.13,
-        "y": 3.849
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.8796116690829536,
-        "y": 4.9179579463975385
->>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/rear_to_station_a.path
+        "x": 2.6329025309648983,
+        "y": 5.901626139889946
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.1078125,
-        "y": 4.188735525948661
+        "x": 3.162,
+        "y": 4.184
       },
       "prevControl": {
-<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/station_to_rear_a.path
-        "x": 2.768390142192716,
-        "y": 4.465728078938613
-=======
-        "x": 1.4956146139699327,
-        "y": 6.679005252234227
->>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/rear_to_station_a.path
+        "x": 2.5992109267188317,
+        "y": 5.071806608031125
       },
       "nextControl": null,
       "isLocked": false,
@@ -60,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "opposing",
+  "folder": "center",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 127.00000000000001

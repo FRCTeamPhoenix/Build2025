@@ -7,7 +7,11 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cage_side_c"
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
+            "pathName": "cage_side_a"
+========
+            "pathName": "Center_Starting_to_Reef"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -25,7 +29,11 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cage_to_coral_c"
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
+            "pathName": "cage_to_station_a"
+========
+            "pathName": "Reef_to_Station"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -37,7 +45,11 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coral_to_rear_c"
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
+            "pathName": "station_to_rear_a"
+========
+            "pathName": "Station_to_Reef"
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
           }
         },
         {
@@ -51,41 +63,20 @@
           "data": {
             "name": "Lower Elevator"
           }
+<<<<<<<< Updated upstream:src/main/deploy/pathplanner/autos/alliance_side.auto
+========
         },
         {
           "type": "path",
           "data": {
-            "pathName": "rear_to_coral2_c"
+            "pathName": "Reef_to_Station_2"
           }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "coral_to_rear2_c"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Raise Elevator Max"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Lower Elevator"
-          }
+>>>>>>>> Stashed changes:src/main/deploy/pathplanner/autos/Center_Auto.auto
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Autos",
   "choreoAuto": false
 }

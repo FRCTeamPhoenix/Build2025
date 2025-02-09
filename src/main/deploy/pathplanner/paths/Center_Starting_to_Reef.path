@@ -3,35 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.19,
-        "y": 1.11
+        "x": 7.3,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/station_to_rear_o.path
-        "x": 2.522088187081473,
-        "y": 1.906384713309152
-=======
-        "x": 2.3210707922815526,
-        "y": 2.0544306223629327
->>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/station_to_rear.path
+        "x": 6.814710344587054,
+        "y": 4.700849260602679
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.13,
-        "y": 3.849
+        "x": 3.976,
+        "y": 5.283
       },
       "prevControl": {
-<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/station_to_rear_o.path
-        "x": 2.8289680769280627,
-        "y": 3.643829205716242
-=======
-        "x": 2.86993852856604,
-        "y": 3.6562962532018397
->>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/station_to_rear.path
+        "x": 5.051011439732143,
+        "y": 6.061696515764509
       },
       "nextControl": null,
       "isLocked": false,
@@ -52,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -62.164
   },
   "reversed": false,
-  "folder": "opposing",
+  "folder": "center",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
