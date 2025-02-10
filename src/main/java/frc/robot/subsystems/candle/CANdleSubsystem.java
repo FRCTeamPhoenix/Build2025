@@ -23,8 +23,6 @@ public class CANdleSubsystem extends SubsystemBase {
     private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.5, 300);
     private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.25, 300 );
 
-
-
     /**
      * Creates a new CANdle object with the supplied CANID
      * @param canID CANID for CANdle device
