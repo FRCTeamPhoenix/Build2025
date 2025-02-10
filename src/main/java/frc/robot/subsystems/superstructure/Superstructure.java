@@ -28,12 +28,13 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.recordOutput(
-        "Superstructure/State", SuperstructureConstants.stateNames[superstructureState]);
-
     if (!manualControl) {
       elevatorSetpoint = SuperstructureConstants.elevatorStates[superstructureState];
       wristSetpoint = SuperstructureConstants.wristStates[superstructureState];
+      Logger.recordOutput(
+          "Superstructure/State", SuperstructureConstants.stateNames[superstructureState]);
+    } else {
+      Logger.recordOutput("Superstructure/State", "MANUAL");
     }
 
     elevator.runSetpoint(elevatorSetpoint);

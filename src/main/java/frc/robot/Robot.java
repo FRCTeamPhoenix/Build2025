@@ -15,7 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.PathfindingCommands;
+import frc.robot.util.PathfindingUtils;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -89,7 +89,7 @@ public class Robot extends LoggedRobot {
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
 
-    PathfindingCommands.warmupCommand().schedule();
+    PathfindingUtils.warmupCommand().schedule();
   }
 
   /** This function is called periodically during all modes. */
@@ -136,7 +136,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingCommands.generateZone());
+    Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
   }
 
   /** This function is called periodically during operator control. */

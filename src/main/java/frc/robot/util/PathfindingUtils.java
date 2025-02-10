@@ -1,6 +1,5 @@
-package frc.robot.commands;
+package frc.robot.util;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
-public class PathfindingCommands {
+public class PathfindingUtils {
   /**
    * Create a command to warmup the pathfinder and pathfinding command
    *
@@ -48,14 +47,30 @@ public class PathfindingCommands {
         .ignoringDisable(true);
   }
 
-  public static Command zoneAlign(Pose2d currentPose) {
+  public static Pose2d[] generateZone() {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    Pose2d reefCenter =
+        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
+
+    List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
+
+    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
+      zoneTrajectory.add(reefCenter.plus(transform));
+    }
+    return zoneTrajectory.toArray(new Pose2d[0]);
+  }
+
+  public static Pose2d getZone(Pose2d odometryPose) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
 
-    Pose2d targetPose = currentPose;
+    Pose2d targetPose = odometryPose;
     Pose2d[] reefPoses =
         isRed ? PathfindingConstants.RED_REEF_POSES : PathfindingConstants.BLUE_REEF_POSES;
+    Logger.recordOutput("reefpos", reefPoses);
 
     Pose2d reefCenter =
         isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
@@ -81,22 +96,6 @@ public class PathfindingCommands {
         targetPose = reefPoses[5];
       }
     }
-
-    return AutoBuilder.pathfindToPose(targetPose, PathfindingConstants.CONSTRAINTS, 0.0);
-  }
-
-  public static Pose2d[] generateZone() {
-    boolean isRed =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-    Pose2d reefCenter =
-        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
-
-    List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
-
-    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
-      zoneTrajectory.add(reefCenter.plus(transform));
-    }
-    return zoneTrajectory.toArray(new Pose2d[0]);
+    return targetPose;
   }
 }

@@ -17,11 +17,13 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -33,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -104,6 +106,10 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS =
         new PathConstraints(4.0, 6.0, Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
+    public static final Constraints LINEAR_CONSTRAINTS = new Constraints(4, 6);
+    public static final Constraints ANGLE_CONSTRAINTS =
+        new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
+
     public static final Pose2d[] BLUE_REEF_POSES =
         new Pose2d[] {
           new Pose2d(6, 4, Rotation2d.k180deg),
@@ -159,6 +165,26 @@ public final class Constants {
           new Transform2d(-1.14, -0.68, Rotation2d.kZero),
           new Transform2d(-1.14, 0.68, Rotation2d.kZero),
         };
+
+    public static final Pose3d[] BLUE_REEF_TAG_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(17).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d())
+        };
+
+    public static final Pose3d[] RED_REEF_TAG_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(11).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
+        };
   }
 
   public static final class DriveConstants {
@@ -187,14 +213,14 @@ public final class Constants {
   public static final class SuperstructureConstants {
     public static final double[] elevatorStates = {0, 0, 0.2, 0.5536, 0.96, 1.7};
     public static final double[] wristStates = {
-      -WristConstants.MIN_ANGLE,
+      WristConstants.MAX_ANGLE - 0.2,
       Units.degreesToRadians(35),
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
-      WristConstants.MAX_ANGLE
+      WristConstants.MIN_ANGLE
     };
-    public static final String[] stateNames = {"STOWED", "HUMAN INTAKE", "L1", "L2", "L3", "L4"};
+    public static final String[] stateNames = {"STOWED", "INTAKE", "L1", "L2", "L3", "L4"};
   }
 
   public static final class ElevatorConstants {

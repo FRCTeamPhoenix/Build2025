@@ -1,6 +1,17 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+
 public class PhoenixUtils {
+
+  public static double getDistance(Pose2d A, Pose2d B) {
+    return Math.sqrt(Math.pow(B.getX() - A.getX(), 2) + Math.pow(B.getY() - A.getY(), 2));
+  }
+
+  public static double getDistance(Pose3d A, Pose3d B) {
+    return Math.sqrt(Math.pow(B.getX() - A.getX(), 2) + Math.pow(B.getY() - A.getY(), 2));
+  }
 
   /* Custom feedforward class */
   public static class PhoenixFF {

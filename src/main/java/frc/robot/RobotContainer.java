@@ -27,9 +27,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
-import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.ReefAlign;
+import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -55,7 +57,6 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
-import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -113,7 +114,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
-        photon = new Photon(drive::addVisionMeasurement, new PhotonIOReal(null, null));
+        photon =
+            new Photon(
+                drive::addVisionMeasurement,
+                new PhotonIOReal(
+                    VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -139,7 +144,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
-        climber = new Climber(new ClimberIOTalonFX());
+        climber = new Climber(new ClimberIOSim());
         break;
 
       default:
@@ -209,8 +214,7 @@ public class RobotContainer {
                 drive)
             .ignoringDisable(true));
 
-    driverYTrigger.whileTrue(
-        Commands.defer(() -> PathfindingCommands.zoneAlign(drive.getPose()), Set.of()));
+    driverYTrigger.whileTrue(new ZoneSnap(drive));
 
     driverATrigger.whileTrue(Commands.run(() -> climber.setSetpoint(Math.PI / 4), climber));
 
