@@ -45,17 +45,16 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
     if (setpoint != null) {
       Logger.recordOutput("Climber/Setpoint", setpoint);
-      io.setVoltage(
-          controller.calculate(inputs.angle.getRadians(), setpoint)
-              + ff.calculate(0, 0, inputs.angle.getRadians()));
+      io.setVoltage(setpoint);
     } else {
       Logger.recordOutput("Climber/Setpoint", -1);
     }
   }
 
   public void setSetpoint(double setpoint) {
-    this.setpoint =
-        MathUtil.clamp(setpoint, ClimberConstants.MIN_ANGLE, ClimberConstants.MAX_ANGLE);
+    this.setpoint = setpoint;
+    // this.setpoint =
+    //    MathUtil.clamp(setpoint, ClimberConstants.MIN_ANGLE, ClimberConstants.MAX_ANGLE);
   }
 
   public void changeSetpoint(double change) {

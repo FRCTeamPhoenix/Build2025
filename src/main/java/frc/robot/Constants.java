@@ -192,7 +192,7 @@ public final class Constants {
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
-      Units.degreesToRadians(-35)
+      WristConstants.MAX_ANGLE
     };
     public static final String[] stateNames = {"STOWED", "HUMAN INTAKE", "L1", "L2", "L3", "L4"};
   }
@@ -206,7 +206,6 @@ public final class Constants {
     public static final double MAX_HEIGHT = MIN_HEIGHT + MAX_EXTENSION;
     public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
-    public static final double[] POSITIONS = {0, 0.5, 0.9, 1.3, 1.7};
   }
 
   public static final class ClawConstants {

@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -29,7 +30,7 @@ import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.PathfindingCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
+import frc.robot.subsystems.photon.PhotonIOReal;
 import frc.robot.subsystems.photon.PhotonIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.claw.Claw;
@@ -111,11 +113,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
-        photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
+        photon = new Photon(drive::addVisionMeasurement, new PhotonIOReal(null, null));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
-        climber = new Climber(new ClimberIO() {});
+        climber = new Climber(new ClimberIOTalonFX());
         break;
 
       case SIM:
@@ -137,7 +139,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
-        climber = new Climber(new ClimberIOSim());
+        climber = new Climber(new ClimberIOTalonFX());
         break;
 
       default:
@@ -226,12 +228,29 @@ public class RobotContainer {
     operatorRightPadTrigger.whileTrue(
         Commands.run(() -> superstructure.changeElevatorGoal(.01), elevator));
 
-    operatorDownPadTrigger.whileTrue(
-        Commands.run(() -> superstructure.changeWristGoal(-.01), wrist));
-    operatorUpPadTrigger.whileTrue(Commands.run(() -> superstructure.changeWristGoal(.01), wrist));
+    operatorUpPadTrigger
+        .whileTrue(Commands.run(() -> climber.setSetpoint(-3), climber))
+        .onFalse(Commands.run(() -> climber.setSetpoint(0), climber));
+    operatorDownPadTrigger
+        .whileTrue(Commands.run(() -> climber.setSetpoint(3), climber))
+        .onFalse(Commands.run(() -> climber.setSetpoint(0), climber));
+
+    // operatorUpPadTrigger.whileTrue(Commands.run(() -> superstructure.changeWristGoal(.01),
+    // wrist));
   }
 
-  private void configureNamedCommands() {}
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand(
+        "Superstructure L4",
+        Commands.run(() -> superstructure.setState(5), wrist, elevator)
+            .until(() -> superstructure.atGoal()));
+    NamedCommands.registerCommand("Claw Outtake", claw.runForward());
+    NamedCommands.registerCommand("Claw Stop", claw.stopCommand());
+    NamedCommands.registerCommand(
+        "Stow Elevator",
+        Commands.run(() -> superstructure.setState(0), wrist, elevator)
+            .until(() -> superstructure.atGoal()));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

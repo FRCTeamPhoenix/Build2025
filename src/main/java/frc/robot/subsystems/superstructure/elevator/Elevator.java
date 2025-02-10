@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
-import java.util.function.IntSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -73,10 +72,6 @@ public class Elevator extends SubsystemBase {
     } else {
       Logger.recordOutput("Elevator/Setpoint", -1.0);
     }
-  }
-
-  public void goToPosition(IntSupplier positionIndex) {
-    this.setpoint = ElevatorConstants.POSITIONS[positionIndex.getAsInt()];
   }
 
   public void runSetpoint(double setpoint) {
