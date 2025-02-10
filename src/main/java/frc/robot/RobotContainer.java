@@ -13,6 +13,17 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdleFaults;
+import com.ctre.phoenix.led.ColorFlowAnimation;
+import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.RgbFadeAnimation;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -24,6 +35,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,6 +51,7 @@ import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
 import frc.robot.commands.MoveElevator;
+import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOSim;
@@ -78,6 +91,7 @@ public class RobotContainer {
   private final Photon photon;
   private final Claw claw;
   private final Elevator elevator;
+  private final CANdleSubsystem candle = new CANdleSubsystem(6);
 
   // PID Controller
   private final PIDController steerPID = new PIDController(0.01, 0, 0.01);
@@ -174,6 +188,12 @@ public class RobotContainer {
 
         break;
     }
+
+
+    SmartDashboard.putData("CANdle FireAnimation", candle.fireAnimate());
+    SmartDashboard.putData("CANdle RainbowAnimation", candle.rainbowAnimate());
+    SmartDashboard.putData("CANdle RGBFade", candle.rgbFade());
+
 
     // Configure PathPlanner commands
     configureNamedCommands();
