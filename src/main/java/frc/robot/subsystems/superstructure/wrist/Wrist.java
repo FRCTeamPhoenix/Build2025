@@ -5,9 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
-import frc.robot.subsystems.superstructure.wrist.WristIOInputsAutoLogged;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,11 +24,11 @@ public class Wrist extends SubsystemBase {
 
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        controller = new PIDController(1.21, 0.0452, 0.019);
+        controller = new PIDController(1, 0.12, 0.07);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.475);
         break;
       case SIM:
-        controller = new PIDController(10, 0.245, 0.01);
+        controller = new PIDController(10, 0.15, 0.01);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.195);
         break;
       default:

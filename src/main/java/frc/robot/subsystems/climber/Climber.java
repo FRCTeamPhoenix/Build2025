@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase {
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
       case SIM:
-        controller = new PIDController(1000.0, 10.0, 0.0);
+        controller = new PIDController(1.0, 0.0, 0.0);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
       default:
@@ -56,6 +56,11 @@ public class Climber extends SubsystemBase {
   public void setSetpoint(double setpoint) {
     this.setpoint =
         MathUtil.clamp(setpoint, ClimberConstants.MIN_ANGLE, ClimberConstants.MAX_ANGLE);
+  }
+
+  public void changeSetpoint(double change) {
+    this.setpoint =
+        MathUtil.clamp(setpoint + change, ClimberConstants.MIN_ANGLE, ClimberConstants.MAX_ANGLE);
   }
 
   public double getAngle() {

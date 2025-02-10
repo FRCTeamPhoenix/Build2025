@@ -32,8 +32,10 @@ import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
 import frc.robot.subsystems.photon.PhotonIOSim;
@@ -41,9 +43,11 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.claw.Claw;
 import frc.robot.subsystems.superstructure.claw.ClawIO;
 import frc.robot.subsystems.superstructure.claw.ClawIOSim;
+import frc.robot.subsystems.superstructure.claw.ClawIOTalonFX;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIO;
 import frc.robot.subsystems.superstructure.elevator.ElevatorIOSim;
+import frc.robot.subsystems.superstructure.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
@@ -74,13 +78,23 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Triggers
-  private final Trigger driverXTrigger = driverController.x();
-  private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverATrigger = driverController.a();
+  private final Trigger driverBTrigger = driverController.b();
+  private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverYTrigger = driverController.y();
 
+  private final Trigger operatorATrigger = operatorController.a();
+  private final Trigger operatorBTrigger = operatorController.b();
+  private final Trigger operatorXTrigger = operatorController.x();
+  private final Trigger operatorYTrigger = operatorController.y();
   private final Trigger operatorLBTrigger = operatorController.leftBumper();
   private final Trigger operatorRBTrigger = operatorController.rightBumper();
+  private final Trigger operatorLTTrigger = operatorController.leftTrigger();
+  private final Trigger operatorRTTrigger = operatorController.rightTrigger();
+  private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
+  private final Trigger operatorRightPadTrigger = operatorController.povRight();
+  private final Trigger operatorUpPadTrigger = operatorController.povUp();
+  private final Trigger operatorDownPadTrigger = operatorController.povDown();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -92,14 +106,14 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(0),
+                new ModuleIOTalonFX(1),
+                new ModuleIOTalonFX(2),
+                new ModuleIOTalonFX(3));
         photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
-        elevator = new Elevator(new ElevatorIO() {});
-        claw = new Claw(new ClawIO() {});
+        elevator = new Elevator(new ElevatorIOTalonFX());
+        claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIO() {});
         break;
@@ -198,10 +212,23 @@ public class RobotContainer {
 
     driverATrigger.whileTrue(Commands.run(() -> climber.setSetpoint(Math.PI / 4), climber));
 
+    // State switches
     operatorLBTrigger.onTrue(
         Commands.runOnce(() -> superstructure.cycleState(-1), elevator, superstructure, wrist));
     operatorRBTrigger.onTrue(
         Commands.runOnce(() -> superstructure.cycleState(1), elevator, superstructure, wrist));
+
+    operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
+    operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
+
+    operatorLeftPadTrigger.whileTrue(
+        Commands.run(() -> superstructure.changeElevatorGoal(-.01), elevator));
+    operatorRightPadTrigger.whileTrue(
+        Commands.run(() -> superstructure.changeElevatorGoal(.01), elevator));
+
+    operatorDownPadTrigger.whileTrue(
+        Commands.run(() -> superstructure.changeWristGoal(-.01), wrist));
+    operatorUpPadTrigger.whileTrue(Commands.run(() -> superstructure.changeWristGoal(.01), wrist));
   }
 
   private void configureNamedCommands() {}

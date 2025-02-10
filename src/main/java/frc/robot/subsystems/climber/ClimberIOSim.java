@@ -25,7 +25,7 @@ public class ClimberIOSim implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     sim.update(0.02);
-    inputs.angle = Rotation2d.fromDegrees(sim.getAngleRads());
+    inputs.angle = Rotation2d.fromRadians(sim.getAngleRads());
     inputs.velocityRad = sim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = Math.abs(sim.getCurrentDrawAmps());

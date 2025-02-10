@@ -28,7 +28,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final StatusSignal<Voltage> followerAppliedVolts;
   private final StatusSignal<Current> followerCurrent;
 
-  private final boolean isInverted = true;
+  private final boolean isInverted = false;
   private final boolean brakeEnabled = true;
 
   public ElevatorIOTalonFX() {

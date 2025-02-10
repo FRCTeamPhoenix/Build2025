@@ -27,7 +27,7 @@ public class ClawIOTalonFX implements ClawIO {
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
 
-  private final boolean isInverted = true;
+  private final boolean isInverted = false;
 
   public ClawIOTalonFX() {
     var config = new TalonFXConfiguration();
