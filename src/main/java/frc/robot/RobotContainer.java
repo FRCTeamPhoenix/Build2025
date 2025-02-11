@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands;
-import frc.robot.commands.ReefAlign;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -203,6 +203,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Basic drive controls
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -216,12 +217,12 @@ public class RobotContainer {
                 drive)
             .ignoringDisable(true));
 
+    // Zonesnap
     driverYTrigger.whileTrue(new ZoneSnap(drive));
 
-    driverLeftPadTrigger.whileTrue(new ReefAlign(drive, false));
-    driverRightPadTrigger.whileTrue(new ReefAlign(drive, true));
-
-    driverATrigger.whileTrue(Commands.run(() -> climber.setSetpoint(Math.PI / 4), climber));
+    // Reef Branch alignment
+    driverLeftPadTrigger.whileTrue(new BranchAlign(drive, false));
+    driverRightPadTrigger.whileTrue(new BranchAlign(drive, true));
 
     // State switches
     operatorLBTrigger.onTrue(
@@ -229,11 +230,9 @@ public class RobotContainer {
     operatorRBTrigger.onTrue(
         Commands.runOnce(() -> superstructure.cycleState(1), elevator, superstructure, wrist));
 
+    // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
-
-    operatorLeftPadTrigger.whileTrue(Commands.run(() -> climber.runVoltage(-3), climber));
-    operatorRightPadTrigger.whileTrue(Commands.run(() -> climber.runVoltage(3), climber));
   }
 
   private void configureNamedCommands() {

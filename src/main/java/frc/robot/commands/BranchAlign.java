@@ -11,11 +11,11 @@ import frc.robot.Constants.PathfindingConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.PhoenixUtils;
 
-public class ReefAlign extends DriveToPose {
+public class BranchAlign extends DriveToPose {
 
   boolean alignToRight;
 
-  public ReefAlign(Drive drive, boolean alignToRight) {
+  public BranchAlign(Drive drive, boolean alignToRight) {
     super(drive, new Pose2d());
     setNewConstraints(
         PathfindingConstants.FINE_LINEAR_CONSTRAINTS, PathfindingConstants.FINE_ANGLE_CONSTRAINTS);
