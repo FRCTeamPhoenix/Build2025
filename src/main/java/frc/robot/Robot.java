@@ -13,8 +13,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.util.PathfindingUtils;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -90,6 +92,7 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     PathfindingUtils.warmupCommand().schedule();
+    Logger.recordOutput("p", Pose3d.kZero.plus(VisionConstants.FRONT_RIGHT_TRANSFORM));
   }
 
   /** This function is called periodically during all modes. */

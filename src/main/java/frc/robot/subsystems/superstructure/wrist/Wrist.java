@@ -24,7 +24,7 @@ public class Wrist extends SubsystemBase {
 
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        controller = new PIDController(1, 0.12, 0.07);
+        controller = new PIDController(1, 0.1, 0.07);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.475);
         break;
       case SIM:

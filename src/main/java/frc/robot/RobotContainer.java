@@ -85,6 +85,8 @@ public class RobotContainer {
   private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverYTrigger = driverController.y();
+  private final Trigger driverLeftPadTrigger = driverController.povLeft();
+  private final Trigger driverRightPadTrigger = driverController.povRight();
 
   private final Trigger operatorATrigger = operatorController.a();
   private final Trigger operatorBTrigger = operatorController.b();
@@ -216,6 +218,9 @@ public class RobotContainer {
 
     driverYTrigger.whileTrue(new ZoneSnap(drive));
 
+    driverLeftPadTrigger.whileTrue(new ReefAlign(drive, false));
+    driverRightPadTrigger.whileTrue(new ReefAlign(drive, true));
+
     driverATrigger.whileTrue(Commands.run(() -> climber.setSetpoint(Math.PI / 4), climber));
 
     // State switches
@@ -227,20 +232,8 @@ public class RobotContainer {
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
 
-    operatorLeftPadTrigger.whileTrue(
-        Commands.run(() -> superstructure.changeElevatorGoal(-.01), elevator));
-    operatorRightPadTrigger.whileTrue(
-        Commands.run(() -> superstructure.changeElevatorGoal(.01), elevator));
-
-    operatorUpPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(-3), climber))
-        .onFalse(Commands.run(() -> climber.setSetpoint(0), climber));
-    operatorDownPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(3), climber))
-        .onFalse(Commands.run(() -> climber.setSetpoint(0), climber));
-
-    // operatorUpPadTrigger.whileTrue(Commands.run(() -> superstructure.changeWristGoal(.01),
-    // wrist));
+    operatorLeftPadTrigger.whileTrue(Commands.run(() -> climber.runVoltage(-3), climber));
+    operatorRightPadTrigger.whileTrue(Commands.run(() -> climber.runVoltage(3), climber));
   }
 
   private void configureNamedCommands() {

@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -73,13 +74,19 @@ public class DriveToPose extends Command {
     return xController.atGoal() && yController.atGoal() && angleController.atGoal();
   }
 
-  public void setNewTarget(Pose2d target) {
+  public void setNewTarget(Pose2d target, Rotation2d rotationOffset) {
     this.target = target;
 
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
-    angleController.setGoal(target.getRotation().getRadians());
+    angleController.setGoal(target.getRotation().plus(rotationOffset).getRadians());
 
     Logger.recordOutput("PoseAlignment/Target", target);
+  }
+
+  public void setNewConstraints(Constraints linear, Constraints angular) {
+    xController.setConstraints(linear);
+    yController.setConstraints(linear);
+    angleController.setConstraints(angular);
   }
 }

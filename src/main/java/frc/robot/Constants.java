@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -66,9 +66,9 @@ public final class Constants {
         new Transform3d(
             new Translation3d(
                 Units.inchesToMeters(6.2944),
-                Units.inchesToMeters(8.9822),
+                Units.inchesToMeters(-8.9822),
                 Units.inchesToMeters(12.125)),
-            new Rotation3d(0, 0.0, Units.degreesToRadians(-50)));
+            new Rotation3d(0, 0.0, Units.degreesToRadians(30)));
 
     public static final Transform3d[] CAMERA_TRANSFORMS = {
       FRONT_LEFT_TRANSFORM, FRONT_RIGHT_TRANSFORM
@@ -83,6 +83,7 @@ public final class Constants {
     public static final double MAX_Z_ERROR = 0.75;
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
+
     // (Adjusted automatically based on distance and # of tags)
     public static final double LINEAR_STD_DEV_BASELINE = 0.02; // Meters
     public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians
@@ -110,26 +111,54 @@ public final class Constants {
     public static final Constraints ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
+    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(1, 1);
+    public static final Constraints FINE_ANGLE_CONSTRAINTS =
+        new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(360));
+
+    public static final Pose3d[] BLUE_REEF_TAG_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(17).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d())
+        };
+
+    public static final Pose3d[] RED_REEF_TAG_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(11).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
+        };
+
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.4;
+    public static final Transform3d REEF_BUFFER_TRANSFORM =
+        new Transform3d(REEF_BUFFER, 0, 0, Rotation3d.kZero);
+
     public static final Pose2d[] BLUE_REEF_POSES =
         new Pose2d[] {
-          new Pose2d(6, 4, Rotation2d.k180deg),
-          new Pose2d(5.25, 2.75, new Rotation2d(Math.toRadians(120))),
-          new Pose2d(3.75, 2.75, new Rotation2d(Math.toRadians(60))),
-          new Pose2d(3, 4, Rotation2d.kZero),
-          new Pose2d(3.75, 5.35, new Rotation2d(Math.toRadians(-60))),
-          new Pose2d(5.25, 5.35, new Rotation2d(Math.toRadians(-120)))
+          BLUE_REEF_TAG_POSES[0].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          BLUE_REEF_TAG_POSES[1].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          BLUE_REEF_TAG_POSES[2].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          BLUE_REEF_TAG_POSES[3].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          BLUE_REEF_TAG_POSES[4].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          BLUE_REEF_TAG_POSES[5].plus(REEF_BUFFER_TRANSFORM).toPose2d()
         };
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
 
     public static final Pose2d[] RED_REEF_POSES =
         new Pose2d[] {
-          new Pose2d(14.5, 4, Rotation2d.k180deg),
-          new Pose2d(13.75, 2.75, new Rotation2d(Math.toRadians(120))),
-          new Pose2d(12.3, 2.75, new Rotation2d(Math.toRadians(60))),
-          new Pose2d(11.5, 4, Rotation2d.kZero),
-          new Pose2d(12.3, 5.25, new Rotation2d(Math.toRadians(-60))),
-          new Pose2d(13.75, 5.25, new Rotation2d(Math.toRadians(-120)))
+          RED_REEF_TAG_POSES[0].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          RED_REEF_TAG_POSES[1].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          RED_REEF_TAG_POSES[2].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          RED_REEF_TAG_POSES[3].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          RED_REEF_TAG_POSES[4].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
+          RED_REEF_TAG_POSES[5].plus(REEF_BUFFER_TRANSFORM).toPose2d()
         };
 
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
@@ -166,25 +195,11 @@ public final class Constants {
           new Transform2d(-1.14, 0.68, Rotation2d.kZero),
         };
 
-    public static final Pose3d[] BLUE_REEF_TAG_POSES =
-        new Pose3d[] {
-          VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(17).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d())
-        };
-
-    public static final Pose3d[] RED_REEF_TAG_POSES =
-        new Pose3d[] {
-          VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(11).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
-          VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
-        };
+    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.1;
+    public static final Transform3d LEFT_BRANCH =
+        new Transform3d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), 0, Rotation3d.kZero);
+    public static final Transform3d RIGHT_BRANCH =
+        new Transform3d(BRANCH_BUFFER, Units.inchesToMeters(6.468), 0, Rotation3d.kZero);
   }
 
   public static final class DriveConstants {
@@ -206,19 +221,21 @@ public final class Constants {
     public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
-    public static final double[] COMP_ENCODER_OFFSETS = {2.78, 2.509, 0.837, 2.137};
+    public static final double[] COMP_ENCODER_OFFSETS = {
+      2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, 2.137 + Math.PI
+    };
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
   }
 
   public static final class SuperstructureConstants {
-    public static final double[] elevatorStates = {0, 0, 0.2, 0.5536, 0.96, 1.7};
+    public static final double[] elevatorStates = {0, 0.4, 0.4, 0.5536, 0.96, 1.7};
     public static final double[] wristStates = {
-      WristConstants.MAX_ANGLE - 0.2,
+      WristConstants.MAX_ANGLE - 0.1,
       Units.degreesToRadians(35),
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
       Units.degreesToRadians(-35),
-      WristConstants.MIN_ANGLE
+      WristConstants.MIN_ANGLE + 0.05
     };
     public static final String[] stateNames = {"STOWED", "INTAKE", "L1", "L2", "L3", "L4"};
   }
@@ -246,6 +263,7 @@ public final class Constants {
     public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(84);
     public static final double MIN_ANGLE = -0.96;
     public static final double MAX_ANGLE = 1.44;
+    public static final double MOVE_ANGLE = 0.0;
   }
 
   public static final class ClimberConstants {
