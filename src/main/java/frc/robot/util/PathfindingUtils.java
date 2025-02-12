@@ -7,6 +7,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -62,14 +63,14 @@ public class PathfindingUtils {
     return zoneTrajectory.toArray(new Pose2d[0]);
   }
 
-  public static Pose2d getZone(Pose2d odometryPose) {
+  public static Pose2d getZoneReefPose(Pose2d odometryPose, Transform2d buffer) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
 
     Pose2d targetPose = odometryPose;
-    Pose2d[] reefPoses =
-        isRed ? PathfindingConstants.RED_REEF_POSES : PathfindingConstants.BLUE_REEF_POSES;
+    Pose3d[] reefPoses =
+        isRed ? PathfindingConstants.RED_REEF_TAG_POSES : PathfindingConstants.BLUE_REEF_TAG_POSES;
     Logger.recordOutput("reefpos", reefPoses);
 
     Pose2d reefCenter =
@@ -83,17 +84,17 @@ public class PathfindingUtils {
     if (Math.abs(translatedRobot.getX()) < PathfindingConstants.X_LIMIT
         && Math.abs(translatedRobot.getY()) < PathfindingConstants.Y_LIMIT) {
       if (-30 < theta && theta < 30) {
-        targetPose = reefPoses[0];
+        targetPose = reefPoses[0].toPose2d().plus(buffer);
       } else if (-30 > theta && theta > -90) {
-        targetPose = reefPoses[1];
+        targetPose = reefPoses[1].toPose2d().plus(buffer);
       } else if (-90 > theta && theta > -150) {
-        targetPose = reefPoses[2];
+        targetPose = reefPoses[2].toPose2d().plus(buffer);
       } else if ((-150 > theta && theta > -180) || (150 < theta && theta < 180)) {
-        targetPose = reefPoses[3];
+        targetPose = reefPoses[3].toPose2d().plus(buffer);
       } else if (90 < theta && theta < 150) {
-        targetPose = reefPoses[4];
+        targetPose = reefPoses[4].toPose2d().plus(buffer);
       } else if (30 < theta && theta < 90) {
-        targetPose = reefPoses[5];
+        targetPose = reefPoses[5].toPose2d().plus(buffer);
       }
     }
     return targetPose;

@@ -61,10 +61,10 @@ public class DriveToPose extends Command {
             yController.getSetpoint().position,
             Rotation2d.fromRadians(angleController.getSetpoint().position));
 
-    Pose2d[] roughTrajectory = new Pose2d[] {currentPosition, setpoint, target};
+    Pose2d[] lazyTrajectory = new Pose2d[] {currentPosition, setpoint, target};
 
     Logger.recordOutput("PoseAlignment/Speeds", speeds);
-    Logger.recordOutput("PoseAlignment/RoughTrajectory", roughTrajectory);
+    Logger.recordOutput("PoseAlignment/LazyTrajectory", lazyTrajectory);
 
     drive.runVelocity(speeds);
   }
@@ -74,12 +74,12 @@ public class DriveToPose extends Command {
     return xController.atGoal() && yController.atGoal() && angleController.atGoal();
   }
 
-  public void setNewTarget(Pose2d target, Rotation2d rotationOffset) {
+  public void setNewTarget(Pose2d target) {
     this.target = target;
 
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
-    angleController.setGoal(target.getRotation().plus(rotationOffset).getRadians());
+    angleController.setGoal(target.getRotation().getRadians());
 
     Logger.recordOutput("PoseAlignment/Target", target);
   }

@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -111,7 +111,7 @@ public final class Constants {
     public static final Constraints ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
-    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(1, 1);
+    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(1, 2);
     public static final Constraints FINE_ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(360));
 
@@ -136,31 +136,10 @@ public final class Constants {
         };
 
     public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.4;
-    public static final Transform3d REEF_BUFFER_TRANSFORM =
-        new Transform3d(REEF_BUFFER, 0, 0, Rotation3d.kZero);
-
-    public static final Pose2d[] BLUE_REEF_POSES =
-        new Pose2d[] {
-          BLUE_REEF_TAG_POSES[0].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          BLUE_REEF_TAG_POSES[1].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          BLUE_REEF_TAG_POSES[2].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          BLUE_REEF_TAG_POSES[3].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          BLUE_REEF_TAG_POSES[4].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          BLUE_REEF_TAG_POSES[5].plus(REEF_BUFFER_TRANSFORM).toPose2d()
-        };
+    public static final Transform2d REEF_BUFFER_TRANSFORM =
+        new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
-
-    public static final Pose2d[] RED_REEF_POSES =
-        new Pose2d[] {
-          RED_REEF_TAG_POSES[0].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          RED_REEF_TAG_POSES[1].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          RED_REEF_TAG_POSES[2].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          RED_REEF_TAG_POSES[3].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          RED_REEF_TAG_POSES[4].plus(REEF_BUFFER_TRANSFORM).toPose2d(),
-          RED_REEF_TAG_POSES[5].plus(REEF_BUFFER_TRANSFORM).toPose2d()
-        };
-
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
 
     public static final double X_LIMIT = 2.75;
@@ -197,10 +176,10 @@ public final class Constants {
 
     // 6.468
     public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
-    public static final Transform3d LEFT_BRANCH =
-        new Transform3d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), 0, Rotation3d.kZero);
-    public static final Transform3d RIGHT_BRANCH =
-        new Transform3d(BRANCH_BUFFER, Units.inchesToMeters(6.468), 0, Rotation3d.kZero);
+    public static final Transform2d LEFT_BRANCH =
+        new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
+    public static final Transform2d RIGHT_BRANCH =
+        new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(6.468), Rotation2d.k180deg);
   }
 
   public static final class DriveConstants {
