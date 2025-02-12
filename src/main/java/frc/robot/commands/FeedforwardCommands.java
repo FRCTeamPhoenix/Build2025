@@ -37,8 +37,7 @@ public class FeedforwardCommands {
         Commands.run(
                 () -> {
                   elevator.runCharacterization(0.0);
-                },
-                elevator)
+                })
             .withTimeout(FF_START_DELAY),
 
         // Start timer
@@ -51,8 +50,7 @@ public class FeedforwardCommands {
                   elevator.runCharacterization(voltage);
                   velocitySamples.add(elevator.getFFCharacterizationVelocity());
                   voltageSamples.add(voltage);
-                },
-                elevator)
+                })
             .until(
                 () ->
                     elevator.getHeight() >= ElevatorConstants.CHARACTERIZATION_CUTOFF_HEIGHT
@@ -107,8 +105,7 @@ public class FeedforwardCommands {
         Commands.run(
                 () -> {
                   wrist.runVoltage(0.0);
-                },
-                wrist)
+                })
             .withTimeout(FF_START_DELAY),
 
         // Start timer
@@ -121,8 +118,7 @@ public class FeedforwardCommands {
                   wrist.runVoltage(voltage);
                   velocitySamples.add(wrist.getFFCharacterizationVelocity());
                   voltageSamples.add(voltage);
-                },
-                wrist)
+                })
             .until(() -> wrist.getAngle() >= WristConstants.CUTOFF_ANGLE)
 
             // When cancelled, calculate and print results

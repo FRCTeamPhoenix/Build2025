@@ -208,8 +208,8 @@ public final class Constants {
   }
 
   public static final class SuperstructureConstants {
-    public static final double[] elevatorStates = {0, 0.4, 0.4, 0.5536, 0.96, 1.7};
-    public static final double[] wristStates = {
+    public static final double[] ELEVATOR_STATES = {0, 0.4, 0.4, 0.5536, 0.96, 1.7};
+    public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.1,
       Units.degreesToRadians(35),
       Units.degreesToRadians(-35),
@@ -217,7 +217,7 @@ public final class Constants {
       Units.degreesToRadians(-35),
       WristConstants.MIN_ANGLE + 0.05
     };
-    public static final String[] stateNames = {"STOWED", "INTAKE", "L1", "L2", "L3", "L4"};
+    public static final String[] STATE_NAMES = {"STOWED", "INTAKE", "L1", "L2", "L3", "L4"};
   }
 
   public static final class ElevatorConstants {

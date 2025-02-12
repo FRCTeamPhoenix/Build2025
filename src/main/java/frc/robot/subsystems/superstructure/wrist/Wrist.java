@@ -3,14 +3,13 @@ package frc.robot.subsystems.superstructure.wrist;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Wrist extends SubsystemBase {
+public class Wrist {
 
   private final WristIO io;
   private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
@@ -41,7 +40,6 @@ public class Wrist extends SubsystemBase {
     controller.enableContinuousInput(-Math.PI, Math.PI);
   }
 
-  @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Wrist", inputs);

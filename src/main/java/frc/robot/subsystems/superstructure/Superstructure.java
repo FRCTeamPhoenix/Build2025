@@ -28,11 +28,14 @@ public class Superstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+    elevator.periodic();
+    wrist.periodic();
+
     if (!manualControl) {
-      elevatorSetpoint = SuperstructureConstants.elevatorStates[superstructureState];
-      wristSetpoint = SuperstructureConstants.wristStates[superstructureState];
+      elevatorSetpoint = SuperstructureConstants.ELEVATOR_STATES[superstructureState];
+      wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
       Logger.recordOutput(
-          "Superstructure/State", SuperstructureConstants.stateNames[superstructureState]);
+          "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
       if (!elevator.atSetpoint()) {
         elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(WristConstants.MOVE_ANGLE);
@@ -49,14 +52,14 @@ public class Superstructure extends SubsystemBase {
 
   public void setState(int state) {
     manualControl = false;
-    superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.stateNames.length - 1);
+    superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
 
   public void cycleState(int change) {
     manualControl = false;
     superstructureState =
         MathUtil.clamp(
-            superstructureState + change, 0, SuperstructureConstants.stateNames.length - 1);
+            superstructureState + change, 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
 
   public double getElevatorGoal() {

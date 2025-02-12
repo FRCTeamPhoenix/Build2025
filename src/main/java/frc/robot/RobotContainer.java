@@ -227,10 +227,8 @@ public class RobotContainer {
     driverRightPadTrigger.whileTrue(new BranchAlign(drive, true));
 
     // State switches
-    operatorLBTrigger.onTrue(
-        Commands.runOnce(() -> superstructure.cycleState(-1), elevator, superstructure, wrist));
-    operatorRBTrigger.onTrue(
-        Commands.runOnce(() -> superstructure.cycleState(1), elevator, superstructure, wrist));
+    operatorLBTrigger.onTrue(Commands.runOnce(() -> superstructure.cycleState(-1), superstructure));
+    operatorRBTrigger.onTrue(Commands.runOnce(() -> superstructure.cycleState(1), superstructure));
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
@@ -240,13 +238,13 @@ public class RobotContainer {
   private void configureNamedCommands() {
     NamedCommands.registerCommand(
         "Superstructure L4",
-        Commands.run(() -> superstructure.setState(5), wrist, elevator)
+        Commands.run(() -> superstructure.setState(5), superstructure)
             .until(() -> superstructure.atGoal()));
     NamedCommands.registerCommand("Claw Outtake", claw.runForward());
     NamedCommands.registerCommand("Claw Stop", claw.stopCommand());
     NamedCommands.registerCommand(
         "Stow Elevator",
-        Commands.run(() -> superstructure.setState(0), wrist, elevator)
+        Commands.run(() -> superstructure.setState(0), superstructure)
             .until(() -> superstructure.atGoal()));
   }
 
