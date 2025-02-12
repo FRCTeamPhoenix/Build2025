@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
@@ -24,8 +25,8 @@ public class Wrist extends SubsystemBase {
 
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        controller = new PIDController(1, 0.1, 0.07);
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.475);
+        controller = new PIDController(1, 0.0, 0.0001);
+        ff = new PhoenixGravFF(0.33684, 2.73745, 0.0, 0.475);
         break;
       case SIM:
         controller = new PIDController(10, 0.15, 0.01);
@@ -72,6 +73,11 @@ public class Wrist extends SubsystemBase {
   }
 
   public void runVoltage(double voltage) {
+    setpoint = null;
     io.setVoltage(voltage);
+  }
+
+  public double getFFCharacterizationVelocity() {
+    return Units.radiansToRotations(inputs.velocityRad);
   }
 }

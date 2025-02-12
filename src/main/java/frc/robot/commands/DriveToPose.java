@@ -17,7 +17,7 @@ public class DriveToPose extends Command {
   ProfiledPIDController yController =
       new ProfiledPIDController(5, 0, 0, PathfindingConstants.LINEAR_CONSTRAINTS);
   ProfiledPIDController angleController =
-      new ProfiledPIDController(5, 0, 0, PathfindingConstants.ANGLE_CONSTRAINTS);
+      new ProfiledPIDController(3, 0, 0.2, PathfindingConstants.ANGLE_CONSTRAINTS);
 
   Drive drive;
   Pose2d target;

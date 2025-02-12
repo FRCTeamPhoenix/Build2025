@@ -195,7 +195,8 @@ public final class Constants {
           new Transform2d(-1.14, 0.68, Rotation2d.kZero),
         };
 
-    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.1;
+    // 6.468
+    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
     public static final Transform3d LEFT_BRANCH =
         new Transform3d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), 0, Rotation3d.kZero);
     public static final Transform3d RIGHT_BRANCH =
@@ -261,9 +262,10 @@ public final class Constants {
     public static final double GEAR_RATIO = 12;
     public static final double CLAW_LENGTH = Units.inchesToMeters(16.6);
     public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(84);
-    public static final double MIN_ANGLE = -0.96;
-    public static final double MAX_ANGLE = 1.44;
-    public static final double MOVE_ANGLE = 0.0;
+    public static final double MIN_ANGLE = -0.93;
+    public static final double MAX_ANGLE = 1.43;
+    public static final double CUTOFF_ANGLE = 1.2;
+    public static final double MOVE_ANGLE = WristConstants.MIN_ANGLE + 0.05;
   }
 
   public static final class ClimberConstants {

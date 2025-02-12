@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ElevatorCommands;
+import frc.robot.commands.FeedforwardCommands;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -190,7 +190,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Elevator FF Characterization", ElevatorCommands.feedforwardCharacterization(elevator));
+        "Elevator FF Characterization", FeedforwardCommands.elevatorCharacterization(elevator));
+    autoChooser.addOption(
+        "Wrist FF Characterization", FeedforwardCommands.wristCharacterization(wrist));
 
     // Configure the button bindings
     configureButtonBindings();

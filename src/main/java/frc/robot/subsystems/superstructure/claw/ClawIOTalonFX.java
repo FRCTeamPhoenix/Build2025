@@ -29,6 +29,8 @@ public class ClawIOTalonFX implements ClawIO {
 
   private final boolean isInverted = false;
 
+  private boolean sensorConnected = false;
+
   public ClawIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
@@ -40,8 +42,10 @@ public class ClawIOTalonFX implements ClawIO {
       laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
       laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+      sensorConnected = true;
     } catch (ConfigurationFailedException e) {
       System.err.println("Configuration failed: " + e.getMessage());
+      sensorConnected = false;
     }
 
     position = clawTalon.getPosition();
@@ -60,8 +64,12 @@ public class ClawIOTalonFX implements ClawIO {
     inputs.velocityRotationsPerSec = velocity.getValueAsDouble() / ClawConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
-    inputs.intakeSensor =
-        laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+    if (sensorConnected) {
+      inputs.intakeSensor =
+          laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+    } else {
+      inputs.intakeSensor = false;
+    }
   }
 
   @Override
