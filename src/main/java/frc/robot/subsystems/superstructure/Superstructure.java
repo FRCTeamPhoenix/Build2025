@@ -50,8 +50,7 @@ public class Superstructure extends SubsystemBase {
         elevator.runSetpoint(elevatorSetpoint);
         if (elevatorSetpoint - elevator.getHeight() > 0) {
           wrist.setSetpoint(WristConstants.HIGH_MOVE_ANGLE);
-        }
-        else {
+        } else {
           wrist.setSetpoint(WristConstants.LOW_MOVE_ANGLE);
         }
       } else {

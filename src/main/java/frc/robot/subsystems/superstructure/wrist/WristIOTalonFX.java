@@ -40,8 +40,6 @@ public class WristIOTalonFX implements WristIO {
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     wristTalon.getConfigurator().apply(config);
 
-    wristTalon.setPosition(encoder.getAbsPosition() * WristConstants.GEAR_RATIO);
-
     position = wristTalon.getPosition();
     velocity = wristTalon.getVelocity();
     appliedVolts = wristTalon.getMotorVoltage();
@@ -54,14 +52,7 @@ public class WristIOTalonFX implements WristIO {
   @Override
   public void updateInputs(WristIOInputs inputs) {
     BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
-    if (encoder.isConnected(0.03)) {
-      inputs.angle = Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero);
-      wristTalon.setPosition(encoder.getAbsPosition() * WristConstants.GEAR_RATIO);
-    } else {
-      inputs.angle =
-          Rotation2d.fromRotations(position.getValueAsDouble() / WristConstants.GEAR_RATIO)
-              .plus(Rotation2d.kZero);
-    }
+    inputs.angle = Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero);
     inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / WristConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();

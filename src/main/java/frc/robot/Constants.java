@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -272,7 +272,7 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85
+      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85, 0
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.1,
