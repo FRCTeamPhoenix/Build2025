@@ -24,8 +24,8 @@ public class Wrist {
 
     switch (Constants.CURRENT_MODE) {
       case REAL:
-        controller = new PIDController(1, 0.0, 0.0001);
-        ff = new PhoenixGravFF(0.33684, 2.73745, 0.0, 0.475);
+        controller = new PIDController(2.0, 0.15, 0.01);
+        ff = new PhoenixGravFF(0.15763, 0.0, 0.0, 0.15);
         break;
       case SIM:
         controller = new PIDController(10, 0.15, 0.01);
@@ -45,9 +45,13 @@ public class Wrist {
     Logger.processInputs("Wrist", inputs);
     if (setpoint != null) {
       Logger.recordOutput("Wrist/Setpoint", setpoint);
+      double lazyVel = 0;
+      if (!controller.atSetpoint()) {
+        lazyVel = setpoint - inputs.angle.getRadians();
+      }
       io.setVoltage(
           controller.calculate(inputs.angle.getRadians(), setpoint)
-              + ff.calculate(0, 0, inputs.angle.getRadians()));
+              + ff.calculate(lazyVel, 0, inputs.angle.getRadians()));
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
     }

@@ -17,6 +17,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,9 +26,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPlayerStation;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedforwardCommands;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
@@ -85,8 +90,14 @@ public class RobotContainer {
   private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverYTrigger = driverController.y();
+  private final Trigger driverLBTrigger = driverController.leftBumper();
+  private final Trigger driverRBTrigger = driverController.rightBumper();
+  private final Trigger driverLTTrigger = driverController.leftTrigger();
+  private final Trigger driverRTTrigger = driverController.rightTrigger();
   private final Trigger driverLeftPadTrigger = driverController.povLeft();
   private final Trigger driverRightPadTrigger = driverController.povRight();
+  private final Trigger driverUpPadTrigger = driverController.povUp();
+  private final Trigger driverDownPadTrigger = driverController.povDown();
 
   private final Trigger operatorATrigger = operatorController.a();
   private final Trigger operatorBTrigger = operatorController.b();
@@ -104,6 +115,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  private boolean isRed = false;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.CURRENT_MODE) {
@@ -120,7 +133,10 @@ public class RobotContainer {
             new Photon(
                 drive::addVisionMeasurement,
                 new PhotonIOReal(
-                    VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM));
+                    VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
+                new PhotonIOReal(
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+                new PhotonIOReal(VisionConstants.BACK_CAMERA_NAME, VisionConstants.BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -142,6 +158,10 @@ public class RobotContainer {
                 new PhotonIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
+                    drive::getPose),
+                new PhotonIOSim(
+                    VisionConstants.LEFT_CAMERA_NAME,
+                    VisionConstants.FRONT_LEFT_TRANSFORM,
                     drive::getPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
@@ -167,7 +187,7 @@ public class RobotContainer {
     }
 
     visualizer = new Visualizer(elevator, wrist, climber);
-    superstructure = new Superstructure(elevator, wrist);
+    superstructure = new Superstructure(elevator, wrist, drive::getPose);
 
     // Configure PathPlanner commands
     configureNamedCommands();
@@ -196,6 +216,10 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
   }
 
   /**
@@ -211,28 +235,58 @@ public class RobotContainer {
             drive,
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
-            () -> -driverController.getRightX()));
-    driverXTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driverBTrigger.onTrue(
+            () -> -driverController.getRightX(),
+            () -> driverLTTrigger.getAsBoolean()));
+    driverLeftPadTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverDownPadTrigger.onTrue(
         Commands.runOnce(
                 () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
             .ignoringDisable(true));
 
     // Zonesnap
-    driverYTrigger.whileTrue(new ZoneSnap(drive));
+    driverRTTrigger.whileTrue(new ZoneSnap(drive));
 
     // Reef Branch alignment
-    driverLeftPadTrigger.whileTrue(new BranchAlign(drive, false));
-    driverRightPadTrigger.whileTrue(new BranchAlign(drive, true));
+    driverLBTrigger.whileTrue(new BranchAlign(drive, false));
+    driverRBTrigger.whileTrue(new BranchAlign(drive, true));
 
-    // State switches
-    operatorLBTrigger.onTrue(Commands.runOnce(() -> superstructure.cycleState(-1), superstructure));
-    operatorRBTrigger.onTrue(Commands.runOnce(() -> superstructure.cycleState(1), superstructure));
+    // Player station alignment
+    driverXTrigger.whileTrue(new DriveToPlayerStation(drive));
+    driverBTrigger.whileTrue(new DriveToPlayerStation(drive));
+
+    // Processor alignment
+    driverATrigger.whileTrue(
+        new DriveToPose(
+            drive,
+            isRed ? PathfindingConstants.RED_PROCESSOR : PathfindingConstants.BLUE_PROCESSOR));
+
+    // Levels
+    operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
+    operatorBTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
+    operatorXTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
+    operatorYTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
+
+    // Elevator home
+    operatorDownPadTrigger.whileTrue(
+        Commands.runOnce(() -> superstructure.setState(0), superstructure));
+
+    // Intake function
+    operatorLBTrigger
+        .whileTrue(
+            Commands.run(() -> superstructure.setState(1), superstructure)
+                .alongWith(claw.runReverse())
+                .until(claw::getSensor)
+                .andThen(
+                    Commands.runOnce(() -> superstructure.setState(0), superstructure)
+                        .alongWith(claw.stopCommand())))
+        .onFalse(claw.stopCommand());
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
+
+    operatorRBTrigger.whileTrue(Commands.runOnce(() -> superstructure.algaeMode(), superstructure));
   }
 
   private void configureNamedCommands() {

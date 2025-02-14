@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.PathfindingConstants;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -71,7 +72,6 @@ public class PathfindingUtils {
     Pose2d targetPose = odometryPose;
     Pose3d[] reefPoses =
         isRed ? PathfindingConstants.RED_REEF_TAG_POSES : PathfindingConstants.BLUE_REEF_TAG_POSES;
-    Logger.recordOutput("reefpos", reefPoses);
 
     Pose2d reefCenter =
         isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
@@ -98,5 +98,21 @@ public class PathfindingUtils {
       }
     }
     return targetPose;
+  }
+
+  public static Pose2d getClosestPlayerStation(Pose2d odometryPose, Transform2d buffer) {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+
+    Pose2d[] stations =
+        isRed
+            ? PathfindingConstants.RED_PLAYER_STATIONS
+            : PathfindingConstants.BLUE_PLAYER_STATIONS;
+
+    Logger.recordOutput("Players", stations);
+    Pose2d target = odometryPose.nearest(Arrays.asList(stations));
+
+    return target.plus(buffer);
   }
 }

@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -49,7 +49,6 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String FRONT_CAMERA_NAME = "front_arducam";
     public static final String BACK_CAMERA_NAME = "back_arducam";
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
@@ -59,8 +58,10 @@ public final class Constants {
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
             new Translation3d(
-                DriveConstants.TRACK_WIDTH_X / 2, Units.inchesToMeters(3), Units.inchesToMeters(5)),
-            new Rotation3d(0, 0.0, 0.0));
+                Units.inchesToMeters(6.2944),
+                Units.inchesToMeters(8.9822),
+                Units.inchesToMeters(12.125)),
+            new Rotation3d(0, 0.0, Units.degreesToRadians(-35)));
 
     public static final Transform3d FRONT_RIGHT_TRANSFORM =
         new Transform3d(
@@ -68,11 +69,15 @@ public final class Constants {
                 Units.inchesToMeters(6.2944),
                 Units.inchesToMeters(-8.9822),
                 Units.inchesToMeters(12.125)),
-            new Rotation3d(0, 0.0, Units.degreesToRadians(30)));
+            new Rotation3d(0, 0.0, Units.degreesToRadians(35)));
 
-    public static final Transform3d[] CAMERA_TRANSFORMS = {
-      FRONT_LEFT_TRANSFORM, FRONT_RIGHT_TRANSFORM
-    };
+    public static final Transform3d BACK_TRANSFORM =
+        new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(-11.29 - 1.5),
+                Units.inchesToMeters(-11.29),
+                Units.inchesToMeters(8.5)),
+            new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT =
@@ -180,6 +185,64 @@ public final class Constants {
         new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
         new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(6.468), Rotation2d.k180deg);
+
+    public static final Pose2d[] BLUE_PLAYER_STATIONS =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(12).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(13).orElse(new Pose3d()).toPose2d(),
+        };
+
+    public static final Pose2d[] RED_PLAYER_STATIONS =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(1).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
+        };
+
+    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
+    public static final Transform2d CENTER_PLAYER_STATION =
+        new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
+
+    public static final Transform2d PROCESSOR_BUFFER =
+        new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.12, 0, Rotation2d.k180deg);
+
+    public static final Pose2d BLUE_PROCESSOR =
+        VisionConstants.TAG_LAYOUT
+            .getTagPose(16)
+            .orElse(new Pose3d())
+            .toPose2d()
+            .plus(PROCESSOR_BUFFER);
+    public static final Pose2d RED_PROCESSOR =
+        VisionConstants.TAG_LAYOUT
+            .getTagPose(3)
+            .orElse(new Pose3d())
+            .toPose2d()
+            .plus(PROCESSOR_BUFFER);
+
+    public static final Pose2d[] ALGAE_BLUE_POSES =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(17).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(16).orElse(new Pose3d()).toPose2d()
+        };
+
+    public static final int[] ALGAE_BLUE_STATES = new int[] {6, 7, 6, 7, 6, 7, 8};
+
+    public static final Pose2d[] ALGAE_RED_POSES =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(11).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(3).orElse(new Pose3d()).toPose2d()
+        };
+
+    public static final int[] ALGAE_RED_STATES = new int[] {7, 6, 7, 6, 7, 6, 8};
   }
 
   public static final class DriveConstants {
@@ -208,16 +271,23 @@ public final class Constants {
   }
 
   public static final class SuperstructureConstants {
-    public static final double[] ELEVATOR_STATES = {0, 0.4, 0.4, 0.5536, 0.96, 1.7};
+    public static final double[] ELEVATOR_STATES = {
+      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85, 0
+    };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.1,
       Units.degreesToRadians(35),
-      Units.degreesToRadians(-35),
-      Units.degreesToRadians(-35),
-      Units.degreesToRadians(-35),
-      WristConstants.MIN_ANGLE + 0.05
+      -0.49,
+      -0.49,
+      -0.49,
+      -0.734,
+      0,
+      0,
+      0
     };
-    public static final String[] STATE_NAMES = {"STOWED", "INTAKE", "L1", "L2", "L3", "L4"};
+    public static final String[] STATE_NAMES = {
+      "STOWED", "INTAKE", "L1", "L2", "L3", "L4", "ALGAE LOW", "ALGAE HIGH", "PROCESSOR"
+    };
   }
 
   public static final class ElevatorConstants {
@@ -238,9 +308,8 @@ public final class Constants {
   }
 
   public static final class WristConstants {
-    public static final double GEAR_RATIO = 12;
+    public static final double GEAR_RATIO = 45;
     public static final double CLAW_LENGTH = Units.inchesToMeters(16.6);
-    public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(84);
     public static final double MIN_ANGLE = -0.93;
     public static final double MAX_ANGLE = 1.43;
     public static final double CUTOFF_ANGLE = 1.2;
@@ -272,7 +341,7 @@ public final class Constants {
     public static final int ELEVATOR_ID = 15;
     public static final int ELEVATOR_FOLLOWER_ID = 16;
     public static final int WRIST_ID = 17;
-    public static final int WRIST_SPARK = 18;
+    public static final int WRIST_ENCODER_ID = 18;
     public static final int CLAW_ID = 19;
     public static final int LASERCAN_ID = 20;
     public static final int CLIMBER_ID = 21;

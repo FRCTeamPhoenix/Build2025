@@ -44,4 +44,8 @@ public class Claw extends SubsystemBase {
   public void holdPosition() {
     this.setpoint = 0.0;
   }
+
+  public boolean getSensor() {
+    return inputs.intakeSensor;
+  }
 }

@@ -15,7 +15,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
-import frc.robot.Constants.WristConstants;
+import frc.robot.Constants.ClimberConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
 
@@ -53,9 +53,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   public void updateInputs(ClimberIOInputs inputs) {
     BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
     inputs.angle =
-        Rotation2d.fromRotations(position.getValueAsDouble() / WristConstants.GEAR_RATIO)
-            .plus(WristConstants.ANGLE_OFFSET);
-    inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / WristConstants.GEAR_RATIO;
+        Rotation2d.fromRotations(position.getValueAsDouble() / ClimberConstants.GEAR_RATIO)
+            .plus(ClimberConstants.ANGLE_OFFSET);
+    inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / ClimberConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
   }

@@ -82,6 +82,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     setTurnBrakeMode(true);
 
     cancoder.getConfigurator().apply(new CANcoderConfiguration());
+    driveTalon.setPosition(0);
 
     drivePosition = driveTalon.getPosition();
     driveVelocity = driveTalon.getVelocity();

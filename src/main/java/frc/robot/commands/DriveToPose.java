@@ -31,6 +31,7 @@ public class DriveToPose extends Command {
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
     angleController.setGoal(target.getRotation().getRadians());
+    angleController.setTolerance(0.002);
 
     Logger.recordOutput("PoseAlignment/Target", target);
 

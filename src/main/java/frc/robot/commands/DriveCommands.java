@@ -33,6 +33,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class DriveCommands {
@@ -51,7 +52,8 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier slowdownSupplier) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -63,6 +65,11 @@ public class DriveCommands {
               new Rotation2d(Math.atan2(ySupplier.getAsDouble(), xSupplier.getAsDouble()));
 
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          double slowDown = 1;
+          if (slowdownSupplier.getAsBoolean()) {
+            slowDown = 0.5;
+          }
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
@@ -80,9 +87,9 @@ public class DriveCommands {
                   && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                  omega * drive.getMaxAngularSpeedRadPerSec() * slowDown,
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation()));

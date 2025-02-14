@@ -1,12 +1,19 @@
 package frc.robot.subsystems.superstructure;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,9 +28,12 @@ public class Superstructure extends SubsystemBase {
   private double elevatorSetpoint = 0.0;
   private double wristSetpoint = 0.0;
 
-  public Superstructure(Elevator elevator, Wrist wrist) {
+  private final Supplier<Pose2d> poseSupplier;
+
+  public Superstructure(Elevator elevator, Wrist wrist, Supplier<Pose2d> pose) {
     this.elevator = elevator;
     this.wrist = wrist;
+    this.poseSupplier = pose;
   }
 
   @Override
@@ -53,13 +63,6 @@ public class Superstructure extends SubsystemBase {
   public void setState(int state) {
     manualControl = false;
     superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.STATE_NAMES.length - 1);
-  }
-
-  public void cycleState(int change) {
-    manualControl = false;
-    superstructureState =
-        MathUtil.clamp(
-            superstructureState + change, 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
 
   public double getElevatorGoal() {
@@ -95,5 +98,25 @@ public class Superstructure extends SubsystemBase {
   @AutoLogOutput(key = "Superstructure/AtGoal")
   public boolean atGoal() {
     return elevator.atSetpoint() && wrist.atSetpoint();
+  }
+
+  public void algaeMode() {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+
+    Pose2d pose = poseSupplier.get();
+
+    List<Pose2d> list =
+        isRed
+            ? Arrays.asList(PathfindingConstants.ALGAE_RED_POSES)
+            : Arrays.asList(PathfindingConstants.ALGAE_BLUE_POSES);
+
+    int[] states =
+        isRed ? PathfindingConstants.ALGAE_RED_STATES : PathfindingConstants.ALGAE_BLUE_STATES;
+
+    Pose2d targetPose = pose.nearest(list);
+
+    superstructureState = states[list.indexOf(targetPose)];
   }
 }
