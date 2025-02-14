@@ -13,12 +13,14 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,13 +28,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.Mode;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
-import frc.robot.commands.DriveToPose;
 import frc.robot.commands.FeedforwardCommands;
+import frc.robot.commands.SimulatorCommands;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -42,7 +45,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOMapleSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.photon.Photon;
 import frc.robot.subsystems.photon.PhotonIO;
@@ -62,6 +65,10 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -80,6 +87,23 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Wrist wrist;
   private final Climber climber;
+
+  private final DriveTrainSimulationConfig driveSimConfig =
+      DriveTrainSimulationConfig.Default()
+          .withGyro(COTS.ofPigeon2())
+          .withSwerveModule(
+              COTS.ofMark4i(
+                  DCMotor.getKrakenX60(1),
+                  DCMotor.getKrakenX60(1),
+                  COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof,
+                  2))
+          .withTrackLengthTrackWidth(
+              Meters.of(DriveConstants.TRACK_WIDTH_X), Meters.of(DriveConstants.TRACK_WIDTH_Y))
+          .withBumperSize(
+              Inches.of(30),
+              Inches.of(30));
+
+  public SwerveDriveSimulation swerveSim;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -115,8 +139,6 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  private boolean isRed = false;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.CURRENT_MODE) {
@@ -145,28 +167,37 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        swerveSim =
+            new SwerveDriveSimulation(
+                // Specify Configuration
+                driveSimConfig,
+                // Specify starting pose
+                new Pose2d(3, 3, new Rotation2d()));
+        SimulatedArena.getInstance().addDriveTrainSimulation(swerveSim);
         drive =
             new Drive(
                 new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+                // new GyroIOSim(swerveSim.getGyroSimulation()),
+                new ModuleIOMapleSim(swerveSim.getModules()[0]),
+                new ModuleIOMapleSim(swerveSim.getModules()[1]),
+                new ModuleIOMapleSim(swerveSim.getModules()[2]),
+                new ModuleIOMapleSim(swerveSim.getModules()[3]));
         photon =
             new Photon(
                 drive::addVisionMeasurement,
                 new PhotonIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
-                    drive::getPose),
+                    swerveSim::getSimulatedDriveTrainPose),
                 new PhotonIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
-                    drive::getPose));
+                    swerveSim::getSimulatedDriveTrainPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
+        drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
       default:
@@ -214,10 +245,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Wrist FF Characterization", FeedforwardCommands.wristCharacterization(wrist));
 
-    isRed =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -256,10 +283,7 @@ public class RobotContainer {
     driverBTrigger.whileTrue(new DriveToPlayerStation(drive));
 
     // Processor alignment
-    driverATrigger.whileTrue(
-        new DriveToPose(
-            drive,
-            isRed ? PathfindingConstants.RED_PROCESSOR : PathfindingConstants.BLUE_PROCESSOR));
+    // driverATrigger.whileTrue(new ProcessorAlign(drive));
 
     // Levels
     operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
@@ -267,7 +291,7 @@ public class RobotContainer {
     operatorXTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
     operatorYTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
-    // Elevator home
+    // Superstructure home
     operatorDownPadTrigger.whileTrue(
         Commands.runOnce(() -> superstructure.setState(0), superstructure));
 
@@ -284,7 +308,19 @@ public class RobotContainer {
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
-    operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
+    if (Constants.CURRENT_MODE != Mode.SIM) {
+      operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
+    } else {
+      driverATrigger
+          .whileTrue(
+              claw.runForward()
+                  .alongWith(
+                      SimulatorCommands.dropCoral(
+                          swerveSim,
+                          superstructure::getElevatorHeight,
+                          superstructure::getWristAngle)))
+          .onFalse(claw.stopCommand());
+    }
 
     // Algae mode
     operatorRBTrigger.whileTrue(Commands.runOnce(() -> superstructure.algaeMode(), superstructure));

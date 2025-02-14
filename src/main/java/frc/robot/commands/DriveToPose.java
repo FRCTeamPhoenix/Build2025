@@ -75,6 +75,11 @@ public class DriveToPose extends Command {
     return xController.atGoal() && yController.atGoal() && angleController.atGoal();
   }
 
+  @Override
+  public void end(boolean interrupted) {
+    drive.runVelocity(new ChassisSpeeds());
+  }
+
   public void setNewTarget(Pose2d target) {
     this.target = target;
 

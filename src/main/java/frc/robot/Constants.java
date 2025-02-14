@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -226,10 +226,9 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d()).toPose2d(),
-          VisionConstants.TAG_LAYOUT.getTagPose(16).orElse(new Pose3d()).toPose2d()
         };
 
-    public static final int[] ALGAE_BLUE_STATES = new int[] {6, 7, 6, 7, 6, 7, 8};
+    public static final int[] ALGAE_BLUE_STATES = new int[] {6, 7, 6, 7, 6, 7};
 
     public static final Pose2d[] ALGAE_RED_POSES =
         new Pose2d[] {
@@ -239,10 +238,9 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d()).toPose2d(),
-          VisionConstants.TAG_LAYOUT.getTagPose(3).orElse(new Pose3d()).toPose2d()
         };
 
-    public static final int[] ALGAE_RED_STATES = new int[] {7, 6, 7, 6, 7, 6, 8};
+    public static final int[] ALGAE_RED_STATES = new int[] {7, 6, 7, 6, 7, 6};
   }
 
   public static final class DriveConstants {
@@ -294,7 +292,7 @@ public final class Constants {
     public static final double GEAR_RATIO = 62.0 / 8.0;
     public static final double CARRIAGE_MASS = Units.lbsToKilograms(25.0);
     public static final double PULLEY_RADIUS = Units.inchesToMeters(1.751) / 2;
-    public static final double MIN_HEIGHT = Units.inchesToMeters(34.875);
+    public static final double MIN_HEIGHT = Units.inchesToMeters(10);
     public static final double MAX_EXTENSION = 1.75;
     public static final double MAX_HEIGHT = MIN_HEIGHT + MAX_EXTENSION;
     public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);

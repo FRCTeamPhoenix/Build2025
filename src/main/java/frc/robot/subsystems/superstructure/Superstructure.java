@@ -77,6 +77,14 @@ public class Superstructure extends SubsystemBase {
     return wristSetpoint;
   }
 
+  public double getElevatorHeight() {
+    return elevator.getHeight();
+  }
+
+  public double getWristAngle() {
+    return wrist.getAngle();
+  }
+
   public void setElevatorManualGoal(double goal) {
     manualControl = true;
     elevatorSetpoint = MathUtil.clamp(goal, 0, ElevatorConstants.MAX_EXTENSION);
