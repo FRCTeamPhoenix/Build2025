@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -313,7 +313,8 @@ public final class Constants {
     public static final double MIN_ANGLE = -0.93;
     public static final double MAX_ANGLE = 1.43;
     public static final double CUTOFF_ANGLE = 1.2;
-    public static final double MOVE_ANGLE = WristConstants.MIN_ANGLE + 0.05;
+    public static final double HIGH_MOVE_ANGLE = WristConstants.MIN_ANGLE + 0.05;
+    public static final double LOW_MOVE_ANGLE = WristConstants.MAX_ANGLE - 0.05;
   }
 
   public static final class ClimberConstants {

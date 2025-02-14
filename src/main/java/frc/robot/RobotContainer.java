@@ -286,11 +286,12 @@ public class RobotContainer {
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
 
-    //Algae mode
+    // Algae mode
     operatorRBTrigger.whileTrue(Commands.runOnce(() -> superstructure.algaeMode(), superstructure));
 
-    //Processor/Zero Mode
-    operatorUpPadTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(8), superstructure));
+    // Processor/Zero Mode
+    operatorUpPadTrigger.whileTrue(
+        Commands.runOnce(() -> superstructure.setState(8), superstructure));
   }
 
   private void configureNamedCommands() {
