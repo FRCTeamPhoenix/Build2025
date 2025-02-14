@@ -214,12 +214,12 @@ public class RobotContainer {
     autoChooser.addOption(
         "Wrist FF Characterization", FeedforwardCommands.wristCharacterization(wrist));
 
-    // Configure the button bindings
-    configureButtonBindings();
-
     isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;
+
+    // Configure the button bindings
+    configureButtonBindings();
   }
 
   /**
@@ -286,7 +286,11 @@ public class RobotContainer {
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
 
+    //Algae mode
     operatorRBTrigger.whileTrue(Commands.runOnce(() -> superstructure.algaeMode(), superstructure));
+
+    //Processor/Zero Mode
+    operatorUpPadTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(8), superstructure));
   }
 
   private void configureNamedCommands() {

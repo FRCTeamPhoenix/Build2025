@@ -272,7 +272,7 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85, 0
+      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.1,
@@ -283,10 +283,10 @@ public final class Constants {
       -0.734,
       0,
       0,
-      0
+      0,
     };
     public static final String[] STATE_NAMES = {
-      "STOWED", "INTAKE", "L1", "L2", "L3", "L4", "ALGAE LOW", "ALGAE HIGH", "PROCESSOR"
+      "STOWED", "INTAKE", "L1", "L2", "L3", "L4", "ALGAE LOW", "ALGAE HIGH", "PROCESSOR/ZERO"
     };
   }
 
