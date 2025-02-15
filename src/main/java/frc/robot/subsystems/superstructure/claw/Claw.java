@@ -1,5 +1,7 @@
 package frc.robot.subsystems.superstructure.claw;
 
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,6 +12,8 @@ public class Claw extends SubsystemBase {
   private final ClawIO io;
   private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
   private Double setpoint = null;
+
+  private final Alert clawAlert = new Alert("Claw motor is disconnected", AlertType.kError);
 
   public Claw(ClawIO io) {
     this.io = io;

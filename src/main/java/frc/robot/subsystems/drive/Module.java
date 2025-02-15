@@ -18,6 +18,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
@@ -36,9 +38,18 @@ public class Module {
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
 
+  private final Alert driveAlert;
+  private final Alert turnAlert;
+  private final Alert encoderAlert;
+
+
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
+
+    driveAlert = new Alert("Module " + Integer.toString(index) + " Drive Motor is disconnected", AlertType.kError);
+    turnAlert = new Alert("Module " + Integer.toString(index) + " Turn Motor is disconnected", AlertType.kError);
+    encoderAlert = new Alert("Module " + Integer.toString(index) + " Encoder is disconnected", AlertType.kError);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -95,6 +106,10 @@ public class Module {
                 + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
       }
     }
+
+    driveAlert.set(!inputs.driveConnected);
+    turnAlert.set(!inputs.turnConnected);
+    encoderAlert.set(!inputs.encoderConnected);
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */

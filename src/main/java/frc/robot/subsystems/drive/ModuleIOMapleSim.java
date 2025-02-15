@@ -36,11 +36,13 @@ public class ModuleIOMapleSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
+    inputs.driveConnected = true;
     inputs.drivePositionRad = sim.getDriveWheelFinalPosition().in(Radians);
     inputs.driveVelocityRadPerSec = sim.getDriveWheelFinalSpeed().in(RadiansPerSecond);
     inputs.driveAppliedVolts = sim.getDriveMotorAppliedVoltage().magnitude();
     inputs.driveCurrentAmps = Math.abs(sim.getDriveMotorSupplyCurrent().magnitude());
 
+    inputs.turnConnected = true;
     inputs.turnPosition = sim.getSteerAbsoluteFacing();
     inputs.turnVelocityRadPerSec = sim.getSteerRelativeEncoderVelocity().magnitude();
     inputs.turnAppliedVolts = sim.getSteerMotorAppliedVoltage().magnitude();
