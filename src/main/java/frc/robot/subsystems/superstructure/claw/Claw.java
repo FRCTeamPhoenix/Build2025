@@ -27,6 +27,8 @@ public class Claw extends SubsystemBase {
     if (setpoint != null) {
       io.setVoltage(setpoint);
     }
+
+    clawAlert.set(!inputs.connected);
   }
 
   public Command runForward() {

@@ -112,20 +112,13 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    var driveStatus = BaseStatusSignal.refreshAll(
-        drivePosition,
-        driveVelocity,
-        driveAppliedVolts,
-        driveCurrent);
+    var driveStatus =
+        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveCurrent);
 
-    var turnStatus = BaseStatusSignal.refreshAll(
-        turnPosition,
-        turnVelocity,
-        turnAppliedVolts,
-        turnCurrent);
+    var turnStatus =
+        BaseStatusSignal.refreshAll(turnPosition, turnVelocity, turnAppliedVolts, turnCurrent);
 
-    var absStatus = BaseStatusSignal.refreshAll(
-      turnAbsolutePosition);
+    var absStatus = BaseStatusSignal.refreshAll(turnAbsolutePosition);
 
     inputs.driveConnected = driveStatus.isOK();
     inputs.drivePositionRad =
@@ -139,7 +132,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     inputs.turnConnected = turnStatus.isOK();
     inputs.encoderConnected = absStatus.isOK();
-    
+
     inputs.turnAbsolutePosition =
         Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
             .minus(absoluteEncoderOffset);

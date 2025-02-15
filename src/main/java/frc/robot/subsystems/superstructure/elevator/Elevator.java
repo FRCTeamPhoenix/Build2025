@@ -25,7 +25,8 @@ public class Elevator {
 
   private Double setpoint = 0.0;
 
-  private final Alert elevatorAlert = new Alert("Elevator motors are disconnected", AlertType.kError);
+  private final Alert elevatorAlert =
+      new Alert("Elevator motors are disconnected", AlertType.kError);
 
   // Mechanism2D
   private final LoggedMechanism2d mech = new LoggedMechanism2d(24, 24);

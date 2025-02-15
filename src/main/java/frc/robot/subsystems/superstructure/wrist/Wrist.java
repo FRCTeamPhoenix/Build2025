@@ -59,6 +59,7 @@ public class Wrist {
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
     }
+    wristAlert.set(!inputs.connected);
   }
 
   public void setSetpoint(double setpoint) {

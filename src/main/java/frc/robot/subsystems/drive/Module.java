@@ -42,14 +42,19 @@ public class Module {
   private final Alert turnAlert;
   private final Alert encoderAlert;
 
-
   public Module(ModuleIO io, int index) {
     this.io = io;
     this.index = index;
 
-    driveAlert = new Alert("Module " + Integer.toString(index) + " Drive Motor is disconnected", AlertType.kError);
-    turnAlert = new Alert("Module " + Integer.toString(index) + " Turn Motor is disconnected", AlertType.kError);
-    encoderAlert = new Alert("Module " + Integer.toString(index) + " Encoder is disconnected", AlertType.kError);
+    driveAlert =
+        new Alert(
+            "Module " + Integer.toString(index) + " Drive Motor is disconnected", AlertType.kError);
+    turnAlert =
+        new Alert(
+            "Module " + Integer.toString(index) + " Turn Motor is disconnected", AlertType.kError);
+    encoderAlert =
+        new Alert(
+            "Module " + Integer.toString(index) + " Encoder is disconnected", AlertType.kError);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
