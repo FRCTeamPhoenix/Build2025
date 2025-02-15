@@ -28,6 +28,8 @@ public class Superstructure extends SubsystemBase {
   private double elevatorSetpoint = 0.0;
   private double wristSetpoint = 0.0;
 
+  private double lastElevatorSetpoint = 0.0;
+
   private final Supplier<Pose2d> poseSupplier;
 
   public Superstructure(Elevator elevator, Wrist wrist, Supplier<Pose2d> pose) {
@@ -41,6 +43,10 @@ public class Superstructure extends SubsystemBase {
     elevator.periodic();
     wrist.periodic();
 
+    if (elevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[superstructureState]) {
+      lastElevatorSetpoint = elevatorSetpoint;
+    }
+
     if (!manualControl) {
       elevatorSetpoint = SuperstructureConstants.ELEVATOR_STATES[superstructureState];
       wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
@@ -48,7 +54,7 @@ public class Superstructure extends SubsystemBase {
           "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
       if (!elevator.atSetpoint()) {
         elevator.runSetpoint(elevatorSetpoint);
-        if (elevatorSetpoint - elevator.getHeight() > 0) {
+        if (elevatorSetpoint - lastElevatorSetpoint > 0) {
           wrist.setSetpoint(WristConstants.HIGH_MOVE_ANGLE);
         } else {
           wrist.setSetpoint(WristConstants.LOW_MOVE_ANGLE);

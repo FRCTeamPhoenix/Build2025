@@ -31,7 +31,7 @@ public class DriveToPose extends Command {
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
     angleController.setGoal(target.getRotation().getRadians());
-    angleController.setTolerance(0.002);
+    angleController.setTolerance(0.005);
 
     Logger.recordOutput("PoseAlignment/Target", target);
 
@@ -43,6 +43,7 @@ public class DriveToPose extends Command {
     xController.reset(drive.getPose().getX());
     yController.reset(drive.getPose().getY());
     angleController.reset(drive.getPose().getRotation().getRadians());
+    Logger.recordOutput("PoseAlignment/AtGoal", false);
   }
 
   @Override
@@ -68,6 +69,7 @@ public class DriveToPose extends Command {
     Logger.recordOutput("PoseAlignment/LazyTrajectory", lazyTrajectory);
 
     drive.runVelocity(speeds);
+    Logger.recordOutput("PoseAlignment/AtGoal", isFinished());
   }
 
   @Override

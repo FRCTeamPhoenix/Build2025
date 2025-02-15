@@ -15,6 +15,10 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.PathfindingUtils;
@@ -35,6 +39,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private final Field2d field = new Field2d();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -93,6 +98,8 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
 
     PathfindingUtils.warmupCommand().schedule();
+    Logger.recordOutput("PoseAlignment/AtGoal", false);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   /** This function is called periodically during all modes. */
@@ -104,6 +111,9 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    field.setRobotPose(robotContainer.getDrive().getPose());
+    SmartDashboard.putData("Field", field);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -140,6 +150,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
+    field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }
 
   /** This function is called periodically during operator control. */
@@ -166,12 +177,12 @@ public class Robot extends LoggedRobot {
   public void simulationPeriodic() {
     SimulatedArena.getInstance().simulationPeriodic();
     Pose3d[] corals = SimulatedArena.getInstance().getGamePiecesArrayByType("Coral");
-    Logger.recordOutput("FieldSimulation/CoralPositions", corals);
-    Logger.recordOutput("SimmedPose", robotContainer.swerveSim.getSimulatedDriveTrainPose());
+    Logger.recordOutput("Simulation/CoralPositions", corals);
+    Logger.recordOutput("Simulation/Pose", robotContainer.swerveSim.getSimulatedDriveTrainPose());
     SwerveModuleState[] arr = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
       arr[i] = robotContainer.swerveSim.getModules()[i].getCurrentState();
     }
-    Logger.recordOutput("SimmedStates", arr);
+    Logger.recordOutput("Simulation/States", arr);
   }
 }

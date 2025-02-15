@@ -110,7 +110,6 @@ public class PathfindingUtils {
             ? PathfindingConstants.RED_PLAYER_STATIONS
             : PathfindingConstants.BLUE_PLAYER_STATIONS;
 
-    Logger.recordOutput("Players", stations);
     Pose2d target = odometryPose.nearest(Arrays.asList(stations));
 
     return target.plus(buffer);

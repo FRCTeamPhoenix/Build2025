@@ -90,8 +90,6 @@ public class Module {
       if (speedSetpoint != null) {
         // Run drive controller
         double velocityRadPerSec = speedSetpoint / DriveConstants.WHEEL_RADIUS;
-        Logger.recordOutput(
-            "Module" + Integer.toString(index) + "/SetpointRadPerSec", velocityRadPerSec);
         io.setDriveVoltage(
             driveFeedforward.calculate(velocityRadPerSec, 0)
                 + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));

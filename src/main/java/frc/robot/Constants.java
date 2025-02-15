@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -81,7 +81,7 @@ public final class Constants {
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT =
-        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Basic filtering thresholds
     public static final double MAX_AMBIGUITY = 0.3;
