@@ -23,11 +23,8 @@ import frc.robot.Constants.DriveConstants;
 /**
  * Physics sim implementation of module IO.
  *
- * <p>
- * Uses two flywheel sims for the drive and turn motors, with the absolute
- * position initialized
- * to a random value. The flywheel sims are not physically accurate, but provide
- * a decent
+ * <p>Uses two flywheel sims for the drive and turn motors, with the absolute position initialized
+ * to a random value. The flywheel sims are not physically accurate, but provide a decent
  * approximation for the behavior of the module.
  */
 public class ModuleIOSim implements ModuleIO {
@@ -35,12 +32,14 @@ public class ModuleIOSim implements ModuleIO {
 
   private DCMotor driveGearbox = DCMotor.getKrakenX60(1);
   private DCMotor steerGearbox = DCMotor.getKrakenX60(1);
-  private DCMotorSim driveSim = new DCMotorSim(
-      LinearSystemId.createDCMotorSystem(driveGearbox, 0.025, DriveConstants.DRIVE_GEAR_RATIO),
-      driveGearbox);
-  private DCMotorSim turnSim = new DCMotorSim(
-      LinearSystemId.createDCMotorSystem(steerGearbox, 0.004, DriveConstants.TURN_GEAR_RATIO),
-      steerGearbox);
+  private DCMotorSim driveSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(driveGearbox, 0.025, DriveConstants.DRIVE_GEAR_RATIO),
+          driveGearbox);
+  private DCMotorSim turnSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(steerGearbox, 0.004, DriveConstants.TURN_GEAR_RATIO),
+          steerGearbox);
 
   private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
   private double driveAppliedVolts = 0.0;
@@ -56,7 +55,8 @@ public class ModuleIOSim implements ModuleIO {
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
 
-    inputs.turnAbsolutePosition = new Rotation2d(turnSim.getAngularPositionRad()).plus(turnAbsoluteInitPosition);
+    inputs.turnAbsolutePosition =
+        new Rotation2d(turnSim.getAngularPositionRad()).plus(turnAbsoluteInitPosition);
     inputs.turnPosition = new Rotation2d(turnSim.getAngularPositionRad());
     inputs.turnVelocityRadPerSec = turnSim.getAngularVelocityRadPerSec();
     inputs.turnAppliedVolts = turnAppliedVolts;

@@ -13,19 +13,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Raise Elevator Max"
+            "name": "Superstructure L4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Lower Elevator"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "cage_to_station"
+            "name": "Claw Outtake"
           }
         },
         {
@@ -35,27 +29,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "station_to_rear"
+            "name": "Claw Stop"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Raise Elevator Max"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Lower Elevator"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "rear_to_station_a"
+            "name": "Stow Elevator"
           }
         }
       ]

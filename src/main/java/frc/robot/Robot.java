@@ -13,10 +13,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.PathfindingCommands;
-
+import frc.robot.util.PathfindingUtils;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -25,21 +31,18 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private final Field2d field = new Field2d();
 
   /**
-   * This function is run when the robot is first started up and should be used
-   * for any
+   * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
@@ -94,7 +97,9 @@ public class Robot extends LoggedRobot {
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
 
-    PathfindingCommands.warmupCommand().schedule();
+    PathfindingUtils.warmupCommand().schedule();
+    Logger.recordOutput("PoseAlignment/AtGoal", false);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
   }
 
   /** This function is called periodically during all modes. */
@@ -106,23 +111,20 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    Logger.recordOutput("ElevatorState", robotContainer.elevatorState);
+
+    field.setRobotPose(robotContainer.getDrive().getPose());
+    SmartDashboard.putData("Field", field);
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
-  /**
-   * This autonomous runs the autonomous command selected by your
-   * {@link RobotContainer} class.
-   */
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
@@ -135,8 +137,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -148,13 +149,13 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    Logger.recordOutput("ZoneSnapping/ZoneMap", robotContainer.generateZone());
+    Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
+    field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -165,16 +166,23 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
+    SimulatedArena.getInstance().simulationPeriodic();
+    Pose3d[] corals = SimulatedArena.getInstance().getGamePiecesArrayByType("Coral");
+    Logger.recordOutput("Simulation/CoralPositions", corals);
+    Logger.recordOutput("Simulation/Pose", robotContainer.swerveSim.getSimulatedDriveTrainPose());
+    SwerveModuleState[] arr = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      arr[i] = robotContainer.swerveSim.getModules()[i].getCurrentState();
+    }
+    Logger.recordOutput("Simulation/States", arr);
   }
 }
