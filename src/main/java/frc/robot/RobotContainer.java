@@ -87,6 +87,7 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Wrist wrist;
   private final Climber climber;
+  // private final CANdleSubsystem candle = new CANdleSubsystem(6);
 
   private final DriveTrainSimulationConfig driveSimConfig =
       DriveTrainSimulationConfig.Default()
