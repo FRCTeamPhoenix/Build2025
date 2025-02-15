@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.935860655737705,
+        "x": 7.61219262295082,
         "y": 6.128842213114754
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.935860655737695,
-        "y": 6.128842213114754
+        "x": 8.111628943637296,
+        "y": 6.130984040349157
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 6.128842213114754
       },
       "prevControl": {
-        "x": 5.149692622950819,
-        "y": 6.128842213114754
+        "x": 5.899697692948518,
+        "y": 6.130434373013987
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.97696981133217
+    "rotation": 178.9769698113322
   },
   "reversed": false,
   "folder": "taxi",
