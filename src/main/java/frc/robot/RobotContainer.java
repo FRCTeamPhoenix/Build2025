@@ -153,8 +153,8 @@ public class RobotContainer {
                 new PhotonIOReal(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new PhotonIOReal(
-                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-                new PhotonIOReal(VisionConstants.BACK_CAMERA_NAME, VisionConstants.BACK_TRANSFORM));
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
+        // new PhotonIOReal(VisionConstants.BACK_CAMERA_NAME, VisionConstants.BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -189,11 +189,11 @@ public class RobotContainer {
                 new PhotonIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
-                    swerveSim::getSimulatedDriveTrainPose),
-                new PhotonIOSim(
-                    VisionConstants.BACK_CAMERA_NAME,
-                    VisionConstants.BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
+        // new PhotonIOSim(
+        //     VisionConstants.BACK_CAMERA_NAME,
+        //     VisionConstants.BACK_TRANSFORM,
+        //     swerveSim::getSimulatedDriveTrainPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());

@@ -49,7 +49,7 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String BACK_CAMERA_NAME = "back_arducam";
+    // public static final String BACK_CAMERA_NAME = "back_arducam";
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
