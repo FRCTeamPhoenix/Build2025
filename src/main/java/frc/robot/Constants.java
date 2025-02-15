@@ -246,13 +246,13 @@ public final class Constants {
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
     public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
-    public static final double TRACK_WIDTH_X = Units.inchesToMeters(26.0 - (2.625 * 2));
-    public static final double TRACK_WIDTH_Y = Units.inchesToMeters(26.0 - (2.625 * 2));
+    public static final double TRACK_WIDTH_X = Units.inchesToMeters(28.0 - (2.625 * 2));
+    public static final double TRACK_WIDTH_Y = Units.inchesToMeters(28.0 - (2.625 * 2));
     public static final double DRIVE_BASE_RADIUS =
         Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
     public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
-    public static final double ROBOT_MASS_KG = 74.088;
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112);
     public static final double ROBOT_MOI = 6.883;
     public static final double WHEEL_COF = 1.2;
     public static final double SLIP_CURRENT = 40;
