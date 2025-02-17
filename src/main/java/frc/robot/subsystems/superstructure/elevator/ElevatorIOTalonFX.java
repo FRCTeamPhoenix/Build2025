@@ -60,9 +60,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
+    var status =
+        BaseStatusSignal.refreshAll(
+            position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
 
+    inputs.connected = status.isOK();
     inputs.heightMeters =
         position.getValueAsDouble()
             / ElevatorConstants.GEAR_RATIO

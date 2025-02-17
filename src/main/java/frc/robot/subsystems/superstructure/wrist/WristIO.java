@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface WristIO {
   @AutoLog
   public static class WristIOInputs {
+    public boolean connected = false;
     public Rotation2d angle = new Rotation2d(0);
     public double velocityRad = 0;
     public double appliedVolts = 0;

@@ -69,6 +69,7 @@ public class Robot extends LoggedRobot {
     switch (Constants.CURRENT_MODE) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
+        System.out.println("Starting AdvantageKit on a real robot");
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         break;

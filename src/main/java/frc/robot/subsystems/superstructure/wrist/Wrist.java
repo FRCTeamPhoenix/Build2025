@@ -3,6 +3,8 @@ package frc.robot.subsystems.superstructure.wrist;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
@@ -18,6 +20,8 @@ public class Wrist {
   private final PhoenixGravFF ff;
 
   private Double setpoint = 0.0;
+
+  private final Alert wristAlert = new Alert("Wrist  bE motor is disconnected", AlertType.kError);
 
   public Wrist(WristIO io) {
     this.io = io;
@@ -55,6 +59,7 @@ public class Wrist {
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
     }
+    wristAlert.set(!inputs.connected);
   }
 
   public void setSetpoint(double setpoint) {

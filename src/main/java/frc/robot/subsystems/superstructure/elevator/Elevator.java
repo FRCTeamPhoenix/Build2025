@@ -3,6 +3,8 @@ package frc.robot.subsystems.superstructure.elevator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -22,6 +24,9 @@ public class Elevator {
   private final PhoenixGravFF feedforward;
 
   private Double setpoint = 0.0;
+
+  private final Alert elevatorAlert =
+      new Alert("Elevator motors are disconnected", AlertType.kError);
 
   // Mechanism2D
   private final LoggedMechanism2d mech = new LoggedMechanism2d(24, 24);
@@ -70,6 +75,8 @@ public class Elevator {
     } else {
       Logger.recordOutput("Elevator/Setpoint", -1.0);
     }
+
+    elevatorAlert.set(!inputs.connected);
   }
 
   public void runSetpoint(double setpoint) {

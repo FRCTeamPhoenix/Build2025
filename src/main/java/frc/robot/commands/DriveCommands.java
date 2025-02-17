@@ -68,7 +68,7 @@ public class DriveCommands {
 
           double slowDown = 1;
           if (slowdownSupplier.getAsBoolean()) {
-            slowDown = 0.5;
+            slowDown = 0.2;
           }
 
           // Square values

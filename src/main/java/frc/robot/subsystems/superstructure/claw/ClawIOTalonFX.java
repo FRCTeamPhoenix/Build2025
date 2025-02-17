@@ -59,7 +59,9 @@ public class ClawIOTalonFX implements ClawIO {
 
   @Override
   public void updateInputs(ClawIOInputs inputs) {
-    BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
+    var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
+
+    inputs.connected = status.isOK();
     inputs.positionRotations = position.getValueAsDouble() / ClawConstants.GEAR_RATIO;
     inputs.velocityRotationsPerSec = velocity.getValueAsDouble() / ClawConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
