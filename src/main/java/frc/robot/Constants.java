@@ -49,11 +49,10 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    // public static final String BACK_CAMERA_NAME = "back_arducam";
+    public static final String BACK_CAMERA_NAME = "back_arducam";
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    // Need to move cameras so they are 6.468 inches from the center of the robot is the y-axis
     // You can use the ideal transform below for sim, but it isn't a real transform
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
@@ -71,6 +70,7 @@ public final class Constants {
                 Units.inchesToMeters(12.125)),
             new Rotation3d(0, 0.0, Units.degreesToRadians(35)));
 
+    // TODO: get accurate transform for back camera
     public static final Transform3d BACK_TRANSFORM =
         new Transform3d(
             new Translation3d(
@@ -97,8 +97,9 @@ public final class Constants {
     // (Adjust to trust some cameras more than others)
     public static final double[] CAMERA_STD_DEV_FACTORS =
         new double[] {
-          1.0, // Camera 0
-          1.0 // Camera 1
+          1.0, // Left Camera
+          1.0, // Right Camera
+          1.0 // Back Camera
         };
 
     // Multipliers to apply for MegaTag 2 observations
@@ -180,7 +181,7 @@ public final class Constants {
         };
 
     // 6.468
-    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
+    public static final double BRANCH_BUFFER = 0.65;
     public static final Transform2d LEFT_BRANCH =
         new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
@@ -270,15 +271,15 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85, 0
+      0, 0.351, 0.375, 0.65, 0.975, 1.7, 0.465, 0.85, 0
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.1,
       Units.degreesToRadians(35),
-      -0.49,
-      -0.49,
-      -0.49,
-      -0.734,
+      -0.438,
+      -0.438,
+      -0.438,
+      -0.61,
       0,
       0,
       0,
