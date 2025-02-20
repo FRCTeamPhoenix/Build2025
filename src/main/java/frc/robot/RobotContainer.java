@@ -39,7 +39,6 @@ import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -132,8 +131,6 @@ public class RobotContainer {
   private final Trigger operatorRSTrigger = operatorController.rightStick();
   private final Trigger operatorUpPadTrigger = operatorController.povUp();
   private final Trigger operatorDownPadTrigger = operatorController.povDown();
-  private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
-  private final Trigger operatorRightPadTrigger = operatorController.povRight();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -161,7 +158,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
-        climber = new Climber(new ClimberIOTalonFX());
+        climber = new Climber(new ClimberIO() {});
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -329,14 +326,6 @@ public class RobotContainer {
         Commands.run(
             () -> superstructure.changeWristGoal(-operatorController.getRightY() * 0.01),
             superstructure));
-
-    // Climber controls
-    operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(-3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0), climber));
-    operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0), climber));
   }
 
   private void configureNamedCommands() {
