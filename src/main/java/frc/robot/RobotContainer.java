@@ -28,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
@@ -39,7 +41,6 @@ import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -161,7 +162,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
-        climber = new Climber(new ClimberIOTalonFX());
+        climber = new Climber(new ClimberIO() {});
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -227,9 +228,14 @@ public class RobotContainer {
     // Configure PathPlanner commands
     configureNamedCommands();
 
+    Pose2d scoring =
+        PathfindingConstants.RED_REEF_TAG_POSES[4]
+            .toPose2d()
+            .plus(PathfindingConstants.LEFT_BRANCH);
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    /*autoChooser.addOption(
+    autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
@@ -244,10 +250,14 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     autoChooser.addOption(
-        "Elevator FF Characterization", FeedforwardCommands.elevatorCharacterization(elevator));
-    autoChooser.addOption(
-        "Wrist FF Characterization", FeedforwardCommands.wristCharacterization(wrist));*/
+        "Test New Auto TM",
+        AutoBuilder.pathfindToPose(scoring, PathfindingConstants.CONSTRAINTS)
+            .andThen(
+                Commands.run(() -> superstructure.setState(5), superstructure)
+                    .until(() -> superstructure.atGoal())
+                    .andThen(claw.runForward())));
 
     // Configure the button bindings
     configureButtonBindings();

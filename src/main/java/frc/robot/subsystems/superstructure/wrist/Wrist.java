@@ -71,7 +71,6 @@ public class Wrist {
     Logger.processInputs("Wrist", inputs);
     if (setpoint != null) {
       Logger.recordOutput("Wrist/Setpoint", setpoint);
-      double lazyVel = 0;
       controller.setGoal(setpoint);
       Logger.recordOutput("output", controller.calculate(inputs.angle.getRadians()));
       io.setVoltage(controller.calculate(inputs.angle.getRadians(), setpoint));

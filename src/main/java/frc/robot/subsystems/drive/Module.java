@@ -15,11 +15,13 @@ package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
@@ -61,7 +63,7 @@ public class Module {
     switch (Constants.CURRENT_MODE) {
       case REAL:
       case REPLAY:
-        driveFeedforward = new PhoenixFF(0.1, 0.13, 0.0);
+        driveFeedforward = new PhoenixFF(0.117, 0.121, 0.00915);
         driveFeedback = new PIDController(0.05, 0.0, 0.0);
         turnFeedback = new PIDController(7.0, 0.0, 0.0);
         break;

@@ -113,7 +113,7 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS =
         new PathConstraints(4.0, 6.0, Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
-    public static final Constraints LINEAR_CONSTRAINTS = new Constraints(4, 6);
+    public static final Constraints LINEAR_CONSTRAINTS = new Constraints(3, 3);
     public static final Constraints ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
@@ -246,7 +246,7 @@ public final class Constants {
 
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
-    public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(1.941);
     public static final double TRACK_WIDTH_X = Units.inchesToMeters(28.0 - (2.625 * 2));
     public static final double TRACK_WIDTH_Y = Units.inchesToMeters(28.0 - (2.625 * 2));
     public static final double DRIVE_BASE_RADIUS =
@@ -254,7 +254,7 @@ public final class Constants {
     public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
     public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112);
-    public static final double ROBOT_MOI = 6.883;
+    public static final double ROBOT_MOI = 5.278;
     public static final double WHEEL_COF = 1.2;
     public static final double SLIP_CURRENT = 40;
 
@@ -264,7 +264,7 @@ public final class Constants {
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
     public static final double[] COMP_ENCODER_OFFSETS = {
-      2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, 2.137 + Math.PI
+      2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, -0.693 + Math.PI
     };
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
   }
@@ -312,8 +312,7 @@ public final class Constants {
     public static final double MIN_ANGLE = -0.93;
     public static final double MAX_ANGLE = 1.43;
     public static final double CUTOFF_ANGLE = 1.2;
-    public static final double HIGH_MOVE_ANGLE = WristConstants.MIN_ANGLE + 0.05;
-    public static final double LOW_MOVE_ANGLE = WristConstants.MAX_ANGLE - 0.05;
+    public static final double MOVE_ANGLE = WristConstants.MAX_ANGLE - 0.05;
   }
 
   public static final class ClimberConstants {
