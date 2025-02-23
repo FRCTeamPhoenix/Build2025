@@ -135,8 +135,6 @@ public class RobotContainer {
   private final Trigger operatorRSTrigger = operatorController.rightStick();
   private final Trigger operatorUpPadTrigger = operatorController.povUp();
   private final Trigger operatorDownPadTrigger = operatorController.povDown();
-  private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
-  private final Trigger operatorRightPadTrigger = operatorController.povRight();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -343,14 +341,6 @@ public class RobotContainer {
         Commands.run(
             () -> superstructure.changeWristGoal(-operatorController.getRightY() * 0.01),
             superstructure));
-
-    // Climber controls
-    operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(-3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0), climber));
-    operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0), climber));
   }
 
   private void configureNamedCommands() {

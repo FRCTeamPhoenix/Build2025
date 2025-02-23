@@ -1,12 +1,10 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.util.PhoenixUtils.PhoenixGravFF;
@@ -18,12 +16,12 @@ public class Wrist {
   private final WristIO io;
   private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
-  private final ProfiledPIDController controller;
+  private final PIDController controller;
   private final PhoenixGravFF ff;
 
   private Double setpoint = 0.0;
 
-  private final Alert wristAlert = new Alert("Wrist motor is disconnected", AlertType.kError);
+  private final Alert wristAlert = new Alert("Wrist  bE motor is disconnected", AlertType.kError);
 
   public Wrist(WristIO io) {
     this.io = io;
@@ -40,30 +38,17 @@ public class Wrist {
         ff = new PhoenixGravFF(0.05, 0.0, 0.0, 0.17);
         break;
       case SIM:
-        controller =
-            new ProfiledPIDController(
-                10,
-                1,
-                0.1,
-                new TrapezoidProfile.Constraints(
-                    Units.degreesToRadians(30), Units.degreesToRadians(30)));
+        controller = new PIDController(10, 0.15, 0.01);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.195);
         break;
       default:
-        controller =
-            new ProfiledPIDController(
-                0.0,
-                0.0,
-                0.0,
-                new TrapezoidProfile.Constraints(
-                    Units.degreesToRadians(30), Units.degreesToRadians(30)));
+        controller = new PIDController(0, 0, 0);
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
     }
 
     controller.enableContinuousInput(-Math.PI, Math.PI);
     controller.setTolerance(0.01);
-    SmartDashboard.putData(controller);
   }
 
   public void periodic() {
@@ -74,7 +59,6 @@ public class Wrist {
       controller.setGoal(setpoint);
       Logger.recordOutput("output", controller.calculate(inputs.angle.getRadians()));
       io.setVoltage(controller.calculate(inputs.angle.getRadians(), setpoint));
-      // + ff.calculate(lazyVel, 0, inputs.angle.getRadians()));
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
     }
