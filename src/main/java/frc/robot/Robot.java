@@ -176,14 +176,16 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    SimulatedArena.getInstance().simulationPeriodic();
-    Pose3d[] corals = SimulatedArena.getInstance().getGamePiecesArrayByType("Coral");
-    Logger.recordOutput("Simulation/CoralPositions", corals);
-    Logger.recordOutput("Simulation/Pose", robotContainer.swerveSim.getSimulatedDriveTrainPose());
-    SwerveModuleState[] arr = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++) {
-      arr[i] = robotContainer.swerveSim.getModules()[i].getCurrentState();
+    if (Constants.CURRENT_MODE == frc.robot.Constants.Mode.SIM) {
+      SimulatedArena.getInstance().simulationPeriodic();
+      Pose3d[] corals = SimulatedArena.getInstance().getGamePiecesArrayByType("Coral");
+      Logger.recordOutput("Simulation/CoralPositions", corals);
+      Logger.recordOutput("Simulation/Pose", robotContainer.swerveSim.getSimulatedDriveTrainPose());
+      SwerveModuleState[] arr = new SwerveModuleState[4];
+      for (int i = 0; i < 4; i++) {
+        arr[i] = robotContainer.swerveSim.getModules()[i].getCurrentState();
+      }
+      Logger.recordOutput("Simulation/States", arr);
     }
-    Logger.recordOutput("Simulation/States", arr);
   }
 }

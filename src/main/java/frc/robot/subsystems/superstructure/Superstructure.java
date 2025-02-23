@@ -52,13 +52,10 @@ public class Superstructure extends SubsystemBase {
       wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
       Logger.recordOutput(
           "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
-      if (!elevator.atSetpoint()) {
-        elevator.runSetpoint(elevatorSetpoint);
-        if (elevatorSetpoint - lastElevatorSetpoint > 0) {
-          wrist.setSetpoint(WristConstants.HIGH_MOVE_ANGLE);
-        } else {
-          wrist.setSetpoint(WristConstants.LOW_MOVE_ANGLE);
-        }
+      if (!elevator.atSetpoint()
+          && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
+              && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
+        wrist.setSetpoint(WristConstants.MOVE_ANGLE);
       } else {
         elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(wristSetpoint);

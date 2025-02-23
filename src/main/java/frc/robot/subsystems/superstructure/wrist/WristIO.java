@@ -16,4 +16,6 @@ public interface WristIO {
   public default void updateInputs(WristIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
+
+  public default void setPositionTarget(Rotation2d angle) {}
 }
