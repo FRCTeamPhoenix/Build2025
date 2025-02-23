@@ -36,7 +36,7 @@ public class Wrist {
                 1,
                 1,
                 new TrapezoidProfile.Constraints(
-                    Units.degreesToRadians(90), Units.degreesToRadians(90)));
+                    Units.degreesToRadians(180), Units.degreesToRadians(120)));
         ff = new PhoenixGravFF(0.05, 0.0, 0.0, 0.17);
         break;
       case SIM:
@@ -62,7 +62,7 @@ public class Wrist {
     }
 
     controller.enableContinuousInput(-Math.PI, Math.PI);
-    // controller.setTolerance(0.005);
+    controller.setTolerance(0.01);
     SmartDashboard.putData(controller);
   }
 

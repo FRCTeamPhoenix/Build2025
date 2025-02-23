@@ -19,6 +19,7 @@ import static edu.wpi.first.units.Units.Meters;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -70,6 +71,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -157,14 +159,16 @@ public class RobotContainer {
                 new PhotonIOReal(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new PhotonIOReal(
-                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
-        // new PhotonIOReal(VisionConstants.BACK_CAMERA_NAME, VisionConstants.BACK_TRANSFORM));
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+                new PhotonIOReal(
+                    VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIO() {});
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
+        Logger.recordOutput("camTra", Pose3d.kZero.plus(VisionConstants.LOW_BACK_TRANSFORM));
         break;
 
       case SIM:

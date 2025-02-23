@@ -49,7 +49,7 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String BACK_CAMERA_NAME = "back_arducam";
+    public static final String LOW_BACK_CAMERA_NAME = "back_arducam";
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
@@ -70,13 +70,12 @@ public final class Constants {
                 Units.inchesToMeters(12.125)),
             new Rotation3d(0, 0.0, Units.degreesToRadians(35)));
 
-    // TODO: get accurate transform for back camera
-    public static final Transform3d BACK_TRANSFORM =
+    public static final Transform3d LOW_BACK_TRANSFORM =
         new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(-11.29 - 1.5),
-                Units.inchesToMeters(-11.29),
-                Units.inchesToMeters(8.5)),
+                Units.inchesToMeters(-12.73),
+                Units.inchesToMeters(11.286),
+                Units.inchesToMeters(7.89)),
             new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
 
     // The layout of the AprilTags on the field
@@ -279,7 +278,7 @@ public final class Constants {
       -0.438,
       -0.438,
       -0.438,
-      -0.61,
+      -0.565,
       0,
       0,
       0,
@@ -301,7 +300,7 @@ public final class Constants {
   }
 
   public static final class ClawConstants {
-    public static final double LASERCAN_TRIGGER_DISTANCE = 0.095;
+    public static final double LASERCAN_TRIGGER_DISTANCE = 20;
     public static final double GEAR_RATIO = 5;
     public static final double INNER_WHEEL_RADIUS = 4.0;
   }
