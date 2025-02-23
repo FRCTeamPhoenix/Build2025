@@ -1,7 +1,8 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -16,7 +17,7 @@ public class Wrist {
   private final WristIO io;
   private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
-  private final PIDController controller;
+  private final ProfiledPIDController controller;
   private final PhoenixGravFF ff;
 
   private Double setpoint = 0.0;
@@ -38,11 +39,23 @@ public class Wrist {
         ff = new PhoenixGravFF(0.05, 0.0, 0.0, 0.17);
         break;
       case SIM:
-        controller = new PIDController(10, 0.15, 0.01);
+        controller =
+            new ProfiledPIDController(
+                5,
+                1,
+                1,
+                new TrapezoidProfile.Constraints(
+                    Units.degreesToRadians(180), Units.degreesToRadians(120)));
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.195);
         break;
       default:
-        controller = new PIDController(0, 0, 0);
+        controller =
+            new ProfiledPIDController(
+                0,
+                0,
+                0,
+                new TrapezoidProfile.Constraints(
+                    Units.degreesToRadians(180), Units.degreesToRadians(120)));
         ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
     }
