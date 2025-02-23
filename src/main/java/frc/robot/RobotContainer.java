@@ -25,8 +25,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -67,6 +70,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
+import frc.robot.util.AutoComposer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -197,9 +201,9 @@ public class RobotContainer {
                     VisionConstants.FRONT_LEFT_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
         // new PhotonIOSim(
-        //     VisionConstants.BACK_CAMERA_NAME,
-        //     VisionConstants.BACK_TRANSFORM,
-        //     swerveSim::getSimulatedDriveTrainPose));
+        // VisionConstants.BACK_CAMERA_NAME,
+        // VisionConstants.BACK_TRANSFORM,
+        // swerveSim::getSimulatedDriveTrainPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
@@ -233,7 +237,7 @@ public class RobotContainer {
     Pose2d scoring =
         PathfindingConstants.RED_REEF_TAG_POSES[4]
             .toPose2d()
-            .plus(PathfindingConstants.LEFT_BRANCH);
+            .plus(PathfindingConstants.REEF_BUFFER_TRANSFORM);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -256,11 +260,19 @@ public class RobotContainer {
     autoChooser.addOption(
         "Test New Auto TM",
         AutoBuilder.pathfindToPose(scoring, PathfindingConstants.CONSTRAINTS)
+            .andThen(new BranchAlign(drive, false))
             .andThen(
-                Commands.run(() -> superstructure.setState(5), superstructure)
-                    .until(() -> superstructure.atGoal())
-                    .andThen(claw.runForward())));
+                Commands.runOnce(() -> superstructure.setState(5), superstructure)
+                    .andThen(Commands.waitUntil(superstructure::atGoal))
+                    .andThen(new WaitCommand(0.1).deadlineFor(claw.runForward()))
+                    .andThen(claw.stopCommand())));
 
+    autoChooser.addOption(
+        "String test",
+        AutoComposer.composeAuto(
+            "1a4.2a4.3b4.4a4", this::getScoringCommands, () -> new WaitCommand(0), drive));
+
+    SmartDashboard.putData(CommandScheduler.getInstance());
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -327,7 +339,7 @@ public class RobotContainer {
     operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
 
     // Algae mode
-    operatorRBTrigger.whileTrue(Commands.runOnce(() -> superstructure.algaeMode(), superstructure));
+    operatorRBTrigger.whileTrue(Commands.runOnce(superstructure::algaeMode, superstructure));
 
     // Processor/Zero Mode
     operatorUpPadTrigger.whileTrue(
@@ -399,5 +411,31 @@ public class RobotContainer {
 
   public CommandXboxController getOperatorController() {
     return operatorController;
+  }
+
+  public Command[] getScoringCommands() {
+    // L1, L2, L3, L4
+    return new Command[] {
+      Commands.runOnce(() -> superstructure.setState(2), superstructure)
+          .andThen(Commands.waitUntil(superstructure::atGoal))
+          .andThen(new WaitCommand(0.1).deadlineFor(claw.runForward()))
+          .andThen(claw.stopCommand())
+          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure)),
+      Commands.runOnce(() -> superstructure.setState(3), superstructure)
+          .andThen(Commands.waitUntil(superstructure::atGoal))
+          .andThen(new WaitCommand(0.1).deadlineFor(claw.runForward()))
+          .andThen(claw.stopCommand())
+          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure)),
+      Commands.runOnce(() -> superstructure.setState(4), superstructure)
+          .andThen(Commands.waitUntil(superstructure::atGoal))
+          .andThen(new WaitCommand(0.1).deadlineFor(claw.runForward()))
+          .andThen(claw.stopCommand())
+          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure)),
+      Commands.runOnce(() -> superstructure.setState(5), superstructure)
+          .andThen(Commands.waitUntil(superstructure::atGoal))
+          .andThen(new WaitCommand(0.1).deadlineFor(claw.runForward()))
+          .andThen(claw.stopCommand())
+          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure))
+    };
   }
 }

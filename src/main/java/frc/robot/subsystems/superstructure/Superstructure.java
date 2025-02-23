@@ -32,6 +32,8 @@ public class Superstructure extends SubsystemBase {
 
   private final Supplier<Pose2d> poseSupplier;
 
+  private boolean atSetpoint = false;
+
   public Superstructure(Elevator elevator, Wrist wrist, Supplier<Pose2d> pose) {
     this.elevator = elevator;
     this.wrist = wrist;
@@ -52,7 +54,7 @@ public class Superstructure extends SubsystemBase {
       wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
       Logger.recordOutput(
           "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
-      if (!elevator.atSetpoint()
+      if (Math.abs(elevatorSetpoint - elevator.getHeight()) > 0.1
           && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
               && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
         wrist.setSetpoint(WristConstants.MOVE_ANGLE);
@@ -60,14 +62,20 @@ public class Superstructure extends SubsystemBase {
         elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(wristSetpoint);
       }
+      atSetpoint =
+          Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
+              && Math.abs(wristSetpoint - wrist.getAngle()) < 0.05;
+
     } else {
       Logger.recordOutput("Superstructure/State", "MANUAL");
       elevator.runSetpoint(elevatorSetpoint);
       wrist.setSetpoint(wristSetpoint);
+      atSetpoint = elevator.atSetpoint() && wrist.atSetpoint();
     }
   }
 
   public void setState(int state) {
+    atSetpoint = false;
     manualControl = false;
     superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
@@ -112,7 +120,7 @@ public class Superstructure extends SubsystemBase {
 
   @AutoLogOutput(key = "Superstructure/AtGoal")
   public boolean atGoal() {
-    return elevator.atSetpoint() && wrist.atSetpoint();
+    return atSetpoint;
   }
 
   public void algaeMode() {

@@ -21,6 +21,7 @@ public class DriveToPose extends Command {
 
   Drive drive;
   Pose2d target;
+  boolean isDone = false;
 
   public DriveToPose(Drive drive, Pose2d targetPose) {
     this.drive = drive;
@@ -40,6 +41,7 @@ public class DriveToPose extends Command {
 
   @Override
   public void initialize() {
+    isDone = false;
     xController.reset(drive.getPose().getX());
     yController.reset(drive.getPose().getY());
     angleController.reset(drive.getPose().getRotation().getRadians());
@@ -70,11 +72,13 @@ public class DriveToPose extends Command {
 
     drive.runVelocity(speeds);
     Logger.recordOutput("PoseAlignment/AtGoal", isFinished());
+
+    isDone = xController.atGoal() && yController.atGoal() && angleController.atGoal();
   }
 
   @Override
   public boolean isFinished() {
-    return xController.atGoal() && yController.atGoal() && angleController.atGoal();
+    return isDone;
   }
 
   @Override
@@ -83,6 +87,7 @@ public class DriveToPose extends Command {
   }
 
   public void setNewTarget(Pose2d target) {
+    isDone = false;
     this.target = target;
 
     xController.setGoal(target.getX());
