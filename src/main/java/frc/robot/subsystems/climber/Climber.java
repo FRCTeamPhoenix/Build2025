@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
@@ -14,7 +13,6 @@ public class Climber extends SubsystemBase {
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
   private final PIDController controller;
-  private final PhoenixGravFF ff;
 
   private Double setpoint = 0.0;
 
@@ -24,15 +22,12 @@ public class Climber extends SubsystemBase {
     switch (Constants.CURRENT_MODE) {
       case REAL:
         controller = new PIDController(0.0, 0.0, 0.0);
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
       case SIM:
         controller = new PIDController(1.0, 0.0, 0.0);
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
       default:
         controller = new PIDController(0, 0, 0);
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
     }
 

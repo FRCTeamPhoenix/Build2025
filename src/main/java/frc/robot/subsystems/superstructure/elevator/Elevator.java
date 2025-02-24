@@ -109,4 +109,8 @@ public class Elevator {
   public boolean atSetpoint() {
     return pidController.atGoal();
   }
+
+  public void resetController() {
+    pidController.reset(inputs.heightMeters);
+  }
 }

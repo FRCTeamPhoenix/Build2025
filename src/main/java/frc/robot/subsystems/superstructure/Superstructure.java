@@ -57,6 +57,7 @@ public class Superstructure extends SubsystemBase {
       if (Math.abs(elevatorSetpoint - elevator.getHeight()) > 0.1
           && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
               && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
+        elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(WristConstants.MOVE_ANGLE);
       } else {
         elevator.runSetpoint(elevatorSetpoint);
@@ -64,7 +65,7 @@ public class Superstructure extends SubsystemBase {
       }
       atSetpoint =
           Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
-              && Math.abs(wristSetpoint - wrist.getAngle()) < 0.05;
+              && Math.abs(wristSetpoint - wrist.getAngle()) < 0.02;
 
     } else {
       Logger.recordOutput("Superstructure/State", "MANUAL");
@@ -126,7 +127,7 @@ public class Superstructure extends SubsystemBase {
   public void algaeMode() {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     Pose2d pose = poseSupplier.get();
 

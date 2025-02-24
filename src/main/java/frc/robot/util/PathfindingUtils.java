@@ -52,7 +52,7 @@ public class PathfindingUtils {
   public static Pose2d[] generateZone() {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
     Pose2d reefCenter =
         isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
 
@@ -67,7 +67,7 @@ public class PathfindingUtils {
   public static Pose2d getZoneReefPose(Pose2d odometryPose, Transform2d buffer) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     Pose2d targetPose = odometryPose;
     Pose3d[] reefPoses =
@@ -103,7 +103,7 @@ public class PathfindingUtils {
   public static Pose2d getClosestPlayerStation(Pose2d odometryPose, Transform2d buffer) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     Pose2d[] stations =
         isRed

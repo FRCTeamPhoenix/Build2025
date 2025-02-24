@@ -16,7 +16,7 @@ public class ProcessorAlign extends DriveToPose {
   public void initialize() {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     setNewTarget(isRed ? PathfindingConstants.RED_PROCESSOR : PathfindingConstants.BLUE_PROCESSOR);
     super.initialize();

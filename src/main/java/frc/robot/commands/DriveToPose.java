@@ -32,7 +32,9 @@ public class DriveToPose extends Command {
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
     angleController.setGoal(target.getRotation().getRadians());
-    angleController.setTolerance(0.005);
+    xController.setTolerance(0.01);
+    yController.setTolerance(0.01);
+    angleController.setTolerance(0.01);
 
     Logger.recordOutput("PoseAlignment/Target", target);
 
@@ -41,10 +43,10 @@ public class DriveToPose extends Command {
 
   @Override
   public void initialize() {
-    isDone = false;
     xController.reset(drive.getPose().getX());
     yController.reset(drive.getPose().getY());
     angleController.reset(drive.getPose().getRotation().getRadians());
+    isDone = false;
     Logger.recordOutput("PoseAlignment/AtGoal", false);
   }
 
@@ -71,9 +73,14 @@ public class DriveToPose extends Command {
     Logger.recordOutput("PoseAlignment/LazyTrajectory", lazyTrajectory);
 
     drive.runVelocity(speeds);
-    Logger.recordOutput("PoseAlignment/AtGoal", isFinished());
-
     isDone = xController.atGoal() && yController.atGoal() && angleController.atGoal();
+
+    Logger.recordOutput(
+        "PoseAlignment/AtGoal",
+        xController.atGoal() && yController.atGoal() && angleController.atGoal());
+    Logger.recordOutput("PoseAlignment/ControllerStates/XController", xController.atGoal());
+    Logger.recordOutput("PoseAlignment/ControllerStates/YController", yController.atGoal());
+    Logger.recordOutput("PoseAlignment/ControllerStates/AngleController", angleController.atGoal());
   }
 
   @Override
@@ -87,13 +94,12 @@ public class DriveToPose extends Command {
   }
 
   public void setNewTarget(Pose2d target) {
-    isDone = false;
     this.target = target;
 
     xController.setGoal(target.getX());
     yController.setGoal(target.getY());
     angleController.setGoal(target.getRotation().getRadians());
-
+    isDone = false;
     Logger.recordOutput("PoseAlignment/Target", target);
   }
 

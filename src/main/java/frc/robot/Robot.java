@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.PathfindingConstants;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -115,6 +116,13 @@ public class Robot extends LoggedRobot {
 
     field.setRobotPose(robotContainer.getDrive().getPose());
     SmartDashboard.putData("Field", field);
+
+    Logger.recordOutput(
+        "Dist",
+        PathfindingConstants.RED_PLAYER_STATIONS[1]
+            .minus(robotContainer.getDrive().getPose())
+            .getTranslation()
+            .getNorm());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -129,6 +137,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
+
+    robotContainer.getElevator().resetController();
+    robotContainer.getWrist().resetController();
+
+    robotContainer.getSuperstructure().setState(0);
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -150,6 +163,9 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    robotContainer.getElevator().resetController();
+    robotContainer.getWrist().resetController();
+
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }

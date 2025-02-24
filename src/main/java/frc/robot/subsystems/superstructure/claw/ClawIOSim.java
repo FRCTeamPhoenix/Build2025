@@ -3,6 +3,7 @@ package frc.robot.subsystems.superstructure.claw;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ClawConstants;
 
 public class ClawIOSim implements ClawIO {
@@ -12,9 +13,15 @@ public class ClawIOSim implements ClawIO {
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(gearbox, 0.003, ClawConstants.GEAR_RATIO), gearbox);
 
+  public ClawIOSim() {
+    SmartDashboard.putBoolean("ClawSensorSim", false);
+  }
+
   @Override
   public void updateInputs(ClawIOInputs inputs) {
     motorSim.update(0.02);
+
+    inputs.intakeSensor = SmartDashboard.getBoolean("ClawSensorSim", false);
 
     inputs.positionRotations = motorSim.getAngularPositionRotations();
     inputs.velocityRotationsPerSec = motorSim.getAngularVelocityRPM();

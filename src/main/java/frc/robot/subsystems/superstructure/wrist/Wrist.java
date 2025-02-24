@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants;
 import frc.robot.Constants.WristConstants;
-import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,11 +17,10 @@ public class Wrist {
   private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
   private final ProfiledPIDController controller;
-  private final PhoenixGravFF ff;
 
   private Double setpoint = 0.0;
 
-  private final Alert wristAlert = new Alert("Wrist  bE motor is disconnected", AlertType.kError);
+  private final Alert wristAlert = new Alert("Wrist motor is disconnected", AlertType.kError);
 
   public Wrist(WristIO io) {
     this.io = io;
@@ -36,7 +34,6 @@ public class Wrist {
                 1,
                 new TrapezoidProfile.Constraints(
                     Units.degreesToRadians(180), Units.degreesToRadians(120)));
-        ff = new PhoenixGravFF(0.05, 0.0, 0.0, 0.17);
         break;
       case SIM:
         controller =
@@ -46,7 +43,6 @@ public class Wrist {
                 1,
                 new TrapezoidProfile.Constraints(
                     Units.degreesToRadians(180), Units.degreesToRadians(120)));
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.195);
         break;
       default:
         controller =
@@ -56,7 +52,6 @@ public class Wrist {
                 0,
                 new TrapezoidProfile.Constraints(
                     Units.degreesToRadians(180), Units.degreesToRadians(120)));
-        ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
         break;
     }
 
@@ -102,5 +97,9 @@ public class Wrist {
 
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.velocityRad);
+  }
+
+  public void resetController() {
+    controller.reset(inputs.angle.getRadians());
   }
 }
