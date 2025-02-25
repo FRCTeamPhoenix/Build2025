@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.commands.BranchAlign;
+import frc.robot.commands.DriveToPose;
 import frc.robot.subsystems.drive.Drive;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class AutoComposer {
 
   public static Command composeAuto(
       String routine,
-      Supplier<Command[]> scoringCommand,
+      Supplier<Command[]> elevatorCommands,
+      Supplier<Command> scoringCommand,
       Supplier<Command> intakeCommand,
       Drive drive) {
     Command returnCommand = Commands.none();
@@ -30,10 +32,10 @@ public class AutoComposer {
       String[] individuals = routine.split("\\.");
       for (String individual : individuals) {
         if (Character.isDigit(individual.charAt(0))) {
-          commandArray.add(scoringRoutine(individual, scoringCommand, drive));
+          commandArray.add(scoringRoutine(individual, elevatorCommands, scoringCommand, drive));
         }
         if (individual.charAt(0) == 'i') {
-          commandArray.add(intakingRoutine(individual, intakeCommand));
+          commandArray.add(intakingRoutine(individual, intakeCommand, drive));
         }
       }
     } catch (Exception e) {
@@ -49,7 +51,10 @@ public class AutoComposer {
   }
 
   public static Command scoringRoutine(
-      String routine, Supplier<Command[]> scoringCommands, Drive drive) {
+      String routine,
+      Supplier<Command[]> elevatorCommands,
+      Supplier<Command> scoringCommand,
+      Drive drive) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
@@ -63,21 +68,31 @@ public class AutoComposer {
 
     try {
       int reefFace = routineSplit[0] - '0';
+      int level = routineSplit[2] - '0';
+
       if (routineSplit[1] == 'a') {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                    reefPoses[reefFace].toPose2d().plus(PathfindingConstants.REEF_BUFFER_TRANSFORM),
+                    reefPoses[reefFace - 1]
+                        .toPose2d()
+                        .plus(PathfindingConstants.LEFT_BRANCH_BUFFER),
                     PathfindingConstants.CONSTRAINTS)
-                .andThen(new DeferredCommand(() -> new BranchAlign(drive, false), Set.of()));
+                .andThen(
+                    new DeferredCommand(() -> new BranchAlign(drive, false), Set.of())
+                        .alongWith(elevatorCommands.get()[level - 1]));
       } else {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                    reefPoses[reefFace].toPose2d().plus(PathfindingConstants.REEF_BUFFER_TRANSFORM),
+                    reefPoses[reefFace - 1]
+                        .toPose2d()
+                        .plus(PathfindingConstants.RIGHT_BRANCH_BUFFER),
                     PathfindingConstants.CONSTRAINTS)
-                .andThen(new DeferredCommand(() -> new BranchAlign(drive, true), Set.of()));
+                .andThen(
+                    new DeferredCommand(() -> new BranchAlign(drive, true), Set.of())
+                        .alongWith(elevatorCommands.get()[level - 1]));
       }
-      int level = routineSplit[2] - '0';
-      returnCommand = returnCommand.andThen(scoringCommands.get()[level - 1]);
+      returnCommand =
+          returnCommand.andThen(scoringCommand.get()).andThen(elevatorCommands.get()[4]);
     } catch (Exception e) {
       System.out.println("Failed to generate scoring command");
       returnCommand = Commands.none();
@@ -86,7 +101,8 @@ public class AutoComposer {
     return returnCommand;
   }
 
-  public static Command intakingRoutine(String routine, Supplier<Command> intakeCommand) {
+  public static Command intakingRoutine(
+      String routine, Supplier<Command> intakeCommand, Drive drive) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
@@ -104,13 +120,19 @@ public class AutoComposer {
       if (routineSplit[1] == 'r') {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                playerStations[0].plus(PathfindingConstants.CENTER_PLAYER_STATION),
-                PathfindingConstants.CONSTRAINTS);
+                    playerStations[1].plus(PathfindingConstants.ALIGN_STATION),
+                    PathfindingConstants.CONSTRAINTS)
+                .andThen(
+                    new DriveToPose(
+                        drive, playerStations[1].plus(PathfindingConstants.CENTER_PLAYER_STATION)));
       } else {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                playerStations[1].plus(PathfindingConstants.CENTER_PLAYER_STATION),
-                PathfindingConstants.CONSTRAINTS);
+                    playerStations[0].plus(PathfindingConstants.ALIGN_STATION),
+                    PathfindingConstants.CONSTRAINTS)
+                .andThen(
+                    new DriveToPose(
+                        drive, playerStations[0].plus(PathfindingConstants.CENTER_PLAYER_STATION)));
       }
       returnCommand = returnCommand.andThen(intakeCommand.get());
     } catch (Exception e) {

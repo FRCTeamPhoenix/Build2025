@@ -42,7 +42,7 @@ public class Elevator {
     switch (Constants.CURRENT_MODE) {
       case REAL:
         pidController =
-            new ProfiledPIDController(11, 1, 0.0, new TrapezoidProfile.Constraints(3, 3));
+            new ProfiledPIDController(11, 1.0, 1.0, new TrapezoidProfile.Constraints(3, 3));
         feedforward = new PhoenixGravFF(0.316, 0.506, 0.0, 0.58);
         break;
       case SIM:

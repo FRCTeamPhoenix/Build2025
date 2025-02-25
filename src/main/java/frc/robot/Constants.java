@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -111,15 +111,20 @@ public final class Constants {
 
   public static final class PathfindingConstants {
     public static final PathConstraints CONSTRAINTS =
-        new PathConstraints(4.0, 3.0, Units.degreesToRadians(720), Units.degreesToRadians(1080));
+        new PathConstraints(
+            DriveConstants.MAX_LINEAR_SPEED,
+            4.0,
+            Units.degreesToRadians(720),
+            Units.degreesToRadians(1080));
 
-    public static final Constraints LINEAR_CONSTRAINTS = new Constraints(3, 3);
+    public static final Constraints LINEAR_CONSTRAINTS =
+        new Constraints(DriveConstants.MAX_LINEAR_SPEED, 4);
     public static final Constraints ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
-    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(1, 2);
+    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(2, 2);
     public static final Constraints FINE_ANGLE_CONSTRAINTS =
-        new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(360));
+        new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
 
     public static final Pose3d[] BLUE_REEF_TAG_POSES =
         new Pose3d[] {
@@ -181,11 +186,16 @@ public final class Constants {
         };
 
     // 6.468
-    public static final double BRANCH_BUFFER = 0.63;
+    public static final double BRANCH_BUFFER = 0.55;
     public static final Transform2d LEFT_BRANCH =
         new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
         new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(6.468), Rotation2d.k180deg);
+
+    public static final Transform2d LEFT_BRANCH_BUFFER =
+        new Transform2d(1, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
+    public static final Transform2d RIGHT_BRANCH_BUFFER =
+        new Transform2d(1, Units.inchesToMeters(6.468), Rotation2d.k180deg);
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
@@ -199,9 +209,11 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = 0.72;
+    public static final double STATION_BUFFER = 0.68;
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
+
+    public static final Transform2d ALIGN_STATION = new Transform2d(1, 0, Rotation2d.k180deg);
 
     public static final Transform2d PROCESSOR_BUFFER =
         new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.12, 0, Rotation2d.k180deg);
@@ -271,13 +283,31 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.26, 0.375, 0.65, 0.975, 1.7, 0.465, 0.85, 0
+      0, 0.301, 0.375, 0.545, 0.92, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.1, 0.63, -0.438, -0.438, -0.438, -0.565, 0, 0, 0,
+      WristConstants.MAX_ANGLE - 0.1,
+      0.63,
+      -0.455,
+      -0.455,
+      -0.477,
+      -0.723,
+      0,
+      0,
+      0,
+      WristConstants.MAX_ANGLE - 0.1
     };
     public static final String[] STATE_NAMES = {
-      "STOWED", "INTAKE", "L1", "L2", "L3", "L4", "ALGAE LOW", "ALGAE HIGH", "PROCESSOR/ZERO"
+      "STOWED",
+      "INTAKE",
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "ALGAE LOW",
+      "ALGAE HIGH",
+      "PROCESSOR/ZERO",
+      "SPEED MOVE"
     };
   }
 

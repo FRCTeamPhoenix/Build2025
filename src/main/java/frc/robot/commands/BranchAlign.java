@@ -12,8 +12,8 @@ public class BranchAlign extends DriveToPose {
 
   public BranchAlign(Drive drive, boolean alignToRight) {
     super(drive, new Pose2d());
-    // setNewConstraints(
-    //  PathfindingConstants.FINE_LINEAR_CONSTRAINTS, PathfindingConstants.FINE_ANGLE_CONSTRAINTS);
+    setNewConstraints(
+        PathfindingConstants.FINE_LINEAR_CONSTRAINTS, PathfindingConstants.FINE_ANGLE_CONSTRAINTS);
     this.alignToRight = alignToRight;
   }
 

@@ -70,7 +70,6 @@ import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
 import frc.robot.util.AutoComposer;
-import java.util.Set;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -255,7 +254,11 @@ public class RobotContainer {
     autoChooser.addOption(
         "Composer Test",
         AutoComposer.composeAuto(
-                    "1a4.ir1", this::getScoringCommands, this::getIntakingCommand, drive));
+            "4a4.ir1.1a4",
+            this::getElevatorCommands,
+            this::getScoringCommand,
+            this::getIntakingCommand,
+            drive));
 
     SmartDashboard.putData(CommandScheduler.getInstance());
     // Configure the button bindings
@@ -309,7 +312,15 @@ public class RobotContainer {
         Commands.runOnce(() -> superstructure.setState(0), superstructure));
 
     // Intake function
-    operatorLBTrigger.whileTrue(getIntakingCommand());
+    operatorLBTrigger
+        .whileTrue(
+            Commands.run(() -> superstructure.setState(1), superstructure)
+                .alongWith(claw.runReverse())
+                .until(claw::getSensor)
+                .andThen(
+                    Commands.runOnce(() -> superstructure.setState(0), superstructure)
+                        .alongWith(claw.stopCommand())))
+        .onFalse(claw.stopCommand());
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
@@ -397,38 +408,28 @@ public class RobotContainer {
     return operatorController;
   }
 
-  public Command[] getScoringCommands() {
+  public Command[] getElevatorCommands() {
     // L1, L2, L3, L4
     return new Command[] {
       Commands.runOnce(() -> superstructure.setState(2), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5))
-          .andThen(new WaitCommand(0.5).deadlineFor(claw.runForward()))
-          .andThen(claw.stopCommand())
-          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure))
           .andThen(new WaitCommand(0.5)),
       Commands.runOnce(() -> superstructure.setState(3), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5))
-          .andThen(new WaitCommand(0.5).deadlineFor(claw.runForward()))
-          .andThen(claw.stopCommand())
-          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure))
           .andThen(new WaitCommand(0.5)),
       Commands.runOnce(() -> superstructure.setState(4), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5))
-          .andThen(new WaitCommand(0.5).deadlineFor(claw.runForward()))
-          .andThen(claw.stopCommand())
-          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure))
           .andThen(new WaitCommand(0.5)),
       Commands.runOnce(() -> superstructure.setState(5), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5))
-          .andThen(new WaitCommand(0.5).deadlineFor(claw.runForward()))
-          .andThen(claw.stopCommand())
-          .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure))
           .andThen(new WaitCommand(0.5)),
+      Commands.runOnce(() -> superstructure.setState(9), superstructure)
+          .andThen(new WaitCommand(0.5))
     };
+  }
+
+  public Command getScoringCommand() {
+    return new WaitCommand(0.25).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {
@@ -436,7 +437,7 @@ public class RobotContainer {
         .alongWith(claw.runReverse())
         .until(claw::getSensor)
         .andThen(
-            Commands.runOnce(() -> superstructure.setState(0), superstructure)
+            Commands.runOnce(() -> superstructure.setState(9), superstructure)
                 .alongWith(claw.stopCommand()));
   }
 }
