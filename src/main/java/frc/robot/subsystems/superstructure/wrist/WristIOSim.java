@@ -1,7 +1,6 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -25,7 +24,7 @@ public class WristIOSim implements WristIO {
   @Override
   public void updateInputs(WristIOInputs inputs) {
     sim.update(0.02);
-    inputs.angle = Rotation2d.fromRadians(sim.getAngleRads());
+    inputs.angle = sim.getAngleRads();
     inputs.velocityRad = sim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = Math.abs(sim.getCurrentDrawAmps());

@@ -47,12 +47,12 @@ public class Elevator {
         break;
       case SIM:
         pidController =
-            new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 3));
+            new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 1.5));
         feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.4);
         break;
       default:
         pidController =
-            new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 3));
+            new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 1.5));
         feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
     }
   }
@@ -69,9 +69,9 @@ public class Elevator {
 
       pidController.setGoal(setpoint);
 
-      io.setVoltage(
-          pidController.calculate(inputs.heightMeters)
-              + feedforward.calculate(pidController.getSetpoint().velocity, 0, 0));
+      io.setPositionTarget(setpoint);
+      // pidController.calculate(inputs.heightMeters)
+      // + feedforward.calculate(pidController.getSetpoint().velocity, 0, 0));
     } else {
       Logger.recordOutput("Elevator/Setpoint", -1.0);
     }

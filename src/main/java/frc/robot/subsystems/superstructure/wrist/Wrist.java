@@ -2,6 +2,7 @@ package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
@@ -65,8 +66,8 @@ public class Wrist {
     if (setpoint != null) {
       Logger.recordOutput("Wrist/Setpoint", setpoint);
       controller.setGoal(setpoint);
-      Logger.recordOutput("output", controller.calculate(inputs.angle.getRadians()));
-      io.setVoltage(controller.calculate(inputs.angle.getRadians(), setpoint));
+      // io.setVoltage(controller.calculate(inputs.angle.getRadians(), setpoint));
+      io.setPositionTarget(Rotation2d.fromRadians(setpoint));
     } else {
       Logger.recordOutput("Wrist/Setpoint", -1);
     }
@@ -78,7 +79,7 @@ public class Wrist {
   }
 
   public double getAngle() {
-    return inputs.angle.getRadians();
+    return inputs.angle;
   }
 
   public double getSetpoint() {
@@ -97,9 +98,5 @@ public class Wrist {
 
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.velocityRad);
-  }
-
-  public void resetController() {
-    controller.reset(inputs.angle.getRadians());
   }
 }

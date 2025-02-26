@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -69,7 +68,6 @@ import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.visualizer.Visualizer;
-import frc.robot.util.AutoComposer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -251,16 +249,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    autoChooser.addOption(
-        "Composer Test",
-        AutoComposer.composeAuto(
-            "4a4.ir1.1a4",
-            this::getElevatorCommands,
-            this::getScoringCommand,
-            this::getIntakingCommand,
-            drive));
-
-    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putString("Composer Input", "1a4");
+    SmartDashboard.putBoolean("Use Auto Composer", false);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -423,8 +413,7 @@ public class RobotContainer {
       Commands.runOnce(() -> superstructure.setState(5), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(9), superstructure)
-          .andThen(new WaitCommand(0.5))
+      Commands.runOnce(() -> superstructure.setState(9), superstructure).andThen(new WaitCommand(1))
     };
   }
 

@@ -92,7 +92,15 @@ public class AutoComposer {
                         .alongWith(elevatorCommands.get()[level - 1]));
       }
       returnCommand =
-          returnCommand.andThen(scoringCommand.get()).andThen(elevatorCommands.get()[4]);
+          returnCommand
+              .andThen(scoringCommand.get())
+              .andThen(
+                  elevatorCommands.get()[4].alongWith(
+                      new DriveToPose(
+                          drive,
+                          reefPoses[reefFace - 1]
+                              .toPose2d()
+                              .plus(PathfindingConstants.PATHING_BUFFER))));
     } catch (Exception e) {
       System.out.println("Failed to generate scoring command");
       returnCommand = Commands.none();
@@ -120,7 +128,7 @@ public class AutoComposer {
       if (routineSplit[1] == 'r') {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                    playerStations[1].plus(PathfindingConstants.ALIGN_STATION),
+                    playerStations[1].plus(PathfindingConstants.PATHING_BUFFER),
                     PathfindingConstants.CONSTRAINTS)
                 .andThen(
                     new DriveToPose(
@@ -128,7 +136,7 @@ public class AutoComposer {
       } else {
         returnCommand =
             AutoBuilder.pathfindToPose(
-                    playerStations[0].plus(PathfindingConstants.ALIGN_STATION),
+                    playerStations[0].plus(PathfindingConstants.PATHING_BUFFER),
                     PathfindingConstants.CONSTRAINTS)
                 .andThen(
                     new DriveToPose(

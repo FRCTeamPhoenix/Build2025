@@ -1,22 +1,25 @@
 package frc.robot.subsystems.superstructure.wrist;
 
+import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
@@ -30,6 +33,7 @@ public class WristIOTalonFX implements WristIO {
 
   private final boolean isInverted = true;
   private final boolean brakeMode = true;
+  final MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public WristIOTalonFX() {
     var config = new TalonFXConfiguration();
@@ -38,6 +42,20 @@ public class WristIOTalonFX implements WristIO {
     config.MotorOutput.Inverted =
         isInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     config.MotorOutput.NeutralMode = brakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+
+    var slot0Configs = config.Slot0;
+    slot0Configs.kP = 5; // A position error of 2.5 rotations results in 12 V output
+    slot0Configs.kI = 0; // no output for integrated error
+    slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.1 V output
+
+    // set Motion Magic settings
+    var motionMagicConfigs = config.MotionMagic;
+    motionMagicConfigs.MotionMagicCruiseVelocity =
+        Units.degreesToRotations(720)
+            * WristConstants.GEAR_RATIO; // Target cruise velocity of 80 rps
+    motionMagicConfigs.MotionMagicAcceleration =
+        Units.degreesToRotations(720)
+            * WristConstants.GEAR_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
     wristTalon.getConfigurator().apply(config);
 
     position = wristTalon.getPosition();
@@ -47,6 +65,16 @@ public class WristIOTalonFX implements WristIO {
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     wristTalon.optimizeBusUtilization();
+
+    Logger.recordOutput(
+        "Wrist/ResetWorked",
+        wristTalon
+            .setPosition(
+                Rotation2d.fromRotations(encoder.getAbsPosition())
+                        .plus(Rotation2d.kZero)
+                        .getRotations()
+                    * WristConstants.GEAR_RATIO)
+            .isOK());
   }
 
   @Override
@@ -54,7 +82,7 @@ public class WristIOTalonFX implements WristIO {
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
 
     inputs.connected = status.isOK();
-    inputs.angle = Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero);
+    inputs.angle = position.getValue().in(Radian) / WristConstants.GEAR_RATIO;
     inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / WristConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
@@ -62,6 +90,17 @@ public class WristIOTalonFX implements WristIO {
 
   @Override
   public void setVoltage(double voltage) {
-    wristTalon.setControl(new VoltageOut(voltage));
+    // wristTalon.setControl(new VoltageOut(voltage));
+  }
+
+  @Override
+  public void setPositionTarget(Rotation2d angle) {
+    Logger.recordOutput(
+        "Wrist/RequestOK",
+        wristTalon
+            .setControl(
+                request.withPosition(
+                    angle.minus(Rotation2d.kZero).getRotations() * WristConstants.GEAR_RATIO))
+            .isOK());
   }
 }

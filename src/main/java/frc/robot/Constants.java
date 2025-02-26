@@ -122,7 +122,7 @@ public final class Constants {
     public static final Constraints ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
 
-    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(2, 2);
+    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(2, 0.5);
     public static final Constraints FINE_ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
 
@@ -213,7 +213,7 @@ public final class Constants {
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 
-    public static final Transform2d ALIGN_STATION = new Transform2d(1, 0, Rotation2d.k180deg);
+    public static final Transform2d PATHING_BUFFER = new Transform2d(1.5, 0, Rotation2d.k180deg);
 
     public static final Transform2d PROCESSOR_BUFFER =
         new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.12, 0, Rotation2d.k180deg);
@@ -286,7 +286,7 @@ public final class Constants {
       0, 0.301, 0.375, 0.545, 0.92, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.1,
+      WristConstants.MAX_ANGLE - 0.3,
       0.63,
       -0.455,
       -0.455,
