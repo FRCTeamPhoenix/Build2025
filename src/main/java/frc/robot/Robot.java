@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.util.AutoComposer;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
@@ -120,7 +120,7 @@ public class Robot extends LoggedRobot {
 
     Logger.recordOutput(
         "Dist",
-        PathfindingConstants.RED_PLAYER_STATIONS[1]
+        FieldConstants.RED_PLAYER_STATIONS[1]
             .minus(robotContainer.getDrive().getPose())
             .getTranslation()
             .getNorm());
@@ -137,19 +137,14 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand =
+        AutoComposer.composeAuto(
+            "1a4.rrr",
+            robotContainer::getElevatorCommands,
+            robotContainer::getScoringCommand,
+            robotContainer::getIntakingCommand,
+            robotContainer.getDrive());
 
-    if (SmartDashboard.getBoolean("Use Auto Composer", false)) {
-      autonomousCommand =
-          AutoComposer.composeAuto(
-              SmartDashboard.getString("Composer Input", "1a4"),
-              robotContainer::getElevatorCommands,
-              robotContainer::getScoringCommand,
-              robotContainer::getIntakingCommand,
-              robotContainer.getDrive());
-    }
-
-    robotContainer.getElevator().resetController();
     robotContainer.getSuperstructure().setState(0);
 
     // schedule the autonomous command (example)
@@ -172,7 +167,6 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    robotContainer.getElevator().resetController();
 
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());

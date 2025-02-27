@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.PathfindingUtils;
 
@@ -14,8 +14,7 @@ public class ZoneSnap extends DriveToPose {
   @Override
   public void initialize() {
     setNewTarget(
-        PathfindingUtils.getZoneReefPose(
-            drive.getPose(), PathfindingConstants.REEF_BUFFER_TRANSFORM));
+        PathfindingUtils.getZoneReefPose(drive.getPose(), FieldConstants.REEF_BUFFER_TRANSFORM));
     super.initialize();
   }
 }

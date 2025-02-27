@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
@@ -66,15 +65,9 @@ public class WristIOTalonFX implements WristIO {
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     wristTalon.optimizeBusUtilization();
 
-    Logger.recordOutput(
-        "Wrist/ResetWorked",
-        wristTalon
-            .setPosition(
-                Rotation2d.fromRotations(encoder.getAbsPosition())
-                        .plus(Rotation2d.kZero)
-                        .getRotations()
-                    * WristConstants.GEAR_RATIO)
-            .isOK());
+    wristTalon.setPosition(
+        Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
+            * WristConstants.GEAR_RATIO);
   }
 
   @Override
@@ -95,12 +88,8 @@ public class WristIOTalonFX implements WristIO {
 
   @Override
   public void setPositionTarget(Rotation2d angle) {
-    Logger.recordOutput(
-        "Wrist/RequestOK",
-        wristTalon
-            .setControl(
-                request.withPosition(
-                    angle.minus(Rotation2d.kZero).getRotations() * WristConstants.GEAR_RATIO))
-            .isOK());
+    wristTalon.setControl(
+        request.withPosition(
+            angle.minus(Rotation2d.kZero).getRotations() * WristConstants.GEAR_RATIO));
   }
 }

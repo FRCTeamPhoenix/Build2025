@@ -1,8 +1,12 @@
 package frc.robot.subsystems.superstructure.wrist;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.WristConstants;
 
@@ -21,6 +25,14 @@ public class WristIOSim implements WristIO {
           WristConstants.MAX_ANGLE);
   private double appliedVolts = 0.0;
 
+  private final ProfiledPIDController controller =
+      new ProfiledPIDController(
+          5,
+          1,
+          1,
+          new TrapezoidProfile.Constraints(
+              Units.degreesToRadians(180), Units.degreesToRadians(120)));
+
   @Override
   public void updateInputs(WristIOInputs inputs) {
     sim.update(0.02);
@@ -33,6 +45,13 @@ public class WristIOSim implements WristIO {
   @Override
   public void setVoltage(double volts) {
     appliedVolts = MathUtil.clamp(volts, -12, 12);
+    sim.setInputVoltage(appliedVolts);
+  }
+
+  @Override
+  public void setPositionTarget(Rotation2d angle) {
+    controller.setGoal(angle.getRadians());
+    appliedVolts = controller.calculate(sim.getAngleRads());
     sim.setInputVoltage(appliedVolts);
   }
 }

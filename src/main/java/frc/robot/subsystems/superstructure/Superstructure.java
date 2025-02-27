@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
@@ -133,11 +133,10 @@ public class Superstructure extends SubsystemBase {
 
     List<Pose2d> list =
         isRed
-            ? Arrays.asList(PathfindingConstants.ALGAE_RED_POSES)
-            : Arrays.asList(PathfindingConstants.ALGAE_BLUE_POSES);
+            ? Arrays.asList(FieldConstants.ALGAE_RED_POSES)
+            : Arrays.asList(FieldConstants.ALGAE_BLUE_POSES);
 
-    int[] states =
-        isRed ? PathfindingConstants.ALGAE_RED_STATES : PathfindingConstants.ALGAE_BLUE_STATES;
+    int[] states = isRed ? FieldConstants.ALGAE_RED_STATES : FieldConstants.ALGAE_BLUE_STATES;
 
     Pose2d targetPose = pose.nearest(list);
 

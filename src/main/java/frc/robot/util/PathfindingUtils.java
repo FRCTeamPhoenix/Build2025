@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,12 +53,11 @@ public class PathfindingUtils {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
-    Pose2d reefCenter =
-        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
+    Pose2d reefCenter = isRed ? FieldConstants.RED_REEF_CENTER : FieldConstants.BLUE_REEF_CENTER;
 
     List<Pose2d> zoneTrajectory = new ArrayList<Pose2d>();
 
-    for (Transform2d transform : PathfindingConstants.ZONE_TRANSFORMS) {
+    for (Transform2d transform : FieldConstants.ZONE_TRANSFORMS) {
       zoneTrajectory.add(reefCenter.plus(transform));
     }
     return zoneTrajectory.toArray(new Pose2d[0]);
@@ -71,18 +70,17 @@ public class PathfindingUtils {
 
     Pose2d targetPose = odometryPose;
     Pose3d[] reefPoses =
-        isRed ? PathfindingConstants.RED_REEF_TAG_POSES : PathfindingConstants.BLUE_REEF_TAG_POSES;
+        isRed ? FieldConstants.ZONE_ALIGN_RED_POSES : FieldConstants.ZONE_ALIGN_BLUE_POSES;
 
-    Pose2d reefCenter =
-        isRed ? PathfindingConstants.RED_REEF_CENTER : PathfindingConstants.BLUE_REEF_CENTER;
+    Pose2d reefCenter = isRed ? FieldConstants.RED_REEF_CENTER : FieldConstants.BLUE_REEF_CENTER;
 
     Transform2d translatedRobot = targetPose.minus(reefCenter);
 
     double theta =
         Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
 
-    if (Math.abs(translatedRobot.getX()) < PathfindingConstants.X_LIMIT
-        && Math.abs(translatedRobot.getY()) < PathfindingConstants.Y_LIMIT) {
+    if (Math.abs(translatedRobot.getX()) < FieldConstants.X_LIMIT
+        && Math.abs(translatedRobot.getY()) < FieldConstants.Y_LIMIT) {
       if (-30 < theta && theta < 30) {
         targetPose = reefPoses[0].toPose2d().plus(buffer);
       } else if (-30 > theta && theta > -90) {
@@ -106,9 +104,7 @@ public class PathfindingUtils {
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     Pose2d[] stations =
-        isRed
-            ? PathfindingConstants.RED_PLAYER_STATIONS
-            : PathfindingConstants.BLUE_PLAYER_STATIONS;
+        isRed ? FieldConstants.RED_PLAYER_STATIONS : FieldConstants.BLUE_PLAYER_STATIONS;
 
     Pose2d target = odometryPose.nearest(Arrays.asList(stations));
 

@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.PathfindingUtils;
 
@@ -15,7 +15,7 @@ public class DriveToPlayerStation extends DriveToPose {
   public void initialize() {
     setNewTarget(
         PathfindingUtils.getClosestPlayerStation(
-            drive.getPose(), PathfindingConstants.CENTER_PLAYER_STATION));
+            drive.getPose(), FieldConstants.CENTER_PLAYER_STATION));
     super.initialize();
   }
 }

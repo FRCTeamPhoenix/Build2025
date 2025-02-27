@@ -118,10 +118,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPositionTarget(double height) {
-    Logger.recordOutput(
-        "PositionTarget",
-        height * ElevatorConstants.GEAR_RATIO / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
-    Logger.recordOutput("ElevatorHeight", position.getValueAsDouble());
     elevatorTalon.setControl(
         request.withPosition(
             height

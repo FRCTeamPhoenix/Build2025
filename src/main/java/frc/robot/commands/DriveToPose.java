@@ -6,18 +6,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends Command {
 
   ProfiledPIDController xController =
-      new ProfiledPIDController(5, 0, 0, PathfindingConstants.LINEAR_CONSTRAINTS);
+      new ProfiledPIDController(5, 0, 0, AutoConstants.LINEAR_CONSTRAINTS);
   ProfiledPIDController yController =
-      new ProfiledPIDController(5, 0, 0, PathfindingConstants.LINEAR_CONSTRAINTS);
+      new ProfiledPIDController(5, 0, 0, AutoConstants.LINEAR_CONSTRAINTS);
   ProfiledPIDController angleController =
-      new ProfiledPIDController(3, 0, 0.2, PathfindingConstants.ANGLE_CONSTRAINTS);
+      new ProfiledPIDController(3, 0, 0.2, AutoConstants.ANGLE_CONSTRAINTS);
 
   Drive drive;
   Pose2d target;

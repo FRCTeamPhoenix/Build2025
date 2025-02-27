@@ -1,14 +1,10 @@
 package frc.robot.subsystems.superstructure.elevator;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.util.PhoenixUtils.PhoenixGravFF;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -19,9 +15,6 @@ public class Elevator {
 
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
-
-  private final ProfiledPIDController pidController;
-  private final PhoenixGravFF feedforward;
 
   private Double setpoint = 0.0;
 
@@ -38,23 +31,6 @@ public class Elevator {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-
-    switch (Constants.CURRENT_MODE) {
-      case REAL:
-        pidController =
-            new ProfiledPIDController(11, 1.0, 1.0, new TrapezoidProfile.Constraints(3, 3));
-        feedforward = new PhoenixGravFF(0.316, 0.506, 0.0, 0.58);
-        break;
-      case SIM:
-        pidController =
-            new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 1.5));
-        feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.4);
-        break;
-      default:
-        pidController =
-            new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(3, 1.5));
-        feedforward = new PhoenixGravFF(0.0, 0.0, 0.0, 0.0);
-    }
   }
 
   public void periodic() {
@@ -67,11 +43,7 @@ public class Elevator {
     if (setpoint != null) {
       Logger.recordOutput("Elevator/Setpoint", setpoint);
 
-      pidController.setGoal(setpoint);
-
       io.setPositionTarget(setpoint);
-      // pidController.calculate(inputs.heightMeters)
-      // + feedforward.calculate(pidController.getSetpoint().velocity, 0, 0));
     } else {
       Logger.recordOutput("Elevator/Setpoint", -1.0);
     }
@@ -92,7 +64,7 @@ public class Elevator {
   }
 
   public void stop() {
-    io.setVoltage(feedforward.calculate(0, 0, 0));
+    io.setVoltage(0);
     setpoint = null;
   }
 
@@ -107,10 +79,6 @@ public class Elevator {
 
   @AutoLogOutput(key = "Elevator/AtGoal")
   public boolean atSetpoint() {
-    return pidController.atGoal();
-  }
-
-  public void resetController() {
-    pidController.reset(inputs.heightMeters);
+    return Math.abs(setpoint - inputs.heightMeters) < 0.05;
   }
 }

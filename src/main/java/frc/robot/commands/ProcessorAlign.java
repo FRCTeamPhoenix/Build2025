@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 
 public class ProcessorAlign extends DriveToPose {
@@ -18,7 +18,7 @@ public class ProcessorAlign extends DriveToPose {
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
-    setNewTarget(isRed ? PathfindingConstants.RED_PROCESSOR : PathfindingConstants.BLUE_PROCESSOR);
+    setNewTarget(isRed ? FieldConstants.RED_PROCESSOR : FieldConstants.BLUE_PROCESSOR);
     super.initialize();
   }
 }
