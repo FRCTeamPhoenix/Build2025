@@ -32,7 +32,7 @@ public class Claw extends SubsystemBase {
   }
 
   public Command runForward() {
-    return Commands.runOnce(() -> setpoint = 5.0, this);
+    return Commands.runOnce(() -> setpoint = 3.0, this);
   }
 
   public Command runReverse() {

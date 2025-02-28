@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.util.AutoComposer;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
@@ -117,13 +116,6 @@ public class Robot extends LoggedRobot {
 
     field.setRobotPose(robotContainer.getDrive().getPose());
     SmartDashboard.putData("Field", field);
-
-    Logger.recordOutput(
-        "Dist",
-        FieldConstants.RED_PLAYER_STATIONS[1]
-            .minus(robotContainer.getDrive().getPose())
-            .getTranslation()
-            .getNorm());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -137,13 +129,15 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand =
-        AutoComposer.composeAuto(
-            "1a4.rrr",
-            robotContainer::getElevatorCommands,
-            robotContainer::getScoringCommand,
-            robotContainer::getIntakingCommand,
-            robotContainer.getDrive());
+    if (SmartDashboard.getBoolean("Use Auto Composer", false)) {
+      autonomousCommand =
+          AutoComposer.composeAuto(
+              SmartDashboard.getString("Composer Input", "1a4"),
+              robotContainer::getElevatorCommands,
+              robotContainer::getScoringCommand,
+              robotContainer::getIntakingCommand,
+              robotContainer.getDrive());
+    }
 
     robotContainer.getSuperstructure().setState(0);
 
@@ -168,6 +162,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
 
+    robotContainer.getSuperstructure().setState(0);
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }

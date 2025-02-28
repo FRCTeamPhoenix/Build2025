@@ -66,11 +66,6 @@ public class DriveCommands {
 
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
-          double slowDown = 1;
-          if (slowdownSupplier.getAsBoolean()) {
-            slowDown = 0.2;
-          }
-
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
           omega = Math.copySign(omega * omega, omega);
@@ -85,14 +80,25 @@ public class DriveCommands {
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                  omega * drive.getMaxAngularSpeedRadPerSec() * slowDown,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+
+          double slowDown = 1;
+          if (slowdownSupplier.getAsBoolean()) {
+            slowDown = 0.2;
+            drive.runVelocity(
+                new ChassisSpeeds(
+                    0,
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                    9));
+          } else {
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                    omega * drive.getMaxAngularSpeedRadPerSec() * slowDown,
+                    isFlipped
+                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                        : drive.getRotation()));
+          }
         },
         drive);
   }

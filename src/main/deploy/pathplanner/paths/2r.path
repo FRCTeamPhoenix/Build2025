@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.388032682986011,
-        "y": 2.1565195208518895
+        "x": 6.346727875154183,
+        "y": 2.194029013066319
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 1.25
       },
       "prevControl": {
-        "x": 2.190611220597432,
-        "y": 1.123559923386245
+        "x": 2.3476314582282964,
+        "y": 1.1032111267800095
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -126.0
   },
   "reversed": false,
-  "folder": "composer",
+  "folder": "dynamic",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 119.99999999999999

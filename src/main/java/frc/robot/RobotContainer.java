@@ -418,7 +418,7 @@ public class RobotContainer {
   }
 
   public Command getScoringCommand() {
-    return new WaitCommand(0.25).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
+    return new WaitCommand(0.5).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {
