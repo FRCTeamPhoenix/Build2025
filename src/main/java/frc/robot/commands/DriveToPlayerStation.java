@@ -1,21 +1,31 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.Constants.PathfindingConstants;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.PathfindingUtils;
 
 public class DriveToPlayerStation extends DriveToPose {
 
-  public DriveToPlayerStation(Drive drive) {
+  private boolean alignToRight;
+
+  public DriveToPlayerStation(Drive drive, boolean alignToRight) {
     super(drive, new Pose2d());
+    this.alignToRight = alignToRight;
   }
 
   @Override
   public void initialize() {
-    setNewTarget(
-        PathfindingUtils.getClosestPlayerStation(
-            drive.getPose(), PathfindingConstants.CENTER_PLAYER_STATION));
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
+
+    Pose2d[] stations =
+        isRed ? FieldConstants.RED_PLAYER_STATIONS : FieldConstants.BLUE_PLAYER_STATIONS;
+
+    int side = alignToRight ? 1 : 0;
+    setNewTarget(stations[side].plus(FieldConstants.CENTER_PLAYER_STATION));
     super.initialize();
   }
 }

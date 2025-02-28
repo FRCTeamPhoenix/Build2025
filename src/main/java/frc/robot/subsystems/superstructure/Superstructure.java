@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.PathfindingConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.superstructure.elevator.Elevator;
@@ -32,6 +32,8 @@ public class Superstructure extends SubsystemBase {
 
   private final Supplier<Pose2d> poseSupplier;
 
+  private boolean atSetpoint = false;
+
   public Superstructure(Elevator elevator, Wrist wrist, Supplier<Pose2d> pose) {
     this.elevator = elevator;
     this.wrist = wrist;
@@ -52,22 +54,29 @@ public class Superstructure extends SubsystemBase {
       wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
       Logger.recordOutput(
           "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
-      if (!elevator.atSetpoint()
-          && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
-              && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
-        wrist.setSetpoint(WristConstants.MOVE_ANGLE);
+      if (Math.abs(wristSetpoint - wrist.getAngle()) > 0.2) {
+        // && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
+        //   && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
+        // elevator.runSetpoint(elevatorSetpoint);
+        wrist.setSetpoint(wristSetpoint);
       } else {
         elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(wristSetpoint);
       }
+      atSetpoint =
+          Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
+              && Math.abs(wristSetpoint - wrist.getAngle()) < 0.02;
+
     } else {
       Logger.recordOutput("Superstructure/State", "MANUAL");
       elevator.runSetpoint(elevatorSetpoint);
       wrist.setSetpoint(wristSetpoint);
+      atSetpoint = elevator.atSetpoint() && wrist.atSetpoint();
     }
   }
 
   public void setState(int state) {
+    atSetpoint = false;
     manualControl = false;
     superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
@@ -112,23 +121,22 @@ public class Superstructure extends SubsystemBase {
 
   @AutoLogOutput(key = "Superstructure/AtGoal")
   public boolean atGoal() {
-    return elevator.atSetpoint() && wrist.atSetpoint();
+    return atSetpoint;
   }
 
   public void algaeMode() {
     boolean isRed =
         DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
 
     Pose2d pose = poseSupplier.get();
 
     List<Pose2d> list =
         isRed
-            ? Arrays.asList(PathfindingConstants.ALGAE_RED_POSES)
-            : Arrays.asList(PathfindingConstants.ALGAE_BLUE_POSES);
+            ? Arrays.asList(FieldConstants.ALGAE_RED_POSES)
+            : Arrays.asList(FieldConstants.ALGAE_BLUE_POSES);
 
-    int[] states =
-        isRed ? PathfindingConstants.ALGAE_RED_STATES : PathfindingConstants.ALGAE_BLUE_STATES;
+    int[] states = isRed ? FieldConstants.ALGAE_RED_STATES : FieldConstants.ALGAE_BLUE_STATES;
 
     Pose2d targetPose = pose.nearest(list);
 

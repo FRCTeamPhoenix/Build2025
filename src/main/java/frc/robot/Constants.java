@@ -98,7 +98,8 @@ public final class Constants {
     public static final double[] CAMERA_STD_DEV_FACTORS =
         new double[] {
           1.0, // Camera 0
-          1.0 // Camera 1
+          1.0, // Camera 1
+          1.0 // Camera 2
         };
 
     // Multipliers to apply for MegaTag 2 observations
@@ -108,19 +109,8 @@ public final class Constants {
         Double.POSITIVE_INFINITY; // No rotation data available
   }
 
-  public static final class PathfindingConstants {
-    public static final PathConstraints CONSTRAINTS =
-        new PathConstraints(4.0, 6.0, Units.degreesToRadians(720), Units.degreesToRadians(1080));
-
-    public static final Constraints LINEAR_CONSTRAINTS = new Constraints(3, 3);
-    public static final Constraints ANGLE_CONSTRAINTS =
-        new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
-
-    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(1, 2);
-    public static final Constraints FINE_ANGLE_CONSTRAINTS =
-        new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(360));
-
-    public static final Pose3d[] BLUE_REEF_TAG_POSES =
+  public static final class FieldConstants {
+    public static final Pose3d[] ZONE_ALIGN_BLUE_POSES =
         new Pose3d[] {
           VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()),
@@ -129,8 +119,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d())
         };
-
-    public static final Pose3d[] RED_REEF_TAG_POSES =
+    public static final Pose3d[] ZONE_ALIGN_RED_POSES =
         new Pose3d[] {
           VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()),
@@ -139,7 +128,6 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-
     public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.4;
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
@@ -149,9 +137,7 @@ public final class Constants {
 
     public static final double X_LIMIT = 2.75;
     public static final double Y_LIMIT = 3.5;
-
     public static final double SLOPE = 0.61261261261261;
-
     public static final Transform2d[] ZONE_TRANSFORMS =
         new Transform2d[] {
           new Transform2d(-X_LIMIT, Y_LIMIT, Rotation2d.kZero),
@@ -188,23 +174,21 @@ public final class Constants {
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
-          VisionConstants.TAG_LAYOUT.getTagPose(12).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(13).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(12).orElse(new Pose3d()).toPose2d(),
         };
-
     public static final Pose2d[] RED_PLAYER_STATIONS =
         new Pose2d[] {
           VisionConstants.TAG_LAYOUT.getTagPose(1).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
+    public static final double STATION_BUFFER = 0.606;
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 
     public static final Transform2d PROCESSOR_BUFFER =
         new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.12, 0, Rotation2d.k180deg);
-
     public static final Pose2d BLUE_PROCESSOR =
         VisionConstants.TAG_LAYOUT
             .getTagPose(16)
@@ -227,9 +211,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d()).toPose2d(),
         };
-
     public static final int[] ALGAE_BLUE_STATES = new int[] {6, 7, 6, 7, 6, 7};
-
     public static final Pose2d[] ALGAE_RED_POSES =
         new Pose2d[] {
           VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()).toPose2d(),
@@ -239,8 +221,64 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()).toPose2d(),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d()).toPose2d(),
         };
-
     public static final int[] ALGAE_RED_STATES = new int[] {7, 6, 7, 6, 7, 6};
+  }
+
+  public static final class AutoConstants {
+    public static final PathConstraints CONSTRAINTS =
+        new PathConstraints(
+            DriveConstants.MAX_LINEAR_SPEED,
+            3.0,
+            Units.degreesToRadians(720),
+            Units.degreesToRadians(1080));
+
+    public static final Constraints LINEAR_CONSTRAINTS =
+        new Constraints(DriveConstants.MAX_LINEAR_SPEED, 4);
+    public static final Constraints ANGLE_CONSTRAINTS =
+        new Constraints(Units.degreesToRadians(720), Units.degreesToRadians(1080));
+
+    public static final Constraints FINE_LINEAR_CONSTRAINTS = new Constraints(2, 0.75);
+    public static final Constraints FINE_ANGLE_CONSTRAINTS =
+        new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
+
+    public static final Transform2d PATHING_BUFFER = new Transform2d(1, 0, Rotation2d.k180deg);
+
+    public static final Transform2d LEFT_STATION_PATHING_BUFFER =
+        new Transform2d(1.5, 1, Rotation2d.k180deg);
+
+    public static final Transform2d RIGHT_STATION_PATHING_BUFFER =
+        new Transform2d(1.5, -1, Rotation2d.k180deg);
+
+    public static final Pose3d[] BLUE_REEF_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(21).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(22).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(17).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(18).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(19).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(20).orElse(new Pose3d())
+        };
+    public static final Pose3d[] RED_REEF_POSES =
+        new Pose3d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(10).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(7).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(6).orElse(new Pose3d()),
+          VisionConstants.TAG_LAYOUT.getTagPose(11).orElse(new Pose3d())
+        };
+
+    public static final Pose2d[] PATHING_BLUE_PLAYER_STATIONS =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(13).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(12).orElse(new Pose3d()).toPose2d()
+        };
+
+    public static final Pose2d[] PATHING_RED_PLAYER_STATIONS =
+        new Pose2d[] {
+          VisionConstants.TAG_LAYOUT.getTagPose(1).orElse(new Pose3d()).toPose2d(),
+          VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d()
+        };
   }
 
   public static final class DriveConstants {
@@ -270,21 +308,31 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.351, 0.351, 0.575, 0.975, 1.7, 0.465, 0.85, 0
+      0, 0.216, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.1,
-      Units.degreesToRadians(35),
-      -0.438,
-      -0.438,
-      -0.438,
-      -0.565,
+      WristConstants.MAX_ANGLE - 0.3,
+      0.7,
+      -0.17,
+      -0.49,
+      -0.55,
+      WristConstants.MIN_ANGLE + 0.02,
       0,
       0,
       0,
+      WristConstants.MAX_ANGLE - 0.1
     };
     public static final String[] STATE_NAMES = {
-      "STOWED", "INTAKE", "L1", "L2", "L3", "L4", "ALGAE LOW", "ALGAE HIGH", "PROCESSOR/ZERO"
+      "STOWED",
+      "INTAKE",
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "ALGAE LOW",
+      "ALGAE HIGH",
+      "PROCESSOR/ZERO",
+      "SPEED MOVE"
     };
   }
 

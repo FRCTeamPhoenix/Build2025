@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.AutoComposer;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -128,7 +129,17 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    if (SmartDashboard.getBoolean("Use Auto Composer", false)) {
+      autonomousCommand =
+          AutoComposer.composeAuto(
+              SmartDashboard.getString("Composer Input", "1a4"),
+              robotContainer::getElevatorCommands,
+              robotContainer::getScoringCommand,
+              robotContainer::getIntakingCommand,
+              robotContainer.getDrive());
+    }
+
+    robotContainer.getSuperstructure().setState(0);
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -150,6 +161,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    robotContainer.getSuperstructure().setState(0);
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }

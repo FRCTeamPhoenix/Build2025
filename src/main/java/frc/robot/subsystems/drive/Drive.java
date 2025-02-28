@@ -102,9 +102,9 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(3.0, 0.0, 0.0), new PIDConstants(3.0, 0.0, 0.0)),
         PP_CONFIG,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        () -> DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red,
         this);
 
     Pathfinding.setPathfinder(new LocalADStarAK());
@@ -367,7 +367,7 @@ public class Drive extends SubsystemBase {
         "Robot Angle",
         () ->
             getRotation().getRadians()
-                + (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? Math.PI : 0),
+                + (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red ? Math.PI : 0),
         null);
   }
   ;

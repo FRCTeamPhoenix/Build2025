@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ClawConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ClawIOTalonFX implements ClawIO {
 
@@ -69,6 +70,7 @@ public class ClawIOTalonFX implements ClawIO {
     if (sensorConnected) {
       inputs.intakeSensor =
           laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+      Logger.recordOutput("Lasercan", laserCan.getMeasurement().distance_mm);
     } else {
       inputs.intakeSensor = false;
     }
