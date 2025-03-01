@@ -136,6 +136,7 @@ public class RobotContainer {
   private final Trigger operatorDownPadTrigger = operatorController.povDown();
   private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
   private final Trigger operatorRightPadTrigger = operatorController.povRight();
+  private final Trigger operatorStartTrigger = operatorController.start();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -351,6 +352,9 @@ public class RobotContainer {
     operatorLeftPadTrigger
         .whileTrue(Commands.run(() -> climber.runVoltage(-3), climber))
         .onFalse(Commands.runOnce(() -> climber.setSetpoint(0)));
+
+    operatorStartTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
   }
 
   private void configureNamedCommands() {
