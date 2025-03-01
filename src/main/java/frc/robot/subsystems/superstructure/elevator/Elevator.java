@@ -68,6 +68,11 @@ public class Elevator {
     setpoint = null;
   }
 
+  public void homeElevator() {
+    io.homeElevator();
+    setpoint = 0.0;
+  }
+
   public void runCharacterization(double volts) {
     setpoint = null;
     io.setVoltage(volts);

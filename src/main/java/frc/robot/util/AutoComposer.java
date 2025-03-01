@@ -13,6 +13,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveToPose;
+import frc.robot.commands.SlowToPose;
 import frc.robot.subsystems.drive.Drive;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +111,11 @@ public class AutoComposer {
                     new DeferredCommand(() -> new BranchAlign(drive, true), Set.of())));
       }
       returnCommand = returnCommand.andThen(scoringCommand.get());
+      returnCommand =
+          returnCommand.andThen(
+              new SlowToPose(
+                      drive, reefPoses[reefFace - 1].toPose2d().plus(AutoConstants.PATHING_BUFFER))
+                  .alongWith(elevatorCommands.get()[4]));
     } catch (Exception e) {
       System.out.println(lastPosition);
       System.out.println(lastPosition.getClass());

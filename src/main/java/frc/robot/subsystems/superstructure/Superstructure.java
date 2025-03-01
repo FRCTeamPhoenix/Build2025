@@ -85,6 +85,11 @@ public class Superstructure extends SubsystemBase {
     return elevatorSetpoint;
   }
 
+  public void homeElevator() {
+    manualControl = true;
+    elevator.homeElevator();
+  }
+
   public double getWristGoal() {
     return wristSetpoint;
   }

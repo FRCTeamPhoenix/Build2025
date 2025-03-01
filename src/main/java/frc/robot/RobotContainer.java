@@ -250,6 +250,8 @@ public class RobotContainer {
 
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
+
+    SmartDashboard.putData("Home Elevator", Commands.runOnce(() -> superstructure.homeElevator()));
     // Configure the button bindings
     configureButtonBindings();
   }

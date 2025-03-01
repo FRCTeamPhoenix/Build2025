@@ -124,4 +124,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 * ElevatorConstants.GEAR_RATIO
                 / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)));
   }
+
+  @Override
+  public void homeElevator() {
+    elevatorTalon.setPosition(0);
+  }
 }
