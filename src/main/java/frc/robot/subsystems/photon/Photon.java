@@ -162,7 +162,6 @@ public class Photon extends SubsystemBase {
       Logger.recordOutput("x", robotPosesAccepted.get(0).getRotation().getX());
       Logger.recordOutput("y", robotPosesAccepted.get(0).getRotation().getX());
       Logger.recordOutput("z", robotPosesAccepted.get(0).getRotation().getX());
-
     }
 
     // Log summary data
