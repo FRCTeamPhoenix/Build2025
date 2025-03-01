@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color8Bit;

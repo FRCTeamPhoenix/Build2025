@@ -66,7 +66,7 @@ public class WristIOTalonFX implements WristIO {
     wristTalon.optimizeBusUtilization();
 
     wristTalon.setPosition(
-        encoder.getAbsPosition()
+        Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
   }
 
