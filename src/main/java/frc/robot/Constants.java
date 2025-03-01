@@ -305,7 +305,7 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.216, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
+      0, 0.271, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.3,
