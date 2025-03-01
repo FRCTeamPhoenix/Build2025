@@ -127,6 +127,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void homeElevator() {
-    elevatorTalon.setPosition(0);
+    elevatorTalon.setPosition(0.0);
   }
 }

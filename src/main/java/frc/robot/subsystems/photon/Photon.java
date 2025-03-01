@@ -168,12 +168,6 @@ public class Photon extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
-
-      if (!robotPosesAccepted.isEmpty()) {
-        Logger.recordOutput("x", robotPosesAccepted.get(0).getRotation().getX());
-        Logger.recordOutput("y", robotPosesAccepted.get(0).getRotation().getY());
-        Logger.recordOutput("z", robotPosesAccepted.get(0).getRotation().getZ());
-      }
     }
 
     // Log summary data
