@@ -89,20 +89,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    Logger.recordOutput("co", offset);
-    Logger.recordOutput(
-        "cdc",
-        position.getValueAsDouble()
-            / ElevatorConstants.GEAR_RATIO
-            * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
-    Logger.recordOutput(
-        "cc",
-        position.getValueAsDouble()
-                / ElevatorConstants.GEAR_RATIO
-                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)
-            - offset);
-
-
     var status =
         BaseStatusSignal.refreshAll(
             position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
