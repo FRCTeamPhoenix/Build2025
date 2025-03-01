@@ -90,12 +90,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     Logger.recordOutput("co", offset);
-    Logger.recordOutput("cdc", position.getValueAsDouble()
-    / ElevatorConstants.GEAR_RATIO
-    * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
-    Logger.recordOutput("cc", position.getValueAsDouble()
-    / ElevatorConstants.GEAR_RATIO
-    * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER) - offset);
+    Logger.recordOutput(
+        "cdc",
+        position.getValueAsDouble()
+            / ElevatorConstants.GEAR_RATIO
+            * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
+    Logger.recordOutput(
+        "cc",
+        position.getValueAsDouble()
+                / ElevatorConstants.GEAR_RATIO
+                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)
+            - offset);
+
 
     var status =
         BaseStatusSignal.refreshAll(
@@ -103,9 +109,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.connected = status.isOK();
     inputs.heightMeters =
-        (position.getValueAsDouble()
+        position.getValueAsDouble()
                 / ElevatorConstants.GEAR_RATIO
-                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER))
+                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)
             - offset;
     inputs.velocityMetersPerSec =
         velocity.getValueAsDouble()
