@@ -158,9 +158,9 @@ public class RobotContainer {
                 new PhotonIOReal(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new PhotonIOReal(
-                    VisionConstants.LEFT_CAMERA_NAME,
-                    VisionConstants.FRONT_LEFT_TRANSFORM), new PhotonIOReal(
-         VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+                new PhotonIOReal(
+                    VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
