@@ -31,12 +31,15 @@ import org.littletonrobotics.junction.Logger;
 
 public class Photon extends SubsystemBase {
   private final VisionConsumer consumer;
+  private final VisionConsumer reefConsumer;
+
   private final PhotonIO[] io;
   private final PhotonIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
-  public Photon(VisionConsumer consumer, PhotonIO... io) {
+  public Photon(VisionConsumer consumer, VisionConsumer reefConsumer, PhotonIO... io) {
     this.consumer = consumer;
+    this.reefConsumer = reefConsumer;
     this.io = io;
 
     // Initialize inputs
@@ -139,6 +142,15 @@ public class Photon extends SubsystemBase {
             observation.pose().toPose2d(),
             observation.timestamp(),
             VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+
+        if (cameraIndex < 2) {
+          reefConsumer.accept(
+              observation.pose().toPose2d(),
+              observation.timestamp(),
+              VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        }
+
+
       }
 
       // Log camera datadata
@@ -158,6 +170,13 @@ public class Photon extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
+
+      if (!robotPosesAccepted.isEmpty()) {
+        Logger.recordOutput("x", robotPosesAccepted.get(0).getRotation().getX());
+        Logger.recordOutput("y", robotPosesAccepted.get(0).getRotation().getX());
+        Logger.recordOutput("z", robotPosesAccepted.get(0).getRotation().getX());
+
+      }
     }
 
     // Log summary data

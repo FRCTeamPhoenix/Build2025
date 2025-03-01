@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -53,8 +53,6 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    // Need to move cameras so they are 6.468 inches from the center of the robot is the y-axis
-    // You can use the ideal transform below for sim, but it isn't a real transform
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
             new Translation3d(
@@ -77,18 +75,17 @@ public final class Constants {
                 Units.inchesToMeters(-12.73),
                 Units.inchesToMeters(11.286),
                 Units.inchesToMeters(7.89)),
-            new Rotation3d(0, Units.degreesToRadians(-15), Units.degreesToRadians(180)));
+            new Rotation3d(0, Units.degreesToRadians(0), Units.degreesToRadians(180)));
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Basic filtering thresholds
-    public static final double MAX_AMBIGUITY = 0.3;
+    public static final double MAX_AMBIGUITY = 0.1;
     public static final double MAX_Z_ERROR = 0.75;
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
-
     // (Adjusted automatically based on distance and # of tags)
     public static final double LINEAR_STD_DEV_BASELINE = 0.02; // Meters
     public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians

@@ -70,6 +70,7 @@ public class Elevator {
 
   public void homeElevator() {
     io.homeElevator();
+    io.setPositionTarget(0);
     setpoint = 0.0;
   }
 

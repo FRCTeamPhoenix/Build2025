@@ -8,7 +8,7 @@ import frc.robot.util.PathfindingUtils;
 public class ZoneSnap extends DriveToPose {
 
   public ZoneSnap(Drive drive) {
-    super(drive, new Pose2d());
+    super(drive, new Pose2d(), drive::getPose);
   }
 
   @Override

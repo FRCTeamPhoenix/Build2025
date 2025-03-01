@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.drive.Drive;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends Command {
@@ -19,13 +20,15 @@ public class DriveToPose extends Command {
   ProfiledPIDController angleController =
       new ProfiledPIDController(3, 0, 0.2, AutoConstants.ANGLE_CONSTRAINTS);
 
-  Drive drive;
+  final Drive drive;
+  final Supplier<Pose2d> robotPose;
   Pose2d target;
   boolean isDone = false;
 
-  public DriveToPose(Drive drive, Pose2d targetPose) {
+  public DriveToPose(Drive drive, Pose2d targetPose, Supplier<Pose2d> robotPose) {
     this.drive = drive;
     this.target = targetPose;
+    this.robotPose = robotPose;
 
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -43,16 +46,16 @@ public class DriveToPose extends Command {
 
   @Override
   public void initialize() {
-    xController.reset(drive.getPose().getX());
-    yController.reset(drive.getPose().getY());
-    angleController.reset(drive.getPose().getRotation().getRadians());
+    xController.reset(robotPose.get().getX());
+    yController.reset(robotPose.get().getY());
+    angleController.reset(robotPose.get().getRotation().getRadians());
     isDone = false;
     Logger.recordOutput("PoseAlignment/AtGoal", false);
   }
 
   @Override
   public void execute() {
-    Pose2d currentPosition = drive.getPose();
+    Pose2d currentPosition = robotPose.get();
 
     ChassisSpeeds speeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(

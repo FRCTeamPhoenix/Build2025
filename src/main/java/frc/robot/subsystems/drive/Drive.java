@@ -83,6 +83,9 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private SwerveDrivePoseEstimator reefEstimator =
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -193,6 +196,7 @@ public class Drive extends SubsystemBase {
     }
 
     poseEstimator.update(rawGyroRotation, modulePositions);
+    reefEstimator.update(rawGyroRotation, modulePositions);
   }
 
   /**
@@ -305,6 +309,12 @@ public class Drive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /** Returns the current odometry pose. */
+  @AutoLogOutput(key = "Odometry/ReefEstimator")
+  public Pose2d getReefPose() {
+    return reefEstimator.getEstimatedPosition();
+  }
+
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
@@ -321,6 +331,15 @@ public class Drive extends SubsystemBase {
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  /** Adds a new timestamped vision measurement. */
+  public void addReefVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    reefEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 

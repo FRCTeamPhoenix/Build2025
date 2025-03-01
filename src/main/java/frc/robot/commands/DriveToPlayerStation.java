@@ -11,7 +11,7 @@ public class DriveToPlayerStation extends DriveToPose {
   private boolean alignToRight;
 
   public DriveToPlayerStation(Drive drive, boolean alignToRight) {
-    super(drive, new Pose2d());
+    super(drive, new Pose2d(), drive::getPose);
     this.alignToRight = alignToRight;
   }
 

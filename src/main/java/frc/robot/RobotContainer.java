@@ -155,6 +155,7 @@ public class RobotContainer {
         photon =
             new Photon(
                 drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
                 new PhotonIOReal(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new PhotonIOReal(
@@ -188,6 +189,7 @@ public class RobotContainer {
         photon =
             new Photon(
                 drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
                 new PhotonIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
@@ -195,6 +197,10 @@ public class RobotContainer {
                 new PhotonIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
+                    swerveSim::getSimulatedDriveTrainPose),
+                new PhotonIOSim(
+                    VisionConstants.LOW_BACK_CAMERA_NAME,
+                    VisionConstants.LOW_BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
         // new PhotonIOSim(
         // VisionConstants.BACK_CAMERA_NAME,
@@ -216,7 +222,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
+        photon =
+            new Photon(
+                drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
+                new PhotonIO() {},
+                new PhotonIO() {},
+                new PhotonIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});

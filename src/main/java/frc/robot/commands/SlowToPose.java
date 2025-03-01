@@ -9,7 +9,7 @@ public class SlowToPose extends DriveToPose {
   boolean alignToRight;
 
   public SlowToPose(Drive drive, Pose2d pose) {
-    super(drive, pose);
+    super(drive, pose, drive::getPose);
     setNewConstraints(AutoConstants.FINE_LINEAR_CONSTRAINTS, AutoConstants.FINE_ANGLE_CONSTRAINTS);
   }
 }

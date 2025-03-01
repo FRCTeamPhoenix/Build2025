@@ -53,4 +53,9 @@ public class ElevatorIOSim implements ElevatorIO {
     appliedVolts = controller.calculate(elevatorSim.getPositionMeters()) + ff.calculate(0, 0, 0);
     elevatorSim.setInputVoltage(appliedVolts);
   }
+
+  @Override
+  public void homeElevator() {
+    elevatorSim.setState(0, elevatorSim.getVelocityMetersPerSecond());
+  }
 }

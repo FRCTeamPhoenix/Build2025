@@ -149,14 +149,18 @@ public class AutoComposer {
                     PathPlannerPath.fromPathFile(lastPosition + "r"), AutoConstants.CONSTRAINTS)
                 .andThen(
                     new DriveToPose(
-                        drive, playerStations[1].plus(FieldConstants.CENTER_PLAYER_STATION)));
+                        drive,
+                        playerStations[1].plus(FieldConstants.CENTER_PLAYER_STATION),
+                        drive::getPose));
       } else {
         returnCommand =
             AutoBuilder.pathfindThenFollowPath(
                     PathPlannerPath.fromPathFile(lastPosition + "l"), AutoConstants.CONSTRAINTS)
                 .andThen(
                     new DriveToPose(
-                        drive, playerStations[0].plus(FieldConstants.CENTER_PLAYER_STATION)));
+                        drive,
+                        playerStations[0].plus(FieldConstants.CENTER_PLAYER_STATION),
+                        drive::getPose));
       }
       returnCommand = returnCommand.alongWith(intakeCommand.get());
     } catch (Exception e) {
