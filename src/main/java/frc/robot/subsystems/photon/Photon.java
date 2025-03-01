@@ -149,8 +149,6 @@ public class Photon extends SubsystemBase {
               observation.timestamp(),
               VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
         }
-
-
       }
 
       // Log camera datadata
@@ -175,7 +173,6 @@ public class Photon extends SubsystemBase {
         Logger.recordOutput("x", robotPosesAccepted.get(0).getRotation().getX());
         Logger.recordOutput("y", robotPosesAccepted.get(0).getRotation().getX());
         Logger.recordOutput("z", robotPosesAccepted.get(0).getRotation().getX());
-
       }
     }
 
