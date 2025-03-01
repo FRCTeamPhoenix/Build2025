@@ -1,7 +1,5 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -18,6 +16,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ElevatorConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
@@ -91,6 +90,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     Logger.recordOutput("co", offset);
+    Logger.recordOutput("cdc", position.getValueAsDouble()
+    / ElevatorConstants.GEAR_RATIO
+    * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
+    Logger.recordOutput("cc", position.getValueAsDouble()
+    / ElevatorConstants.GEAR_RATIO
+    * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER) - offset);
+
     var status =
         BaseStatusSignal.refreshAll(
             position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);

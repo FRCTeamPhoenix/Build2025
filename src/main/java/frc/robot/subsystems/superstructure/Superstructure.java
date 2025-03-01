@@ -105,7 +105,7 @@ public class Superstructure extends SubsystemBase {
 
   public void setElevatorManualGoal(double goal) {
     manualControl = true;
-    elevatorSetpoint = MathUtil.clamp(goal, 0, ElevatorConstants.MAX_EXTENSION);
+    elevatorSetpoint = goal;
   }
 
   public void setWristManualGoal(double goal) {
