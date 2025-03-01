@@ -52,7 +52,7 @@ public class Elevator {
   }
 
   public void runSetpoint(double setpoint) {
-    this.setpoint = MathUtil.clamp(setpoint, 0, ElevatorConstants.MAX_EXTENSION);
+    this.setpoint = setpoint;
   }
 
   public double getVelocity() {
