@@ -115,8 +115,7 @@ public class Superstructure extends SubsystemBase {
 
   public void changeElevatorGoal(double change) {
     manualControl = true;
-    elevatorSetpoint =
-        MathUtil.clamp(elevatorSetpoint + change, 0, ElevatorConstants.MAX_EXTENSION);
+    elevatorSetpoint = elevatorSetpoint + change;
   }
 
   public void changeWristGoal(double change) {
