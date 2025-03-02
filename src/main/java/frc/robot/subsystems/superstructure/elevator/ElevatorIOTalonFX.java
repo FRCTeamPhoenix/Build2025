@@ -118,6 +118,5 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             (height
                 * ElevatorConstants.GEAR_RATIO
                 / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER))));
-
-            }
+  }
 }
