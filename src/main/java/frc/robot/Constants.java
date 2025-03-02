@@ -297,9 +297,14 @@ public final class Constants {
     public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
+    //public static final double[] COMP_ENCODER_OFFSETS = {
+      //2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, -0.693 + Math.PI
+    //};
+
     public static final double[] COMP_ENCODER_OFFSETS = {
-      2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, -0.693 + Math.PI
+      0, 0, 0, 0
     };
+
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
   }
 
