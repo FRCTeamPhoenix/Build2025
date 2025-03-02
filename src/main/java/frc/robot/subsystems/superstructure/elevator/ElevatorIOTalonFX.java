@@ -33,8 +33,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final boolean isInverted = false;
   private final boolean brakeEnabled = true;
 
-  private double offset = 0;
-
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public ElevatorIOTalonFX() {
@@ -96,8 +94,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.heightMeters =
         position.getValueAsDouble()
                 / ElevatorConstants.GEAR_RATIO
-                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)
-            - offset;
+                * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
     inputs.velocityMetersPerSec =
         velocity.getValueAsDouble()
             / ElevatorConstants.GEAR_RATIO
@@ -118,15 +115,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void setPositionTarget(double height) {
     elevatorTalon.setControl(
         request.withPosition(
-            (height * ElevatorConstants.GEAR_RATIO / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER))
-                + offset));
-  }
-
-  @Override
-  public void homeElevator() {
-    offset =
-        position.getValueAsDouble()
-            / ElevatorConstants.GEAR_RATIO
-            * (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER);
+            (height * ElevatorConstants.GEAR_RATIO / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER))));
   }
 }

@@ -18,6 +18,4 @@ public interface ElevatorIO {
   public default void setVoltage(double voltage) {}
 
   public default void setPositionTarget(double target) {}
-
-  public default void homeElevator() {}
 }

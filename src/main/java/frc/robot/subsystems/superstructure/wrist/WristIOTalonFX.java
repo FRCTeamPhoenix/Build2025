@@ -12,7 +12,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -67,7 +66,7 @@ public class WristIOTalonFX implements WristIO {
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     wristTalon.optimizeBusUtilization();
 
-    encoder.setSettings(new CanandmagSettings());
+    //encoder.setSettings(new CanandmagSettings());
     wristTalon.setPosition(
         Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
