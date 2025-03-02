@@ -301,7 +301,7 @@ public final class Constants {
     // 2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, -0.693 + Math.PI
     // };
 
-    public static final double[] COMP_ENCODER_OFFSETS = {1.969, 2.481, 0.82, -0.7};
+    public static final double[] COMP_ENCODER_OFFSETS = {-1.969, -2.481, -0.82, 0.7};
 
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
   }
