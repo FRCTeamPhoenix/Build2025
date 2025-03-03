@@ -136,6 +136,7 @@ public class RobotContainer {
   private final Trigger operatorDownPadTrigger = operatorController.povDown();
   private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
   private final Trigger operatorRightPadTrigger = operatorController.povRight();
+  private final Trigger operatorStartTrigger = operatorController.start();
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -155,12 +156,13 @@ public class RobotContainer {
         photon =
             new Photon(
                 drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
                 new PhotonIOReal(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new PhotonIOReal(
-                    VisionConstants.LEFT_CAMERA_NAME,
-                    VisionConstants.FRONT_LEFT_TRANSFORM)); // new PhotonIOReal(
-        //  VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+                new PhotonIOReal(
+                    VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -188,6 +190,7 @@ public class RobotContainer {
         photon =
             new Photon(
                 drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
                 new PhotonIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
@@ -195,6 +198,10 @@ public class RobotContainer {
                 new PhotonIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
+                    swerveSim::getSimulatedDriveTrainPose),
+                new PhotonIOSim(
+                    VisionConstants.LOW_BACK_CAMERA_NAME,
+                    VisionConstants.LOW_BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
         // new PhotonIOSim(
         // VisionConstants.BACK_CAMERA_NAME,
@@ -216,7 +223,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        photon = new Photon(drive::addVisionMeasurement, new PhotonIO() {});
+        photon =
+            new Photon(
+                drive::addVisionMeasurement,
+                drive::addReefVisionMeasurement,
+                new PhotonIO() {},
+                new PhotonIO() {},
+                new PhotonIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
@@ -250,6 +263,8 @@ public class RobotContainer {
 
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
+
+    SmartDashboard.putData("Home Elevator", Commands.runOnce(() -> superstructure.homeElevator()));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -337,6 +352,9 @@ public class RobotContainer {
     operatorLeftPadTrigger
         .whileTrue(Commands.run(() -> climber.runVoltage(-3), climber))
         .onFalse(Commands.runOnce(() -> climber.setSetpoint(0)));
+
+    operatorStartTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
   }
 
   private void configureNamedCommands() {

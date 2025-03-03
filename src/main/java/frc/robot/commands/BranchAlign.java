@@ -12,7 +12,7 @@ public class BranchAlign extends DriveToPose {
   boolean alignToRight;
 
   public BranchAlign(Drive drive, boolean alignToRight) {
-    super(drive, new Pose2d());
+    super(drive, new Pose2d(), drive::getReefPose);
     setNewConstraints(AutoConstants.FINE_LINEAR_CONSTRAINTS, AutoConstants.FINE_ANGLE_CONSTRAINTS);
     this.alignToRight = alignToRight;
   }

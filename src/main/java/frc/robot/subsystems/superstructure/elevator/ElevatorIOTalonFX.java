@@ -16,7 +16,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ElevatorConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
@@ -33,6 +32,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private final boolean isInverted = false;
   private final boolean brakeEnabled = true;
+
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public ElevatorIOTalonFX() {
@@ -86,11 +86,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    Logger.recordOutput(
-        "PositionTarget",
-        0.02 * ElevatorConstants.GEAR_RATIO / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER));
-    Logger.recordOutput("ElevatorHeight", position.getValueAsDouble());
-
     var status =
         BaseStatusSignal.refreshAll(
             position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
@@ -120,8 +115,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void setPositionTarget(double height) {
     elevatorTalon.setControl(
         request.withPosition(
-            height
+            (height
                 * ElevatorConstants.GEAR_RATIO
-                / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER)));
+                / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER))));
   }
 }

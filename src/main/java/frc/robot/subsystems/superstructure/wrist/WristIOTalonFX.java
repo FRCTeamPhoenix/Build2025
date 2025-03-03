@@ -65,6 +65,7 @@ public class WristIOTalonFX implements WristIO {
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     wristTalon.optimizeBusUtilization();
 
+    // encoder.setSettings(new CanandmagSettings());
     wristTalon.setPosition(
         Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);

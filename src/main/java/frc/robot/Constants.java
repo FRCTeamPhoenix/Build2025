@@ -53,8 +53,6 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    // Need to move cameras so they are 6.468 inches from the center of the robot is the y-axis
-    // You can use the ideal transform below for sim, but it isn't a real transform
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
             new Translation3d(
@@ -77,18 +75,17 @@ public final class Constants {
                 Units.inchesToMeters(-12.73),
                 Units.inchesToMeters(11.286),
                 Units.inchesToMeters(7.89)),
-            new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(180)));
+            new Rotation3d(0, Units.degreesToRadians(-25), Units.degreesToRadians(180)));
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Basic filtering thresholds
-    public static final double MAX_AMBIGUITY = 0.3;
+    public static final double MAX_AMBIGUITY = 0.1;
     public static final double MAX_Z_ERROR = 0.75;
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
-
     // (Adjusted automatically based on distance and # of tags)
     public static final double LINEAR_STD_DEV_BASELINE = 0.02; // Meters
     public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians
@@ -301,14 +298,15 @@ public final class Constants {
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
     public static final double[] COMP_ENCODER_OFFSETS = {
-      2.78 + Math.PI, 2.509 + Math.PI, 0.837 + Math.PI, -0.693 + Math.PI
+      1.969 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
     };
+
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
   }
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.216, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
+      0, 0.318, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.3,

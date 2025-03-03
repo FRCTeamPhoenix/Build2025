@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.elevator;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -17,6 +16,7 @@ public class Elevator {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private Double setpoint = 0.0;
+  private double offset = 0.0;
 
   private final Alert elevatorAlert =
       new Alert("Elevator motors are disconnected", AlertType.kError);
@@ -37,13 +37,15 @@ public class Elevator {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
     Logger.recordOutput("Elevator/Mech2D", mech);
+    Logger.recordOutput("Elevator/Offset", offset);
 
-    elevator.setLength(inputs.heightMeters + ElevatorConstants.MIN_HEIGHT);
+    elevator.setLength(inputs.heightMeters + ElevatorConstants.MIN_HEIGHT - offset);
 
     if (setpoint != null) {
       Logger.recordOutput("Elevator/Setpoint", setpoint);
+      Logger.recordOutput("Elevator/Setpoint Offsetted", setpoint + offset);
 
-      io.setPositionTarget(setpoint);
+      io.setPositionTarget(setpoint + offset);
     } else {
       Logger.recordOutput("Elevator/Setpoint", -1.0);
     }
@@ -52,7 +54,7 @@ public class Elevator {
   }
 
   public void runSetpoint(double setpoint) {
-    this.setpoint = MathUtil.clamp(setpoint, 0, ElevatorConstants.MAX_EXTENSION);
+    this.setpoint = setpoint;
   }
 
   public double getVelocity() {
@@ -66,6 +68,11 @@ public class Elevator {
   public void stop() {
     io.setVoltage(0);
     setpoint = null;
+  }
+
+  public void homeElevator() {
+    offset = inputs.heightMeters;
+    setpoint = offset;
   }
 
   public void runCharacterization(double volts) {

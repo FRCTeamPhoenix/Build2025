@@ -9,7 +9,7 @@ import frc.robot.subsystems.drive.Drive;
 public class ProcessorAlign extends DriveToPose {
 
   public ProcessorAlign(Drive drive) {
-    super(drive, new Pose2d());
+    super(drive, new Pose2d(), drive::getPose);
   }
 
   @Override

@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
@@ -85,6 +84,12 @@ public class Superstructure extends SubsystemBase {
     return elevatorSetpoint;
   }
 
+  public void homeElevator() {
+    manualControl = true;
+    elevator.homeElevator();
+    elevatorSetpoint = 0;
+  }
+
   public double getWristGoal() {
     return wristSetpoint;
   }
@@ -99,7 +104,7 @@ public class Superstructure extends SubsystemBase {
 
   public void setElevatorManualGoal(double goal) {
     manualControl = true;
-    elevatorSetpoint = MathUtil.clamp(goal, 0, ElevatorConstants.MAX_EXTENSION);
+    elevatorSetpoint = goal;
   }
 
   public void setWristManualGoal(double goal) {
@@ -109,8 +114,7 @@ public class Superstructure extends SubsystemBase {
 
   public void changeElevatorGoal(double change) {
     manualControl = true;
-    elevatorSetpoint =
-        MathUtil.clamp(elevatorSetpoint + change, 0, ElevatorConstants.MAX_EXTENSION);
+    elevatorSetpoint = elevatorSetpoint + change;
   }
 
   public void changeWristGoal(double change) {
