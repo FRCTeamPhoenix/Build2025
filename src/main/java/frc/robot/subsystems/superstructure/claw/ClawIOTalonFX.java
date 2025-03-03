@@ -29,7 +29,7 @@ public class ClawIOTalonFX implements ClawIO {
   private final StatusSignal<Current> current;
 
   private final boolean isInverted = false;
- 
+
   public ClawIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 40.0;
@@ -65,12 +65,12 @@ public class ClawIOTalonFX implements ClawIO {
     inputs.currentAmps = current.getValueAsDouble();
     try {
       inputs.intakeSensor =
-      laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
-  Logger.recordOutput("Lasercan", laserCan.getMeasurement().distance_mm);
-      } catch (Exception e) {
-        inputs.intakeSensor = false;
-        System.err.println("Failed to read LaserCAN: " + e);
-      }
+          laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
+      Logger.recordOutput("Lasercan", laserCan.getMeasurement().distance_mm);
+    } catch (Exception e) {
+      inputs.intakeSensor = false;
+      System.err.println("Failed to read LaserCAN: " + e);
+    }
   }
 
   @Override
