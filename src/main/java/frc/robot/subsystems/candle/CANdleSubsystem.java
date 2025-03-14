@@ -1,5 +1,10 @@
 package frc.robot.subsystems.candle;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANdleConstants;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
@@ -9,10 +14,6 @@ import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.RgbFadeAnimation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CANdleConstants;
 
 public class CANdleSubsystem extends SubsystemBase {
   private final CANdle candle;
@@ -21,6 +22,7 @@ public class CANdleSubsystem extends SubsystemBase {
   private FireAnimation fireAnimation = new FireAnimation(1, 0.25, 300, 1, 0);
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.5, 300);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.25, 300);
+
 
   /**
    * Creates a new CANdle object with the supplied CANID
@@ -31,6 +33,7 @@ public class CANdleSubsystem extends SubsystemBase {
     this.candle = new CANdle(canID);
     this.config = new CANdleConfiguration();
     candle.configAllSettings(config);
+    candle.getBusVoltage();
   }
 
   /**
