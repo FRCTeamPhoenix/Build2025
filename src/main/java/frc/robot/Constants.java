@@ -389,7 +389,8 @@ public final class Constants {
     public static final int CLAW_ID = 19;
     public static final int LASERCAN_ID = 20;
     public static final int CLIMBER_ID = 21;
-    public static final int CANDLE_ID = 22;
+    public static final int LEFT_CANDLE_ID = 22;
+    public static final int RIGHT_CANDLE_ID = 23;
   }
 
   public static final class CANdleConstants {
