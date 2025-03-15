@@ -175,13 +175,9 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        swerveSim =
-            new SwerveDriveSimulation(
-                // Specify Configuration
-                driveSimConfig,
-                // Specify starting pose
-                new Pose2d(3, 3, new Rotation2d()));
+        swerveSim = new SwerveDriveSimulation(driveSimConfig, new Pose2d(3, 3, new Rotation2d()));
         SimulatedArena.getInstance().addDriveTrainSimulation(swerveSim);
+
         drive =
             new Drive(
                 new GyroIOSim(swerveSim.getGyroSimulation()),
@@ -205,10 +201,6 @@ public class RobotContainer {
                     VisionConstants.LOW_BACK_CAMERA_NAME,
                     VisionConstants.LOW_BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
-        // new PhotonIOSim(
-        // VisionConstants.BACK_CAMERA_NAME,
-        // VisionConstants.BACK_TRANSFORM,
-        // swerveSim::getSimulatedDriveTrainPose));
         claw = new Claw(new ClawIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
@@ -247,6 +239,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
     /*autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
@@ -349,11 +342,11 @@ public class RobotContainer {
             superstructure));
 
     operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.setSetpoint(3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0)));
+        .whileTrue(Commands.run(() -> climber.runVoltage(3), climber))
+        .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
     operatorLeftPadTrigger
         .whileTrue(Commands.run(() -> climber.runVoltage(-3), climber))
-        .onFalse(Commands.runOnce(() -> climber.setSetpoint(0)));
+        .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
 
     operatorStartTrigger.onTrue(
         Commands.runOnce(() -> superstructure.homeElevator(), superstructure));

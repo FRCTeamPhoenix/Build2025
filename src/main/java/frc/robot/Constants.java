@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -162,12 +162,12 @@ public final class Constants {
           new Transform2d(-1.14, 0.68, Rotation2d.kZero),
         };
 
-    // 6.468
+    public static final double BRANCH_STRAFE = Units.inchesToMeters(6.5);
     public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
     public static final Transform2d LEFT_BRANCH =
-        new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(-6.468), Rotation2d.k180deg);
+        new Transform2d(BRANCH_BUFFER, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
-        new Transform2d(BRANCH_BUFFER, Units.inchesToMeters(6.468), Rotation2d.k180deg);
+        new Transform2d(BRANCH_BUFFER, BRANCH_STRAFE, Rotation2d.k180deg);
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
