@@ -31,6 +31,7 @@ public class CANdleSubsystem extends SubsystemBase {
     this.candle = new CANdle(canID);
     this.config = new CANdleConfiguration();
     candle.configAllSettings(config);
+    candle.getBusVoltage();
   }
 
   /**

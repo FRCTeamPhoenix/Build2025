@@ -21,6 +21,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -38,6 +40,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ProcessorAlign;
 import frc.robot.commands.ZoneSnap;
+import frc.robot.subsystems.candle.*;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -90,7 +93,6 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Wrist wrist;
   private final Climber climber;
-  // private final CANdleSubsystem candle = new CANdleSubsystem(6);
 
   private final DriveTrainSimulationConfig driveSimConfig =
       DriveTrainSimulationConfig.Default()
@@ -368,6 +370,13 @@ public class RobotContainer {
         "Stow Elevator",
         Commands.run(() -> superstructure.setState(0), superstructure)
             .until(() -> superstructure.atGoal()));
+  }
+
+  private void startCandle() {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+    } else {
+    }
   }
 
   /**
