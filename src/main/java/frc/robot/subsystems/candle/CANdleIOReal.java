@@ -68,13 +68,6 @@ public class CANdleIOReal implements CANdleIO {
         leftCandle.setLEDs(255, 30, 0);
         // rightCandle.setLEDs(255, 30, 0);
         break;
-      case PhoenixOrange: // Phoenix colors have been commented out until we actually get them
-        leftCandle.setLEDs(224, 79, 13);
-        // rightCandle.setLEDs(224, 79, 13);
-      case PhoenixRed:
-        leftCandle.setLEDs(217, 83, 79);
-        // rightCandle.setLEDs(217, 83, 79);
-        break;
       default:
         leftCandle.setLEDs(0, 0, 0);
         // rightCandle.setLEDs(0, 0, 0);

@@ -87,7 +87,7 @@ public class AutoComposer {
 
       returnCommand =
           AutoBuilder.pathfindToPose(
-              reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_BUFFER_TRANSFORM),
+              reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER),
               AutoConstants.CONSTRAINTS);
       if (routineSplit[1] == 'a') {
         returnCommand =

@@ -119,7 +119,7 @@ public class Superstructure extends SubsystemBase {
 
   public void setWristManualGoal(double goal) {
     manualControl = true;
-    elevatorSetpoint = MathUtil.clamp(goal, WristConstants.MIN_ANGLE, WristConstants.MAX_ANGLE);
+    wristSetpoint = MathUtil.clamp(goal, WristConstants.MIN_ANGLE, WristConstants.MAX_ANGLE);
   }
 
   public void changeElevatorGoal(double change) {

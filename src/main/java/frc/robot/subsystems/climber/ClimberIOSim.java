@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -25,8 +24,6 @@ public class ClimberIOSim implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     sim.update(0.02);
-    inputs.angle = Rotation2d.fromRadians(sim.getAngleRads());
-    inputs.velocityRad = sim.getVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = Math.abs(sim.getCurrentDrawAmps());
   }

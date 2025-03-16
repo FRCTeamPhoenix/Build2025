@@ -23,8 +23,6 @@ public class ClawIOSim implements ClawIO {
 
     inputs.intakeSensor = SmartDashboard.getBoolean("ClawSensorSim", false);
 
-    inputs.positionRotations = motorSim.getAngularPositionRotations();
-    inputs.velocityRotationsPerSec = motorSim.getAngularVelocityRPM();
     inputs.appliedVolts = motorSim.getInputVoltage();
     inputs.currentAmps = Math.abs(motorSim.getCurrentDrawAmps());
   }

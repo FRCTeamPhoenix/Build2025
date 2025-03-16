@@ -295,22 +295,23 @@ public class RobotContainer {
     driverRTTrigger.whileTrue(new ZoneSnap(drive));
 
     // Reef Branch alignment
-    driverLBTrigger.whileTrue(
-        new BranchAlign(drive, false)
-            .alongWith(
-                new AutoElevator(
-                    drive::getReefPose,
-                    superstructure,
-                    () -> selectedScore,
-                    operatorStartTrigger)));
-    driverRBTrigger.whileTrue(
-        new BranchAlign(drive, true)
-            .alongWith(
-                new AutoElevator(
-                    drive::getReefPose,
-                    superstructure,
-                    () -> selectedScore,
-                    operatorStartTrigger)));
+    driverLBTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(
+            new BranchAlign(drive, false)
+                .alongWith(
+                    new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
+        .onFalse(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    driverRBTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(
+            new BranchAlign(drive, true)
+                .alongWith(
+                    new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
+        .onFalse(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+
+    driverLBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, false));
+    driverRBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, true));
 
     // Player station alignment
     driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
@@ -353,7 +354,7 @@ public class RobotContainer {
                 .until(claw::getSensor)
                 .andThen(
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                        .alongWith(claw.stopCommand())))
+                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
 
     // Claw controls
@@ -458,16 +459,16 @@ public class RobotContainer {
   public Command[] getElevatorCommands() {
     // L1, L2, L3, L4
     return new Command[] {
-      Commands.runOnce(() -> superstructure.setState(2), superstructure)
+      new AutoElevator(drive::getPose, superstructure, () -> 2)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.runOnce(() -> superstructure.setState(3), superstructure)
+      new AutoElevator(drive::getPose, superstructure, () -> 3)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.runOnce(() -> superstructure.setState(4), superstructure)
+      new AutoElevator(drive::getPose, superstructure, () -> 4)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.runOnce(() -> superstructure.setState(5), superstructure)
+      new AutoElevator(drive::getPose, superstructure, () -> 5)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
       Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)

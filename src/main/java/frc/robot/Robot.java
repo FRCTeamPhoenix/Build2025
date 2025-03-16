@@ -14,6 +14,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -171,6 +172,14 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    robotContainer.getDrive().runVelocity(new ChassisSpeeds());
+    robotContainer
+        .getSuperstructure()
+        .setElevatorManualGoal(robotContainer.getSuperstructure().getElevatorHeight());
+    robotContainer
+        .getSuperstructure()
+        .setWristManualGoal(robotContainer.getSuperstructure().getWristAngle());
 
     if (!robotContainer.getDrive().getOffsetDone()) {
       robotContainer

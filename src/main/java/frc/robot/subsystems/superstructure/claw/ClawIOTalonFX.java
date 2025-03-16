@@ -10,8 +10,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
@@ -23,8 +21,6 @@ public class ClawIOTalonFX implements ClawIO {
   private TalonFX clawTalon = new TalonFX(CANConstants.CLAW_ID);
   private LaserCan laserCan = new LaserCan(CANConstants.LASERCAN_ID);
 
-  private final StatusSignal<Angle> position;
-  private final StatusSignal<AngularVelocity> velocity;
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
 
@@ -45,22 +41,18 @@ public class ClawIOTalonFX implements ClawIO {
       System.err.println("Configuration failed: " + e.getMessage());
     }
 
-    position = clawTalon.getPosition();
-    velocity = clawTalon.getVelocity();
     appliedVolts = clawTalon.getMotorVoltage();
     current = clawTalon.getSupplyCurrent();
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
+    BaseStatusSignal.setUpdateFrequencyForAll(50.0, appliedVolts, current);
     clawTalon.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(ClawIOInputs inputs) {
-    var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
+    var status = BaseStatusSignal.refreshAll(appliedVolts, current);
 
     inputs.connected = status.isOK();
-    inputs.positionRotations = position.getValueAsDouble() / ClawConstants.GEAR_RATIO;
-    inputs.velocityRotationsPerSec = velocity.getValueAsDouble() / ClawConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
     try {
