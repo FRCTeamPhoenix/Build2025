@@ -33,13 +33,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.AutoElevator;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
-import frc.robot.commands.ProcessorAlign;
 import frc.robot.commands.ZoneSnap;
-import frc.robot.subsystems.candle.*;
+import frc.robot.subsystems.candle.CANdleIO;
 import frc.robot.subsystems.candle.CANdleIO.CANdleState;
+import frc.robot.subsystems.candle.CANdleIOReal;
+import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -51,10 +53,6 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMapleSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.photon.Photon;
-import frc.robot.subsystems.photon.PhotonIO;
-import frc.robot.subsystems.photon.PhotonIOReal;
-import frc.robot.subsystems.photon.PhotonIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.claw.Claw;
 import frc.robot.subsystems.superstructure.claw.ClawIO;
@@ -68,6 +66,10 @@ import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
@@ -85,7 +87,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Photon photon;
+  private final Vision vision;
   private final Claw claw;
   private final Elevator elevator;
   private final Visualizer visualizer;
@@ -116,7 +118,6 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Triggers
-  private final Trigger driverATrigger = driverController.a();
   private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverLBTrigger = driverController.leftBumper();
@@ -141,7 +142,6 @@ public class RobotContainer {
   private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
   private final Trigger operatorRightPadTrigger = operatorController.povRight();
   private final Trigger operatorStartTrigger = operatorController.start();
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -157,15 +157,15 @@ public class RobotContainer {
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
-        photon =
-            new Photon(
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIOReal(
+                new VisionIOPhoton(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
-                new PhotonIOReal(
+                new VisionIOPhoton(
                     VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-                new PhotonIOReal(
+                new VisionIOPhoton(
                     VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
@@ -188,19 +188,19 @@ public class RobotContainer {
                 new ModuleIOMapleSim(swerveSim.getModules()[1]),
                 new ModuleIOMapleSim(swerveSim.getModules()[2]),
                 new ModuleIOMapleSim(swerveSim.getModules()[3]));
-        photon =
-            new Photon(
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose),
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose),
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.LOW_BACK_CAMERA_NAME,
                     VisionConstants.LOW_BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
@@ -221,13 +221,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        photon =
-            new Photon(
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIO() {},
-                new PhotonIO() {},
-                new PhotonIO() {});
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
@@ -300,30 +300,58 @@ public class RobotContainer {
     driverLBTrigger.whileTrue(
         new BranchAlign(drive, false)
             .alongWith(
-                Commands.runOnce(
-                    () -> superstructure.setState(() -> selectedScore), superstructure)));
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    operatorStartTrigger)));
     driverRBTrigger.whileTrue(
         new BranchAlign(drive, true)
             .alongWith(
-                Commands.runOnce(
-                    () -> superstructure.setState(() -> selectedScore), superstructure)));
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    operatorStartTrigger)));
 
     // Player station alignment
     driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
     driverBTrigger.whileTrue(new DriveToPlayerStation(drive, true));
 
-    // Processor alignment
-    driverATrigger.whileTrue(new ProcessorAlign(drive));
+    // Level select & manual
+    operatorATrigger
+        .and(operatorStartTrigger)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
+    operatorBTrigger
+        .and(operatorStartTrigger)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
+    operatorXTrigger
+        .and(operatorStartTrigger)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
+    operatorYTrigger
+        .and(operatorStartTrigger)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
-    // Levels
-    operatorATrigger.whileTrue(Commands.runOnce(() -> selectedScore = 2, superstructure));
-    operatorBTrigger.whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
-    operatorXTrigger.whileTrue(Commands.runOnce(() -> selectedScore = 3, superstructure));
-    operatorYTrigger.whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
+    operatorATrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(Commands.runOnce(() -> selectedScore = 2, superstructure));
+    operatorBTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
+    operatorXTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(Commands.runOnce(() -> selectedScore = 3, superstructure));
+    operatorYTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
 
-    // Superstructure home
-    operatorDownPadTrigger.whileTrue(
-        Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    // Superstructure home and rehome
+    operatorDownPadTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    operatorDownPadTrigger
+        .and(operatorStartTrigger)
+        .onTrue(Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
     // Intake function
     operatorLBTrigger
@@ -347,24 +375,34 @@ public class RobotContainer {
     operatorUpPadTrigger.whileTrue(
         Commands.runOnce(() -> superstructure.setState(8), superstructure));
 
-    operatorLSTrigger.whileTrue(
-        Commands.run(
-            () -> superstructure.changeElevatorGoal(-operatorController.getLeftY() * 0.005),
-            superstructure));
+    // Manual control
+    operatorLSTrigger
+        .and(operatorStartTrigger)
+        .whileTrue(
+            Commands.run(
+                () -> superstructure.changeElevatorGoal(-operatorController.getLeftY() * 0.005),
+                superstructure));
+    operatorLSTrigger
+        .and(operatorStartTrigger.negate())
+        .whileTrue(
+            Commands.run(
+                () ->
+                    superstructure.changeElevatorGoalClamped(
+                        -operatorController.getLeftY() * 0.005),
+                superstructure));
+
     operatorRSTrigger.whileTrue(
         Commands.run(
             () -> superstructure.changeWristGoal(-operatorController.getRightY() * 0.01),
             superstructure));
 
+    // Climber
     operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(3), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
     operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(-3), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(-6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
-
-    operatorStartTrigger.onTrue(
-        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
   }
 
   private void configureNamedCommands() {
@@ -393,8 +431,8 @@ public class RobotContainer {
     return drive;
   }
 
-  public Photon getPhoton() {
-    return photon;
+  public Vision getVision() {
+    return vision;
   }
 
   public Elevator getElevator() {
@@ -440,7 +478,7 @@ public class RobotContainer {
       Commands.runOnce(() -> superstructure.setState(5), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(0), superstructure).andThen(new WaitCommand(1))
+      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)
     };
   }
 
