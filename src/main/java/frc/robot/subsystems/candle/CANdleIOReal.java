@@ -8,23 +8,37 @@ import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.RgbFadeAnimation;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.CANConstants;
 
 public class CANdleIOReal implements CANdleIO {
   private CANdle leftCandle = new CANdle(CANConstants.LEFT_CANDLE_ID);
   // private CANdle rightCandle = new CANdle(CANConstants.RIGHT_CANDLE_ID);
 
-  private FireAnimation fireAnimation = new FireAnimation(1, 0.25, 300, 1, 0);
-  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.5, 300);
-  private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.25, 300);
+  private CANdleState state = CANdleState.Off;
+
+  private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
+  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.01, 37);
+  private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
 
   public CANdleIOReal() {
     leftCandle.configAllSettings(new CANdleConfiguration());
     // rightCandle.configAllSettings(new CANdleConfiguration());
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+      setMode(CANdleState.Red);
+      state = CANdleState.Red;
+    } else {
+      setMode(CANdleState.Blue);
+      state = CANdleState.Blue;
+    }
   }
   // Set the RGBs for Phoenix Colors once Business Art gets them for us
   @Override
   public void setMode(CANdleState mode) {
+    leftCandle.clearAnimation(0);
+    state = mode;
     switch (mode) {
       case FireAnimation:
         leftCandle.animate(fireAnimation);
@@ -51,8 +65,8 @@ public class CANdleIOReal implements CANdleIO {
         // rightCandle.setLEDs(0, 255, 0);
         break;
       case Orange:
-        leftCandle.setLEDs(255, 69, 0);
-        // rightCandle.setLEDs(255, 69, 0);
+        leftCandle.setLEDs(255, 30, 0);
+        // rightCandle.setLEDs(255, 30, 0);
         break;
       case PhoenixOrange: // Phoenix colors have been commented out until we actually get them
         leftCandle.setLEDs(224, 79, 13);
@@ -70,6 +84,13 @@ public class CANdleIOReal implements CANdleIO {
         // rightCandle.setLEDs(0, 0, 0);
         break;
     }
+  }
+
+  @Override
+  public void updateInputs(CANdleIOInputs inputs) {
+    inputs.mode = state;
+    inputs.busVolts = new double[] {leftCandle.getBusVoltage()};
+    inputs.railVolts = new double[] {leftCandle.get5VRailVoltage()};
   }
 }
 // Peter Halassa is an uwu furry femboy

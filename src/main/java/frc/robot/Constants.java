@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.SIM;
+  public static final Mode CURRENT_MODE = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -125,7 +125,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.4;
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.55;
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
 
@@ -163,7 +163,7 @@ public final class Constants {
         };
 
     public static final double BRANCH_STRAFE = Units.inchesToMeters(6.5);
-    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
+    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.15;
     public static final Transform2d LEFT_BRANCH =
         new Transform2d(BRANCH_BUFFER, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
@@ -180,7 +180,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = 0.606;
+    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS;
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 
@@ -238,13 +238,8 @@ public final class Constants {
     public static final Constraints FINE_ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
 
-    public static final Transform2d PATHING_BUFFER = new Transform2d(1, 0, Rotation2d.k180deg);
-
-    public static final Transform2d LEFT_STATION_PATHING_BUFFER =
-        new Transform2d(1.5, 1, Rotation2d.k180deg);
-
-    public static final Transform2d RIGHT_STATION_PATHING_BUFFER =
-        new Transform2d(1.5, -1, Rotation2d.k180deg);
+    public static final Transform2d PATHING_BUFFER =
+        new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.5, 0, Rotation2d.k180deg);
 
     public static final Pose3d[] BLUE_REEF_POSES =
         new Pose3d[] {
@@ -298,7 +293,7 @@ public final class Constants {
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
     public static final double[] COMP_ENCODER_OFFSETS = {
-      1.969 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
+      0.815 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
     };
 
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
@@ -306,15 +301,15 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.318, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
+      0, 0.122, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.3,
-      0.7,
+      WristConstants.MAX_ANGLE - 0.2,
+      1.222,
       -0.17,
+      -0.48,
       -0.49,
-      -0.55,
-      WristConstants.MIN_ANGLE + 0.02,
+      -0.692,
       0,
       0,
       0,
@@ -341,7 +336,7 @@ public final class Constants {
     public static final double MIN_HEIGHT = Units.inchesToMeters(10);
     public static final double MAX_EXTENSION = 1.75;
     public static final double MAX_HEIGHT = MIN_HEIGHT + MAX_EXTENSION;
-    public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
+    public static final double MAGIC_NUMBER = PULLEY_RADIUS * 3;
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
   }
 
@@ -357,7 +352,7 @@ public final class Constants {
     public static final double MIN_ANGLE = -0.93;
     public static final double MAX_ANGLE = 1.43;
     public static final double CUTOFF_ANGLE = 1.2;
-    public static final double MOVE_ANGLE = WristConstants.MAX_ANGLE - 0.05;
+    public static final double MOVE_ANGLE = 0.5;
   }
 
   public static final class ClimberConstants {

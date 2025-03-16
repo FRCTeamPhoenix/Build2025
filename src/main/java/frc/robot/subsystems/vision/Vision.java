@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.photon;
+package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -23,29 +23,29 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.subsystems.photon.PhotonIO.PoseObservationType;
-import frc.robot.subsystems.photon.PhotonIO.TargetObservation;
+import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
-public class Photon extends SubsystemBase {
+public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionConsumer reefConsumer;
 
-  private final PhotonIO[] io;
-  private final PhotonIOInputsAutoLogged[] inputs;
+  private final VisionIO[] io;
+  private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
-  public Photon(VisionConsumer consumer, VisionConsumer reefConsumer, PhotonIO... io) {
+  public Vision(VisionConsumer consumer, VisionConsumer reefConsumer, VisionIO... io) {
     this.consumer = consumer;
     this.reefConsumer = reefConsumer;
     this.io = io;
 
     // Initialize inputs
-    this.inputs = new PhotonIOInputsAutoLogged[io.length];
+    this.inputs = new VisionIOInputsAutoLogged[io.length];
     for (int i = 0; i < inputs.length; i++) {
-      inputs[i] = new PhotonIOInputsAutoLogged();
+      inputs[i] = new VisionIOInputsAutoLogged();
     }
 
     // Initialize disconnected alerts

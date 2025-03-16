@@ -7,16 +7,11 @@ public interface CANdleIO {
   public static class CANdleIOInputs {
     // public double appliedVolts = 0;
     public CANdleState mode = CANdleState.Off;
-    public double busVolts = 0;
-    public double railVolts = 0;
+    public double[] busVolts = {0, 0};
+    public double[] railVolts = {0, 0};
   }
 
-  public default void updateInputs(CANdleIOInputs inputs) {}
-
-  public default void setMode(CANdleState mode) {}
-}
-
-enum CANdleState {
+  public enum CANdleState {
   FireAnimation,
   RainbowAnimation,
   RgbFadeAnimation,
@@ -24,8 +19,13 @@ enum CANdleState {
   Blue,
   Green,
   Orange,
-  Off,
   //PhoenixOrange,
   //PhoenixYellow,
-  PhoenixRed;
+  PhoenixRed,
+  Off;
+  }
+
+  public default void updateInputs(CANdleIOInputs inputs) {}
+
+  public default void setMode(CANdleState mode) {}
 }

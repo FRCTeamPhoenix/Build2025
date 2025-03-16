@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
@@ -13,10 +14,10 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends Command {
 
-  PIDController xController = new PIDController(1, 0, 0);
-  PIDController yController = new PIDController(1, 0, 0);
+  PIDController xController = new PIDController(2, 0, 0.07);
+  PIDController yController = new PIDController(2, 0, 0.07);
   ProfiledPIDController angleController =
-      new ProfiledPIDController(3, 0, 0.2, AutoConstants.ANGLE_CONSTRAINTS);
+      new ProfiledPIDController(2, 0, 0.07, AutoConstants.ANGLE_CONSTRAINTS);
 
   HolonomicDriveController controller =
       new HolonomicDriveController(xController, yController, angleController);
@@ -31,14 +32,7 @@ public class DriveToPose extends Command {
     this.target = targetPose;
     this.robotPose = robotPose;
 
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-
-    // xController.setGoal(target.getX());
-    // yController.setGoal(target.getY());
-    // angleController.setGoal(target.getRotation().getRadians());
-    xController.setTolerance(0.008);
-    yController.setTolerance(0.008);
-    angleController.setTolerance(0.01);
+    controller.setTolerance(new Pose2d(0.01, 0.01, new Rotation2d(0.01)));
 
     Logger.recordOutput("PoseAlignment/Target", target);
 
@@ -57,13 +51,6 @@ public class DriveToPose extends Command {
   @Override
   public void execute() {
     Pose2d currentPosition = robotPose.get();
-
-    // ChassisSpeeds speeds =
-    //     ChassisSpeeds.fromFieldRelativeSpeeds(
-    //         xController.calculate(currentPosition.getX()),
-    //         yController.calculate(currentPosition.getY()),
-    //         angleController.calculate(currentPosition.getRotation().getRadians()),
-    //         drive.getRotation());
 
     ChassisSpeeds speeds = controller.calculate(currentPosition, target, 0, target.getRotation());
 
@@ -91,11 +78,5 @@ public class DriveToPose extends Command {
     // angleController.setGoal(target.getRotation().getRadians());
     isDone = false;
     Logger.recordOutput("PoseAlignment/Target", target);
-  }
-
-  public void setNewPValues(double strafeP, double rotationP) {
-    xController.setP(strafeP);
-    yController.setP(strafeP);
-    angleController.setP(rotationP);
   }
 }

@@ -3,9 +3,10 @@
   "robotLength": 0.787,
   "holonomicMode": true,
   "pathFolders": [
-    "dynamic",
+    "test paths",
     "alliance",
     "center",
+    "dynamic",
     "opposing",
     "taxi"
   ],

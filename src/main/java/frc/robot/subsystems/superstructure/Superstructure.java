@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.WristConstants;
@@ -12,6 +13,7 @@ import frc.robot.subsystems.superstructure.elevator.Elevator;
 import frc.robot.subsystems.superstructure.wrist.Wrist;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -53,14 +55,15 @@ public class Superstructure extends SubsystemBase {
       wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
       Logger.recordOutput(
           "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
-      if (Math.abs(wristSetpoint - wrist.getAngle()) > 0.2) {
-        // && (lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[6]
-        //   && lastElevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[7])) {
-        // elevator.runSetpoint(elevatorSetpoint);
-        wrist.setSetpoint(wristSetpoint);
+      if (lastElevatorSetpoint == SuperstructureConstants.ELEVATOR_STATES[5]
+          && !(Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05)) {
+        wrist.setSetpoint(WristConstants.MOVE_ANGLE);
+        if (Math.abs(WristConstants.MOVE_ANGLE - wrist.getAngle()) < 0.02) {
+          elevator.runSetpoint(elevatorSetpoint);
+        }
       } else {
-        elevator.runSetpoint(elevatorSetpoint);
         wrist.setSetpoint(wristSetpoint);
+        elevator.runSetpoint(elevatorSetpoint);
       }
       atSetpoint =
           Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
@@ -78,6 +81,13 @@ public class Superstructure extends SubsystemBase {
     atSetpoint = false;
     manualControl = false;
     superstructureState = MathUtil.clamp(state, 0, SuperstructureConstants.STATE_NAMES.length - 1);
+  }
+
+  public void setState(IntSupplier state) {
+    atSetpoint = false;
+    manualControl = false;
+    superstructureState =
+        MathUtil.clamp(state.getAsInt(), 0, SuperstructureConstants.STATE_NAMES.length - 1);
   }
 
   public double getElevatorGoal() {
@@ -115,6 +125,12 @@ public class Superstructure extends SubsystemBase {
   public void changeElevatorGoal(double change) {
     manualControl = true;
     elevatorSetpoint = elevatorSetpoint + change;
+  }
+
+  public void changeElevatorGoalClamped(double change) {
+    manualControl = true;
+    elevatorSetpoint =
+        MathUtil.clamp(elevatorSetpoint + change, 0, ElevatorConstants.MAX_EXTENSION);
   }
 
   public void changeWristGoal(double change) {
