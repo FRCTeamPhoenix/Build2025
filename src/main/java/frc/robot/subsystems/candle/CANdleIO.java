@@ -24,5 +24,8 @@ enum CANdleState {
   Blue,
   Green,
   Orange,
-  Off;
+  Off,
+  //PhoenixOrange,
+  //PhoenixYellow,
+  PhoenixRed;
 }
