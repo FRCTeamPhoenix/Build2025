@@ -25,7 +25,6 @@ public class CANdleIOReal implements CANdleIO {
   public CANdleIOReal() {
     leftCandle.configAllSettings(new CANdleConfiguration());
     // rightCandle.configAllSettings(new CANdleConfiguration());
-
     if (DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
       setMode(CANdleState.Red);
@@ -35,7 +34,7 @@ public class CANdleIOReal implements CANdleIO {
       state = CANdleState.Blue;
     }
   }
-
+  // Set the RGBs for Phoenix Colors once Business Art gets them for us
   @Override
   public void setMode(CANdleState mode) {
     leftCandle.clearAnimation(0);
@@ -69,6 +68,17 @@ public class CANdleIOReal implements CANdleIO {
         leftCandle.setLEDs(255, 30, 0);
         // rightCandle.setLEDs(255, 30, 0);
         break;
+      case PhoenixOrange: // Phoenix colors have been commented out until we actually get them
+        leftCandle.setLEDs(224, 79, 13);
+        // rightCandle.setLEDs(224, 79, 13);
+      case PhoenixRed:
+        leftCandle.setLEDs(217, 83, 79);
+        // rightCandle.setLEDs(217, 83, 79);
+        break;
+      //case PhoenixYellow:
+        //leftCandle.setLEDs(255, 69, 0);
+        // rightCandle.setLEDs(255, 69, 0);
+        //break;
       default:
         leftCandle.setLEDs(0, 0, 0);
         // rightCandle.setLEDs(0, 0, 0);
@@ -83,3 +93,4 @@ public class CANdleIOReal implements CANdleIO {
     inputs.railVolts = new double[] {leftCandle.get5VRailVoltage()};
   }
 }
+// Peter Halassa is an uwu furry femboy

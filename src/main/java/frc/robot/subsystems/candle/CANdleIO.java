@@ -12,14 +12,17 @@ public interface CANdleIO {
   }
 
   public enum CANdleState {
-    FireAnimation,
-    RainbowAnimation,
-    RgbFadeAnimation,
-    Red,
-    Blue,
-    Green,
-    Orange,
-    Off;
+  FireAnimation,
+  RainbowAnimation,
+  RgbFadeAnimation,
+  Red,
+  Blue,
+  Green,
+  Orange,
+  //PhoenixOrange,
+  //PhoenixYellow,
+  PhoenixRed,
+  Off;
   }
 
   public default void updateInputs(CANdleIOInputs inputs) {}
