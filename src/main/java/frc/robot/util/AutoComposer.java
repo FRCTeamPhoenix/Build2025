@@ -68,8 +68,8 @@ public class AutoComposer {
 
   public static Command scoringRoutine(
       String routine,
-      Supplier<Command[]> elevatorCommands,
-      Supplier<Command> scoringCommand,
+      Supplier<Command[]> scoringCommands,
+      Supplier<Command> shootCommand,
       Drive drive,
       String lastPosition) {
     boolean isRed =
@@ -86,37 +86,30 @@ public class AutoComposer {
       int reefFace = routineSplit[0] - '0';
       int level = routineSplit[2] - '0';
 
-      if (lastPosition != "0") {
-        returnCommand =
-            AutoBuilder.pathfindToPose(
-                reefPoses[reefFace - 1].toPose2d().plus(AutoConstants.PATHING_BUFFER),
-                AutoConstants.CONSTRAINTS);
-
-      } else {
-        returnCommand =
-            AutoBuilder.pathfindThenFollowPath(
-                PathPlannerPath.fromPathFile(lastPosition + Integer.toString(reefFace)),
-                AutoConstants.CONSTRAINTS);
-      }
+      returnCommand =
+          AutoBuilder.pathfindToPose(
+              reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_BUFFER_TRANSFORM),
+              AutoConstants.CONSTRAINTS);
       if (routineSplit[1] == 'a') {
         returnCommand =
             returnCommand.andThen(
-                elevatorCommands.get()[level - 1].alongWith(
+                scoringCommands.get()[level - 1].alongWith(
                     new DeferredCommand(() -> new BranchAlign(drive, false), Set.of())));
       } else {
         returnCommand =
             returnCommand.andThen(
-                elevatorCommands.get()[level - 1].alongWith(
+                scoringCommands.get()[level - 1].alongWith(
                     new DeferredCommand(() -> new BranchAlign(drive, true), Set.of())));
       }
-      returnCommand = returnCommand.andThen(scoringCommand.get());
+      returnCommand = returnCommand.andThen(shootCommand.get());
       returnCommand =
           returnCommand.andThen(
               new DriveToPose(
                       drive,
-                      reefPoses[reefFace - 1].toPose2d().plus(AutoConstants.PATHING_BUFFER),
+                      reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_BUFFER_TRANSFORM),
                       drive::getPose)
-                  .alongWith(elevatorCommands.get()[4]));
+                  .withTimeout(0.5)
+                  .alongWith(scoringCommands.get()[4]));
     } catch (Exception e) {
       System.out.println(lastPosition);
       System.out.println(lastPosition.getClass());
@@ -145,25 +138,11 @@ public class AutoComposer {
 
     try {
       if (routineSplit[0] == 'r') {
-        returnCommand =
-            AutoBuilder.pathfindThenFollowPath(
-                    PathPlannerPath.fromPathFile(lastPosition + "r"), AutoConstants.CONSTRAINTS)
-                .andThen(
-                    new DriveToPose(
-                        drive,
-                        playerStations[1].plus(FieldConstants.CENTER_PLAYER_STATION),
-                        drive::getPose));
+        returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "r"));
       } else {
-        returnCommand =
-            AutoBuilder.pathfindThenFollowPath(
-                    PathPlannerPath.fromPathFile(lastPosition + "l"), AutoConstants.CONSTRAINTS)
-                .andThen(
-                    new DriveToPose(
-                        drive,
-                        playerStations[0].plus(FieldConstants.CENTER_PLAYER_STATION),
-                        drive::getPose));
+        returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "l"));
       }
-      returnCommand = returnCommand.alongWith(intakeCommand.get());
+      returnCommand = returnCommand.andThen(intakeCommand.get());
     } catch (Exception e) {
       System.out.println(e);
       System.out.println("Failed to generate intake command");

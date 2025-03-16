@@ -7,22 +7,22 @@ public interface CANdleIO {
   public static class CANdleIOInputs {
     // public double appliedVolts = 0;
     public CANdleState mode = CANdleState.Off;
-    public double busVolts = 0;
-    public double railVolts = 0;
+    public double[] busVolts = {0, 0};
+    public double[] railVolts = {0, 0};
+  }
+
+  public enum CANdleState {
+    FireAnimation,
+    RainbowAnimation,
+    RgbFadeAnimation,
+    Red,
+    Blue,
+    Green,
+    Orange,
+    Off;
   }
 
   public default void updateInputs(CANdleIOInputs inputs) {}
 
   public default void setMode(CANdleState mode) {}
-}
-
-enum CANdleState {
-  FireAnimation,
-  RainbowAnimation,
-  RgbFadeAnimation,
-  Red,
-  Blue,
-  Green,
-  Orange,
-  Off;
 }

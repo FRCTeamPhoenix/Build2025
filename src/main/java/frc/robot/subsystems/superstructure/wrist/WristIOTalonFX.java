@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
@@ -50,10 +51,10 @@ public class WristIOTalonFX implements WristIO {
     // set Motion Magic settings
     var motionMagicConfigs = config.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity =
-        Units.degreesToRotations(720)
+        Units.degreesToRotations(900)
             * WristConstants.GEAR_RATIO; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        Units.degreesToRotations(720)
+        Units.degreesToRotations(900)
             * WristConstants.GEAR_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
     wristTalon.getConfigurator().apply(config);
 
@@ -66,8 +67,12 @@ public class WristIOTalonFX implements WristIO {
     wristTalon.optimizeBusUtilization();
 
     // encoder.setSettings(new CanandmagSettings());
+    Logger.recordOutput("pos", encoder.getAbsPosition());
+    Logger.recordOutput(
+        "posreset",
+        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations());
     wristTalon.setPosition(
-        Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
+        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
   }
 

@@ -60,7 +60,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * ElevatorConstants.GEAR_RATIO
             / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER); // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        3
+        6
             * ElevatorConstants.GEAR_RATIO
             / (2
                 * Math.PI
