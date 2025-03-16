@@ -39,7 +39,6 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.candle.CANdleIO;
-import frc.robot.subsystems.candle.CANdleIO.CANdleState;
 import frc.robot.subsystems.candle.CANdleIOReal;
 import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.climber.Climber;
@@ -68,6 +67,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
@@ -142,6 +142,7 @@ public class RobotContainer {
   private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
   private final Trigger operatorRightPadTrigger = operatorController.povRight();
   private final Trigger operatorStartTrigger = operatorController.start();
+  private final Trigger operatorBackTrigger = operatorController.back();
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -165,13 +166,12 @@ public class RobotContainer {
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new VisionIOPhoton(
                     VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-                new VisionIOPhoton(
-                    VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
+                new VisionIOLimelight(VisionConstants.LIMELIGHT_NAME, drive::getMegatagRotation));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        candle = new CANdleSubsystem(new CANdleIOReal());
+        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose);
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -208,7 +208,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
-        candle = new CANdleSubsystem(new CANdleIO() {});
+        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose);
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -231,7 +231,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
-        candle = new CANdleSubsystem(new CANdleIO() {});
+        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose);
         climber = new Climber(new ClimberIO() {});
         break;
     }
@@ -267,8 +267,6 @@ public class RobotContainer {
     SmartDashboard.putData("Home Elevator", Commands.runOnce(() -> superstructure.homeElevator()));
     // Configure the button bindings
     configureButtonBindings();
-
-    candle.setState(CANdleState.Orange);
   }
 
   /**
@@ -319,9 +317,7 @@ public class RobotContainer {
     driverBTrigger.whileTrue(new DriveToPlayerStation(drive, true));
 
     // Level select & manual
-    operatorATrigger
-        .and(operatorStartTrigger)
-        .whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
+    operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
     operatorBTrigger
         .and(operatorStartTrigger)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
@@ -332,9 +328,6 @@ public class RobotContainer {
         .and(operatorStartTrigger)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
-    operatorATrigger
-        .and(operatorStartTrigger.negate())
-        .whileTrue(Commands.runOnce(() -> selectedScore = 2, superstructure));
     operatorBTrigger
         .and(operatorStartTrigger.negate())
         .whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
@@ -349,9 +342,8 @@ public class RobotContainer {
     operatorDownPadTrigger
         .and(operatorStartTrigger.negate())
         .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
-    operatorDownPadTrigger
-        .and(operatorStartTrigger)
-        .onTrue(Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
+    operatorBackTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
     // Intake function
     operatorLBTrigger
@@ -468,22 +460,22 @@ public class RobotContainer {
     return new Command[] {
       Commands.runOnce(() -> superstructure.setState(2), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
+          .andThen(new WaitCommand(0.0)),
       Commands.runOnce(() -> superstructure.setState(3), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
+          .andThen(new WaitCommand(0.0)),
       Commands.runOnce(() -> superstructure.setState(4), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
+          .andThen(new WaitCommand(0.0)),
       Commands.runOnce(() -> superstructure.setState(5), superstructure)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
+          .andThen(new WaitCommand(0.0)),
       Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)
     };
   }
 
   public Command getScoringCommand() {
-    return new WaitCommand(0.5).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
+    return new WaitCommand(0.2).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {

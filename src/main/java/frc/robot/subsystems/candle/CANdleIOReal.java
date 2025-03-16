@@ -75,10 +75,10 @@ public class CANdleIOReal implements CANdleIO {
         leftCandle.setLEDs(217, 83, 79);
         // rightCandle.setLEDs(217, 83, 79);
         break;
-      //case PhoenixYellow:
-        //leftCandle.setLEDs(255, 69, 0);
+        // case PhoenixYellow:
+        // leftCandle.setLEDs(255, 69, 0);
         // rightCandle.setLEDs(255, 69, 0);
-        //break;
+        // break;
       default:
         leftCandle.setLEDs(0, 0, 0);
         // rightCandle.setLEDs(0, 0, 0);

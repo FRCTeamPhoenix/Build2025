@@ -141,6 +141,16 @@ public class Robot extends LoggedRobot {
 
     robotContainer.getSuperstructure().setState(0);
 
+    if (!robotContainer.getDrive().getOffsetDone()) {
+      robotContainer
+          .getDrive()
+          .setMegatagOffset(
+              robotContainer
+                  .getDrive()
+                  .getRotation()
+                  .minus(robotContainer.getDrive().getMegatagRotation()));
+    }
+
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
@@ -162,7 +172,16 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
 
-    robotContainer.getSuperstructure().setState(0);
+    if (!robotContainer.getDrive().getOffsetDone()) {
+      robotContainer
+          .getDrive()
+          .setMegatagOffset(
+              robotContainer
+                  .getDrive()
+                  .getRotation()
+                  .minus(robotContainer.getDrive().getMegatagRotation()));
+    }
+
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }

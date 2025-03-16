@@ -53,6 +53,8 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
+    public static final String LIMELIGHT_NAME = "limelight-phoenix";
+
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
             new Translation3d(
@@ -125,7 +127,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.55;
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.5;
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
 
@@ -307,8 +309,8 @@ public final class Constants {
       WristConstants.MAX_ANGLE - 0.2,
       1.222,
       -0.17,
-      -0.48,
-      -0.49,
+      -0.43,
+      -0.43,
       -0.692,
       0,
       0,

@@ -103,7 +103,8 @@ public class AutoComposer {
       returnCommand = returnCommand.andThen(shootCommand.get());
       returnCommand =
           returnCommand.andThen(
-              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive).withTimeout(0.5)
+              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
+                  .withTimeout(0.5)
                   .alongWith(scoringCommands.get()[4]));
     } catch (Exception e) {
       System.out.println(lastPosition);
@@ -118,7 +119,7 @@ public class AutoComposer {
 
   public static Command intakingRoutine(
       String routine, Supplier<Command> intakeCommand, Drive drive, String lastPosition) {
-        
+
     Command returnCommand;
 
     char[] routineSplit = routine.toLowerCase().toCharArray();
@@ -129,7 +130,7 @@ public class AutoComposer {
       } else {
         returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "l"));
       }
-      returnCommand = returnCommand.andThen(intakeCommand.get());
+      returnCommand = returnCommand.alongWith(intakeCommand.get());
     } catch (Exception e) {
       System.out.println(e);
       System.out.println("Failed to generate intake command");
