@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.util.AutoComposer;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
@@ -103,6 +105,22 @@ public class Robot extends LoggedRobot {
     PathfindingUtils.warmupCommand().schedule();
     Logger.recordOutput("PoseAlignment/AtGoal", false);
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+    System.out.println(
+        FieldConstants.BLUE_PLAYER_STATIONS[0].plus(FieldConstants.CENTER_PLAYER_STATION));
+    System.out.println(
+        FieldConstants.BLUE_PLAYER_STATIONS[1].plus(FieldConstants.CENTER_PLAYER_STATION));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[0].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[1].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[2].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[3].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[4].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
+    System.out.println(
+        AutoConstants.BLUE_REEF_POSES[5].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER));
   }
 
   /** This function is called periodically during all modes. */

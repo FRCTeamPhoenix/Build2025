@@ -184,7 +184,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS;
+    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.05;
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 

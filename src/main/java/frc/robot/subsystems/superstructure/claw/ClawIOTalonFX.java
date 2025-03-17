@@ -28,7 +28,7 @@ public class ClawIOTalonFX implements ClawIO {
 
   public ClawIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.SupplyCurrentLimit = 40.0;
+    config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     clawTalon.getConfigurator().apply(config);
     setBrakeMode(true);
