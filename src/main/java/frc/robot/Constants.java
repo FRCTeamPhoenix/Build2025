@@ -391,12 +391,4 @@ public final class Constants {
     public static final int LEFT_CANDLE_ID = 22;
     public static final int RIGHT_CANDLE_ID = 23;
   }
-
-  public static final class CANdleConstants {
-    public static final int LED_RED = 255;
-    public static final int LED_BLUE = 255;
-    public static final int LED_GREEN = 255;
-
-    public static final int COLOR_OFF = 0;
-  }
 }

@@ -19,6 +19,9 @@ public interface CANdleIO {
     Blue,
     Green,
     Orange,
+    // PhoenixOrange,
+    // PhoenixYellow,
+    PhoenixRed,
     Off;
   }
 
