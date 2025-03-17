@@ -40,7 +40,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ProcessorAlign;
 import frc.robot.commands.ZoneSnap;
-import frc.robot.subsystems.candle.*;
+import frc.robot.subsystems.candle.CANdleIO;
+import frc.robot.subsystems.candle.CANdleIOReal;
+import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -93,6 +95,7 @@ public class RobotContainer {
   private final Superstructure superstructure;
   private final Wrist wrist;
   private final Climber climber;
+  private final CANdleSubsystem candle;
 
   private final DriveTrainSimulationConfig driveSimConfig =
       DriveTrainSimulationConfig.Default()
@@ -169,6 +172,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
+        candle = new CANdleSubsystem(new CANdleIOReal());
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -205,6 +209,8 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
+        candle = new CANdleSubsystem(new CANdleIO() {});
+
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -228,6 +234,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
         climber = new Climber(new ClimberIO() {});
+        candle = new CANdleSubsystem(new CANdleIO() {});
         break;
     }
 
