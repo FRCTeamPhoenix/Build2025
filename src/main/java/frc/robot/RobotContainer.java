@@ -20,6 +20,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -301,14 +302,20 @@ public class RobotContainer {
             new BranchAlign(drive, false)
                 .alongWith(
                     new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
-        .onFalse(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+        .onFalse(
+            Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
+                .withTimeout(0.2)
+                .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
     driverRBTrigger
         .and(operatorStartTrigger.negate())
         .whileTrue(
             new BranchAlign(drive, true)
                 .alongWith(
                     new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
-        .onFalse(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+        .onFalse(
+            Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
+                .withTimeout(0.2)
+                .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
 
     driverLBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, false));
     driverRBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, true));
