@@ -29,7 +29,12 @@ public class CANdleSubsystem extends SubsystemBase {
     if (!override) {
       Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
       if (reef != poseSupplier.get()) {
-        if (reef.minus(poseSupplier.get()).getTranslation().getX() > FieldConstants.REEF_BUFFER) {
+        if (poseSupplier
+                .get()
+                .minus(PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d()))
+                .getTranslation()
+                .getX()
+            > FieldConstants.REEF_BUFFER) {
           candle.setMode(CANdleState.Green);
         } else {
           candle.setMode(CANdleState.Red);
