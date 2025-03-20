@@ -25,11 +25,10 @@ public class Superstructure extends SubsystemBase {
 
   private int superstructureState = 0;
   private boolean manualControl = false;
+  private boolean killed = false;
 
   private double elevatorSetpoint = 0.0;
   private double wristSetpoint = 0.0;
-
-  private double lastElevatorSetpoint = 0.0;
 
   private final Supplier<Pose2d> poseSupplier;
 
@@ -46,37 +45,40 @@ public class Superstructure extends SubsystemBase {
     elevator.periodic();
     wrist.periodic();
 
-    if (elevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[superstructureState]) {
+    /*if (elevatorSetpoint != SuperstructureConstants.ELEVATOR_STATES[superstructureState]) {
       lastElevatorSetpoint = elevatorSetpoint;
-    }
+    }*/
 
-    if (!manualControl) {
-      elevatorSetpoint = SuperstructureConstants.ELEVATOR_STATES[superstructureState];
-      wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
-      Logger.recordOutput(
-          "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
-      // if (lastElevatorSetpoint == SuperstructureConstants.ELEVATOR_STATES[5]
-      //     && (Math.abs(SuperstructureConstants.ELEVATOR_STATES[5] - elevator.getHeight()) < 0.1))
-      // {
-      //   wrist.setSetpoint(SuperstructureConstants.WRIST_STATES[5]);
-      //   elevator.runSetpoint(elevatorSetpoint);
-      // } else {
-      //   wrist.setSetpoint(wristSetpoint);
-      //   elevator.runSetpoint(elevatorSetpoint);
-      // }
+    if (!killed) {
+      if (!manualControl) {
+        elevatorSetpoint = SuperstructureConstants.ELEVATOR_STATES[superstructureState];
+        wristSetpoint = SuperstructureConstants.WRIST_STATES[superstructureState];
+        Logger.recordOutput(
+            "Superstructure/State", SuperstructureConstants.STATE_NAMES[superstructureState]);
+        // if (lastElevatorSetpoint == SuperstructureConstants.ELEVATOR_STATES[5]
+        //     && (Math.abs(SuperstructureConstants.ELEVATOR_STATES[5] - elevator.getHeight()) <
+        // 0.1))
+        // {
+        //   wrist.setSetpoint(SuperstructureConstants.WRIST_STATES[5]);
+        //   elevator.runSetpoint(elevatorSetpoint);
+        // } else {
+        //   wrist.setSetpoint(wristSetpoint);
+        //   elevator.runSetpoint(elevatorSetpoint);
+        // }
 
-      wrist.setSetpoint(wristSetpoint);
-      elevator.runSetpoint(elevatorSetpoint);
+        wrist.setSetpoint(wristSetpoint);
+        elevator.runSetpoint(elevatorSetpoint);
 
-      atSetpoint =
-          Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
-              && Math.abs(wristSetpoint - wrist.getAngle()) < 0.02;
+        atSetpoint =
+            Math.abs(elevatorSetpoint - elevator.getHeight()) < 0.05
+                && Math.abs(wristSetpoint - wrist.getAngle()) < 0.02;
 
-    } else {
-      Logger.recordOutput("Superstructure/State", "MANUAL");
-      elevator.runSetpoint(elevatorSetpoint);
-      wrist.setSetpoint(wristSetpoint);
-      atSetpoint = elevator.atSetpoint() && wrist.atSetpoint();
+      } else {
+        Logger.recordOutput("Superstructure/State", "MANUAL");
+        elevator.runSetpoint(elevatorSetpoint);
+        wrist.setSetpoint(wristSetpoint);
+        atSetpoint = elevator.atSetpoint() && wrist.atSetpoint();
+      }
     }
   }
 
@@ -164,5 +166,11 @@ public class Superstructure extends SubsystemBase {
     Pose2d targetPose = pose.nearest(list);
 
     superstructureState = states[list.indexOf(targetPose)];
+  }
+
+  public void killSuperstructure() {
+    killed = true;
+    elevator.kill();
+    wrist.kill();
   }
 }

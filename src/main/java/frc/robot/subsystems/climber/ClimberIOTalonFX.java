@@ -9,11 +9,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 
 public class ClimberIOTalonFX implements ClimberIO {
 
   private TalonFX climberTalon = new TalonFX(CANConstants.CLIMBER_ID);
+  private final Alert motorAlert = new Alert("Climber motor is disconnected", AlertType.kError);
 
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
@@ -41,7 +44,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVolts, current);
+    var status = BaseStatusSignal.refreshAll(appliedVolts, current);
+    motorAlert.set(!status.isOK());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
   }

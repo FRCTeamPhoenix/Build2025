@@ -12,14 +12,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ClawConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class ClawIOTalonFX implements ClawIO {
 
   private TalonFX clawTalon = new TalonFX(CANConstants.CLAW_ID);
   private LaserCan laserCan = new LaserCan(CANConstants.LASERCAN_ID);
+  private final Alert motorAlert = new Alert("Claw motor is disconnected", AlertType.kError);
+  private final Alert sensorAlert = new Alert("Claw LaserCAN is disconnected", AlertType.kError);
 
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
@@ -34,10 +37,12 @@ public class ClawIOTalonFX implements ClawIO {
     setBrakeMode(true);
 
     try {
+      sensorAlert.set(false);
       laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
       laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
     } catch (ConfigurationFailedException e) {
+      sensorAlert.set(true);
       System.err.println("Configuration failed: " + e.getMessage());
     }
 
@@ -53,13 +58,16 @@ public class ClawIOTalonFX implements ClawIO {
     var status = BaseStatusSignal.refreshAll(appliedVolts, current);
 
     inputs.connected = status.isOK();
+    motorAlert.set(!inputs.connected);
+
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = current.getValueAsDouble();
     try {
+      sensorAlert.set(false);
       inputs.intakeSensor =
           laserCan.getMeasurement().distance_mm < ClawConstants.LASERCAN_TRIGGER_DISTANCE;
-      Logger.recordOutput("Lasercan", laserCan.getMeasurement().distance_mm);
     } catch (Exception e) {
+      sensorAlert.set(true);
       inputs.intakeSensor = false;
       System.err.println("Failed to read LaserCAN: " + e);
     }

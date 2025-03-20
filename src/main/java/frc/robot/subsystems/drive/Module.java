@@ -54,7 +54,7 @@ public class Module {
             "Module " + Integer.toString(index) + " Turn Motor is disconnected", AlertType.kError);
     encoderAlert =
         new Alert(
-            "Module " + Integer.toString(index) + " Encoder is disconnected", AlertType.kError);
+            "Module " + Integer.toString(index) + " Encoder is disconnected", AlertType.kWarning);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)

@@ -50,7 +50,7 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOMapleSim;
+import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.claw.Claw;
@@ -186,10 +186,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOSim(swerveSim.getGyroSimulation()),
-                new ModuleIOMapleSim(swerveSim.getModules()[0]),
-                new ModuleIOMapleSim(swerveSim.getModules()[1]),
-                new ModuleIOMapleSim(swerveSim.getModules()[2]),
-                new ModuleIOMapleSim(swerveSim.getModules()[3]));
+                new ModuleIOSim(swerveSim.getModules()[0]),
+                new ModuleIOSim(swerveSim.getModules()[1]),
+                new ModuleIOSim(swerveSim.getModules()[2]),
+                new ModuleIOSim(swerveSim.getModules()[3]));
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -350,9 +350,8 @@ public class RobotContainer {
     operatorDownPadTrigger
         .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
-    operatorBackTrigger
-        .and(() -> manualScoreOverride)
-        .onTrue(Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
+    operatorBackTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
     // Intake function
     operatorLBTrigger

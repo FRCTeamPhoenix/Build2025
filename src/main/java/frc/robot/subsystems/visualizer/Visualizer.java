@@ -25,7 +25,8 @@ public class Visualizer extends SubsystemBase {
   private LoggedNetworkNumber pitch;
   private LoggedNetworkNumber yaw;*/
 
-  private final LoggedMechanism2d mech = new LoggedMechanism2d(Units.inchesToMeters(28), Units.inchesToMeters(28));
+  private final LoggedMechanism2d mech =
+      new LoggedMechanism2d(Units.inchesToMeters(28), Units.inchesToMeters(28));
   private final LoggedMechanismRoot2d root = mech.getRoot("root", Units.inchesToMeters(16), 0);
   private final LoggedMechanismLigament2d elevatorMech =
       root.append(
