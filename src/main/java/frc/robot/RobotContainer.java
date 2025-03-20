@@ -17,7 +17,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -112,13 +111,15 @@ public class RobotContainer {
 
   public SwerveDriveSimulation swerveSim;
 
-  public int selectedScore = 5;
+  private int selectedScore = 5;
+  private boolean manualScoreOverride = false;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Triggers
+  private final Trigger driverATrigger = driverController.a();
   private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverXTrigger = driverController.x();
   private final Trigger driverLBTrigger = driverController.leftBumper();
@@ -237,7 +238,7 @@ public class RobotContainer {
         break;
     }
 
-    visualizer = new Visualizer(elevator, wrist, climber);
+    visualizer = new Visualizer(elevator, wrist);
     superstructure = new Superstructure(elevator, wrist, drive::getPose);
 
     // Configure PathPlanner commands
@@ -292,33 +293,32 @@ public class RobotContainer {
                 drive)
             .ignoringDisable(true));
 
+    // Backoff Command
+    driverATrigger.onTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
+            .withTimeout(0.2)
+            .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
+
     // Zonesnap
     driverRTTrigger.whileTrue(new ZoneSnap(drive));
 
     // Reef Branch alignment
-    driverLBTrigger
-        .and(operatorStartTrigger.negate())
-        .whileTrue(
-            new BranchAlign(drive, false)
-                .alongWith(
-                    new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
-        .onFalse(
-            Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
-                .withTimeout(0.2)
-                .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
-    driverRBTrigger
-        .and(operatorStartTrigger.negate())
-        .whileTrue(
-            new BranchAlign(drive, true)
-                .alongWith(
-                    new AutoElevator(drive::getReefPose, superstructure, () -> selectedScore)))
-        .onFalse(
-            Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
-                .withTimeout(0.2)
-                .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
-
-    driverLBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, false));
-    driverRBTrigger.and(operatorStartTrigger).whileTrue(new BranchAlign(drive, true));
+    driverLBTrigger.whileTrue(
+        new BranchAlign(drive, false)
+            .alongWith(
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    () -> manualScoreOverride)));
+    driverRBTrigger.whileTrue(
+        new BranchAlign(drive, true)
+            .alongWith(
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    () -> manualScoreOverride)));
 
     // Player station alignment
     driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
@@ -327,31 +327,32 @@ public class RobotContainer {
     // Level select & manual
     operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
     operatorBTrigger
-        .and(operatorStartTrigger)
+        .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
     operatorXTrigger
-        .and(operatorStartTrigger)
+        .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
     operatorYTrigger
-        .and(operatorStartTrigger)
+        .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
     operatorBTrigger
-        .and(operatorStartTrigger.negate())
+        .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
     operatorXTrigger
-        .and(operatorStartTrigger.negate())
+        .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 3, superstructure));
     operatorYTrigger
-        .and(operatorStartTrigger.negate())
+        .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
 
     // Superstructure home and rehome
     operatorDownPadTrigger
-        .and(operatorStartTrigger.negate())
+        .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
-    operatorBackTrigger.onTrue(
-        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
+    operatorBackTrigger
+        .and(() -> manualScoreOverride)
+        .onTrue(Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
     // Intake function
     operatorLBTrigger
@@ -377,13 +378,13 @@ public class RobotContainer {
 
     // Manual control
     operatorLSTrigger
-        .and(operatorStartTrigger)
+        .and(() -> manualScoreOverride)
         .whileTrue(
             Commands.run(
                 () -> superstructure.changeElevatorGoal(-operatorController.getLeftY() * 0.005),
                 superstructure));
     operatorLSTrigger
-        .and(operatorStartTrigger.negate())
+        .and(() -> !manualScoreOverride)
         .whileTrue(
             Commands.run(
                 () ->
@@ -396,6 +397,9 @@ public class RobotContainer {
             () -> superstructure.changeWristGoal(-operatorController.getRightY() * 0.01),
             superstructure));
 
+    // Manual override
+    operatorStartTrigger.onTrue(Commands.runOnce(() -> manualScoreOverride = !manualScoreOverride));
+
     // Climber
     operatorRightPadTrigger
         .whileTrue(Commands.run(() -> climber.runVoltage(6), climber))
@@ -405,18 +409,7 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
   }
 
-  private void configureNamedCommands() {
-    NamedCommands.registerCommand(
-        "Superstructure L4",
-        Commands.run(() -> superstructure.setState(5), superstructure)
-            .until(() -> superstructure.atGoal()));
-    NamedCommands.registerCommand("Claw Outtake", claw.runForward());
-    NamedCommands.registerCommand("Claw Stop", claw.stopCommand());
-    NamedCommands.registerCommand(
-        "Stow Elevator",
-        Commands.run(() -> superstructure.setState(0), superstructure)
-            .until(() -> superstructure.atGoal()));
-  }
+  private void configureNamedCommands() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -464,18 +457,18 @@ public class RobotContainer {
   }
 
   public Command[] getElevatorCommands() {
-    // L1, L2, L3, L4
+    // L1, L2, L3, L4, Home
     return new Command[] {
-      new AutoElevator(drive::getPose, superstructure, () -> 2)
+      new AutoElevator(drive::getPose, superstructure, () -> 2, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      new AutoElevator(drive::getPose, superstructure, () -> 3)
+      new AutoElevator(drive::getPose, superstructure, () -> 3, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      new AutoElevator(drive::getPose, superstructure, () -> 4)
+      new AutoElevator(drive::getPose, superstructure, () -> 4, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      new AutoElevator(drive::getPose, superstructure, () -> 5)
+      new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
       Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)

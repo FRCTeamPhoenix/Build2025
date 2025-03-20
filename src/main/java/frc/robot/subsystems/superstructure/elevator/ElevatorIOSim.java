@@ -24,7 +24,7 @@ public class ElevatorIOSim implements ElevatorIO {
   private double appliedVolts = 0.0;
 
   private ProfiledPIDController controller =
-      new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 1.5));
+      new ProfiledPIDController(0.42, 0.730, 0.50, new TrapezoidProfile.Constraints(3, 7));
   private PhoenixGravFF ff = new PhoenixGravFF(0.0, 0.0, 0.0, 0.4);
 
   @Override
