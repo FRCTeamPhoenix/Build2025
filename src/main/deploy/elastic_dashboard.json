@@ -3,245 +3,6 @@
   "grid_size": 64,
   "tabs": [
     {
-      "name": "Blue",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "heartbeat",
-            "x": 128.0,
-            "y": 576.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/photonvision/right_arducam/heartbeat",
-              "period": 0.06,
-              "data_type": "int",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "heartbeat",
-            "x": 0.0,
-            "y": 576.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/photonvision/left_arducam/heartbeat",
-              "period": 0.06,
-              "data_type": "int",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Auto Choices",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Choices",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
-            "title": "Alerts",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 320.0,
-            "type": "Alerts",
-            "properties": {
-              "topic": "/SmartDashboard/Alerts",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "State",
-            "x": 448.0,
-            "y": 448.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Superstructure/State",
-              "period": 0.06,
-              "data_type": "string"
-            }
-          },
-          {
-            "title": "Voltage",
-            "x": 1152.0,
-            "y": 128.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Voltage View",
-            "properties": {
-              "topic": "/AdvantageKit/PowerDistribution/Voltage",
-              "period": 0.06,
-              "data_type": "double",
-              "min_value": 4.0,
-              "max_value": 13.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
-            }
-          },
-          {
-            "title": "FMSInfo",
-            "x": 1152.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "FMSInfo",
-            "properties": {
-              "topic": "/FMSInfo",
-              "period": 0.06
-            }
-          },
-          {
-            "title": "Field",
-            "x": 704.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 576.0,
-            "type": "Field",
-            "properties": {
-              "topic": "/SmartDashboard/Field",
-              "period": 0.06,
-              "field_game": "Reefscape",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": -90.0,
-              "robot_color": 4278205183,
-              "trajectory_color": 4287482212
-            }
-          },
-          {
-            "title": "Swerve Drive",
-            "x": 448.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 320.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/SmartDashboard/Swerve Drive",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
-            "title": "IntakeSensor",
-            "x": 448.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/Claw/IntakeSensor",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "heartbeat",
-            "x": 256.0,
-            "y": 576.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/photonvision/back_arducam/heartbeat",
-              "period": 0.06,
-              "data_type": "int",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "AtGoal",
-            "x": 448.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/AdvantageKit/RealOutputs/PoseAlignment/AtGoal",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Composer Input",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Composer Input",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": true
-            }
-          },
-          {
-            "title": "Use Auto Composer",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Toggle Switch",
-            "properties": {
-              "topic": "/SmartDashboard/Use Auto Composer",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Home Elevator",
-            "x": 704.0,
-            "y": 576.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Home Elevator",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "title": "photonvision_Port_1184_Output_MJPEG_Server",
-            "x": 1152.0,
-            "y": 256.0,
-            "width": 384.0,
-            "height": 448.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          }
-        ]
-      }
-    },
-    {
       "name": "Red",
       "grid_layout": {
         "layouts": [],
@@ -317,7 +78,7 @@
             "x": 1152.0,
             "y": 128.0,
             "width": 384.0,
-            "height": 128.0,
+            "height": 192.0,
             "type": "Voltage View",
             "properties": {
               "topic": "/AdvantageKit/PowerDistribution/Voltage",
@@ -347,7 +108,7 @@
             "x": 704.0,
             "y": 0.0,
             "width": 384.0,
-            "height": 576.0,
+            "height": 704.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
@@ -452,29 +213,294 @@
             }
           },
           {
-            "title": "Home Elevator",
-            "x": 704.0,
-            "y": 576.0,
+            "title": "Kill Superstructure",
+            "x": 1152.0,
+            "y": 320.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Command",
             "properties": {
-              "topic": "/SmartDashboard/Home Elevator",
+              "topic": "/SmartDashboard/Kill Superstructure",
               "period": 0.06,
               "show_type": true
             }
           },
           {
-            "title": "photonvision_Port_1184_Output_MJPEG_Server",
+            "title": "Revive Superstructure",
             "x": 1152.0,
+            "y": 448.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Revive Superstructure",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Zero LimeLight Gyro",
+            "x": 1152.0,
+            "y": 576.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Zero LimeLight Gyro",
+              "period": 0.06,
+              "show_type": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Blue",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "heartbeat",
+            "x": 128.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/photonvision/right_arducam/heartbeat",
+              "period": 0.06,
+              "data_type": "int",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "heartbeat",
+            "x": 0.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/photonvision/left_arducam/heartbeat",
+              "period": 0.06,
+              "data_type": "int",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Auto Choices",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Choices",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "Alerts",
+            "x": 0.0,
             "y": 256.0,
             "width": 384.0,
-            "height": 448.0,
-            "type": "Camera Stream",
+            "height": 320.0,
+            "type": "Alerts",
             "properties": {
-              "topic": "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server",
+              "topic": "/SmartDashboard/Alerts",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "State",
+            "x": 448.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Superstructure/State",
               "period": 0.06,
-              "rotation_turns": 0
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Voltage",
+            "x": 1152.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 192.0,
+            "type": "Voltage View",
+            "properties": {
+              "topic": "/AdvantageKit/PowerDistribution/Voltage",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 5,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "FMSInfo",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "FMSInfo",
+            "properties": {
+              "topic": "/FMSInfo",
+              "period": 0.06
+            }
+          },
+          {
+            "title": "Field",
+            "x": 704.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 704.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Field",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": -90.0,
+              "robot_color": 4278218239,
+              "trajectory_color": 4287482212
+            }
+          },
+          {
+            "title": "Swerve Drive",
+            "x": 448.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 320.0,
+            "type": "SwerveDrive",
+            "properties": {
+              "topic": "/SmartDashboard/Swerve Drive",
+              "period": 0.06,
+              "show_robot_rotation": true,
+              "rotation_unit": "Radians"
+            }
+          },
+          {
+            "title": "IntakeSensor",
+            "x": 448.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/Claw/IntakeSensor",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "heartbeat",
+            "x": 256.0,
+            "y": 576.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/photonvision/back_arducam/heartbeat",
+              "period": 0.06,
+              "data_type": "int",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "AtGoal",
+            "x": 448.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/PoseAlignment/AtGoal",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Use Auto Composer",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Toggle Switch",
+            "properties": {
+              "topic": "/SmartDashboard/Use Auto Composer",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Composer Input",
+            "x": 128.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Composer Input",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Kill Superstructure",
+            "x": 1152.0,
+            "y": 320.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Kill Superstructure",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Revive Superstructure",
+            "x": 1152.0,
+            "y": 448.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Revive Superstructure",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "Zero LimeLight Gyro",
+            "x": 1152.0,
+            "y": 576.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/Zero LimeLight Gyro",
+              "period": 0.06,
+              "show_type": true
             }
           }
         ]

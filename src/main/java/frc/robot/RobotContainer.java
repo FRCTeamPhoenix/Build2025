@@ -40,6 +40,7 @@ import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.candle.CANdleIO;
 import frc.robot.subsystems.candle.CANdleIOReal;
+import frc.robot.subsystems.candle.CANdleIOSim;
 import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -173,7 +174,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose);
+        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose, () -> selectedScore);
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -210,7 +211,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
-        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose);
+        candle = new CANdleSubsystem(new CANdleIOSim(), drive::getPose, () -> selectedScore);
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -233,7 +234,7 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
-        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose);
+        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose, () -> selectedScore);
         climber = new Climber(new ClimberIO() {});
         break;
     }
@@ -247,9 +248,9 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    /*autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
     autoChooser.addOption(
@@ -266,7 +267,13 @@ public class RobotContainer {
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
 
-    SmartDashboard.putData("Home Elevator", Commands.runOnce(() -> superstructure.homeElevator()));
+    SmartDashboard.putData(
+        "Kill Superstructure",
+        Commands.runOnce(() -> superstructure.killSuperstructure(), superstructure));
+    SmartDashboard.putData(
+        "Revive Superstructure",
+        Commands.runOnce(() -> superstructure.reviveSuperstructure(), superstructure));
+    SmartDashboard.putData("Zero LimeLight Gyro", Commands.runOnce(() -> drive.resetMegatagGyro()));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -372,8 +379,15 @@ public class RobotContainer {
     operatorRBTrigger.whileTrue(Commands.runOnce(superstructure::algaeMode, superstructure));
 
     // Processor/Zero Mode
-    operatorUpPadTrigger.whileTrue(
-        Commands.runOnce(() -> superstructure.setState(8), superstructure));
+    operatorUpPadTrigger
+        .whileTrue(
+            Commands.run(() -> superstructure.setState(8), superstructure)
+                .alongWith(claw.runReverse())
+                .until(claw::getSensor)
+                .andThen(
+                    Commands.runOnce(() -> superstructure.setState(0), superstructure)
+                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
+        .onFalse(claw.stopCommand());
 
     // Manual control
     operatorLSTrigger
@@ -479,7 +493,7 @@ public class RobotContainer {
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(1), superstructure)
+    return Commands.run(() -> superstructure.setState(8), superstructure)
         .alongWith(claw.runReverse())
         .until(claw::getSensor)
         .andThen(

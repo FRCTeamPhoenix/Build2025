@@ -20,6 +20,7 @@ public interface CANdleIO {
     Green,
     Orange,
     Yellow,
+    Cyan,
     Off;
   }
 

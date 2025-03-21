@@ -52,7 +52,7 @@ public class Visualizer extends SubsystemBase {
 
   @Override
   public void periodic() {
-    elevatorMech.setLength(elevator.getHeight() + ElevatorConstants.MIN_HEIGHT);
+    elevatorMech.setLength(elevator.getHeight() + ElevatorConstants.MIN_HEIGHT + 0.3);
     wristMech.setAngle(Math.toDegrees(wrist.getAngle()) - 90);
 
     Logger.recordOutput("Mechanism/2D/Superstructure", mech);

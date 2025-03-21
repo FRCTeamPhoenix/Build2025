@@ -337,6 +337,16 @@ public class Drive extends SubsystemBase {
     return offsetDone;
   }
 
+  public void resetMegatagGyro() {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    setMegatagOffset(
+        isFlipped
+            ? Rotation2d.kZero.minus(getMegatagRotation())
+            : Rotation2d.k180deg.minus(getMegatagRotation()));
+  }
+
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);

@@ -70,4 +70,9 @@ public class Wrist {
     killed = true;
     stop();
   }
+
+  public void revive() {
+    killed = false;
+    setpoint = getAngle();
+  }
 }

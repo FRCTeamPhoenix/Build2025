@@ -75,4 +75,9 @@ public class Elevator {
     killed = true;
     stop();
   }
+
+  public void revive() {
+    killed = false;
+    setpoint = getHeight();
+  }
 }

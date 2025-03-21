@@ -173,4 +173,13 @@ public class Superstructure extends SubsystemBase {
     elevator.kill();
     wrist.kill();
   }
+
+  public void reviveSuperstructure() {
+    killed = false;
+    manualControl = true;
+    elevatorSetpoint = elevator.getHeight();
+    wristSetpoint = wrist.getAngle();
+    elevator.revive();
+    wrist.revive();
+  }
 }

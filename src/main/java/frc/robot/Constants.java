@@ -35,7 +35,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode CURRENT_MODE = Mode.REAL;
+  public static final Mode CURRENT_MODE = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -89,8 +89,8 @@ public final class Constants {
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
     // (Adjusted automatically based on distance and # of tags)
-    public static final double LINEAR_STD_DEV_BASELINE = 0.02; // Meters
-    public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians
+    public static final double LINEAR_STD_DEV_BASELINE = 0.06; // Meters
+    public static final double ANGULAR_STD_DEV_BASELINE = 0.12; // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
@@ -127,7 +127,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.5;
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
     public static final Transform2d REEF_PATH_BUFFER =
@@ -184,7 +184,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.05;
+    public static final double STATION_BUFFER = Units.inchesToMeters(14 + 2);
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 
@@ -309,14 +309,14 @@ public final class Constants {
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.2,
-      1.222,
+      1.065,
       -0.17,
       -0.53,
       -0.53,
       -0.692,
       0.1,
       0.1,
-      0,
+      1.065,
       WristConstants.MAX_ANGLE - 0.1
     };
     public static final String[] STATE_NAMES = {
@@ -328,7 +328,7 @@ public final class Constants {
       "L4",
       "ALGAE LOW",
       "ALGAE HIGH",
-      "PROCESSOR/ZERO",
+      "LOW INTAKE",
       "SPEED MOVE"
     };
   }

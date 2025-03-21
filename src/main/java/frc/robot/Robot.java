@@ -103,6 +103,8 @@ public class Robot extends LoggedRobot {
     PathfindingUtils.warmupCommand().schedule();
     Logger.recordOutput("PoseAlignment/AtGoal", false);
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+    SmartDashboard.putBoolean("Zero LimeLight Gyro", false);
   }
 
   /** This function is called periodically during all modes. */
@@ -180,6 +182,7 @@ public class Robot extends LoggedRobot {
     robotContainer
         .getSuperstructure()
         .setWristManualGoal(robotContainer.getSuperstructure().getWristAngle());
+    robotContainer.getClaw().stop();
 
     if (!robotContainer.getDrive().getOffsetDone()) {
       robotContainer
