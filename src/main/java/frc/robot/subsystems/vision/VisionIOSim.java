@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.photon;
+package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -22,19 +22,19 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 
 /** IO implementation for physics sim using PhotonVision simulator. */
-public class PhotonIOSim extends PhotonIOReal {
+public class VisionIOSim extends VisionIOPhoton {
   private static VisionSystemSim visionSim;
 
   private final Supplier<Pose2d> poseSupplier;
   private final PhotonCameraSim cameraSim;
 
   /**
-   * Creates a new VisionIOPhotonVisionSim.
+   * Creates a new VisionIOSim.
    *
    * @param name The name of the camera.
    * @param poseSupplier Supplier for the robot pose to use in simulation.
    */
-  public PhotonIOSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier) {
+  public VisionIOSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier) {
     super(name, robotToCamera);
     this.poseSupplier = poseSupplier;
 
@@ -51,7 +51,7 @@ public class PhotonIOSim extends PhotonIOReal {
   }
 
   @Override
-  public void updateInputs(PhotonIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs) {
     visionSim.update(poseSupplier.get());
     super.updateInputs(inputs);
   }

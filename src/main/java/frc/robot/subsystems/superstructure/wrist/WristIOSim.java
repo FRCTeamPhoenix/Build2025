@@ -31,7 +31,7 @@ public class WristIOSim implements WristIO {
           1,
           1,
           new TrapezoidProfile.Constraints(
-              Units.degreesToRadians(180), Units.degreesToRadians(120)));
+              Units.degreesToRadians(900), Units.degreesToRadians(900)));
 
   @Override
   public void updateInputs(WristIOInputs inputs) {

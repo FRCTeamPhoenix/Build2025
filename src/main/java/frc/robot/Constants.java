@@ -53,6 +53,8 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
+    public static final String LIMELIGHT_NAME = "limelight-phoenix";
+
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
             new Translation3d(
@@ -87,8 +89,8 @@ public final class Constants {
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
     // (Adjusted automatically based on distance and # of tags)
-    public static final double LINEAR_STD_DEV_BASELINE = 0.02; // Meters
-    public static final double ANGULAR_STD_DEV_BASELINE = 0.06; // Radians
+    public static final double LINEAR_STD_DEV_BASELINE = 0.06; // Meters
+    public static final double ANGULAR_STD_DEV_BASELINE = 0.12; // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
@@ -125,14 +127,16 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.4;
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
+    public static final Transform2d REEF_PATH_BUFFER =
+        new Transform2d(REEF_BUFFER + 0.1, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
 
-    public static final double X_LIMIT = 2.75;
+    public static final double X_LIMIT = 3.25;
     public static final double Y_LIMIT = 3.5;
     public static final double SLOPE = 0.61261261261261;
     public static final Transform2d[] ZONE_TRANSFORMS =
@@ -163,7 +167,7 @@ public final class Constants {
         };
 
     public static final double BRANCH_STRAFE = Units.inchesToMeters(6.5);
-    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.12;
+    public static final double BRANCH_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.15;
     public static final Transform2d LEFT_BRANCH =
         new Transform2d(BRANCH_BUFFER, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
@@ -180,7 +184,7 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(2).orElse(new Pose3d()).toPose2d(),
         };
 
-    public static final double STATION_BUFFER = 0.606;
+    public static final double STATION_BUFFER = Units.inchesToMeters(14 + 2);
     public static final Transform2d CENTER_PLAYER_STATION =
         new Transform2d(STATION_BUFFER, 0, Rotation2d.k180deg);
 
@@ -238,13 +242,8 @@ public final class Constants {
     public static final Constraints FINE_ANGLE_CONSTRAINTS =
         new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
 
-    public static final Transform2d PATHING_BUFFER = new Transform2d(1, 0, Rotation2d.k180deg);
-
-    public static final Transform2d LEFT_STATION_PATHING_BUFFER =
-        new Transform2d(1.5, 1, Rotation2d.k180deg);
-
-    public static final Transform2d RIGHT_STATION_PATHING_BUFFER =
-        new Transform2d(1.5, -1, Rotation2d.k180deg);
+    public static final Transform2d PATHING_BUFFER =
+        new Transform2d(DriveConstants.DRIVE_BASE_RADIUS + 0.5, 0, Rotation2d.k180deg);
 
     public static final Pose3d[] BLUE_REEF_POSES =
         new Pose3d[] {
@@ -298,7 +297,7 @@ public final class Constants {
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
     public static final double[] COMP_ENCODER_OFFSETS = {
-      1.969 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
+      0.815 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
     };
 
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
@@ -306,18 +305,18 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.318, 0.257, 0.575, 0.975, 1.7, 0.465, 0.85, 0, 0.3
+      0, 0.122, 0.257, 0.575, 0.975, 1.7, 0.17, 0.59, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.3,
-      0.7,
+      WristConstants.MAX_ANGLE - 0.2,
+      1.065,
       -0.17,
-      -0.49,
-      -0.55,
-      WristConstants.MIN_ANGLE + 0.02,
-      0,
-      0,
-      0,
+      -0.53,
+      -0.53,
+      -0.692,
+      0.1,
+      0.1,
+      1.065,
       WristConstants.MAX_ANGLE - 0.1
     };
     public static final String[] STATE_NAMES = {
@@ -329,7 +328,7 @@ public final class Constants {
       "L4",
       "ALGAE LOW",
       "ALGAE HIGH",
-      "PROCESSOR/ZERO",
+      "LOW INTAKE",
       "SPEED MOVE"
     };
   }
@@ -341,7 +340,7 @@ public final class Constants {
     public static final double MIN_HEIGHT = Units.inchesToMeters(10);
     public static final double MAX_EXTENSION = 1.75;
     public static final double MAX_HEIGHT = MIN_HEIGHT + MAX_EXTENSION;
-    public static final double MAGIC_NUMBER = Units.inchesToMeters(2.56718);
+    public static final double MAGIC_NUMBER = PULLEY_RADIUS * 3;
     public static final double CHARACTERIZATION_CUTOFF_HEIGHT = (MAX_HEIGHT - MIN_HEIGHT) / 1.5;
   }
 
@@ -357,7 +356,7 @@ public final class Constants {
     public static final double MIN_ANGLE = -0.93;
     public static final double MAX_ANGLE = 1.43;
     public static final double CUTOFF_ANGLE = 1.2;
-    public static final double MOVE_ANGLE = WristConstants.MAX_ANGLE - 0.05;
+    public static final double MOVE_ANGLE = 0.5;
   }
 
   public static final class ClimberConstants {

@@ -17,13 +17,19 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
   private TalonFX wristTalon = new TalonFX(CANConstants.WRIST_ID);
   private Canandmag encoder = new Canandmag(CANConstants.WRIST_ENCODER_ID);
+
+  private final Alert wristAlert = new Alert("Wrist motor is disconnected", AlertType.kError);
+  private final Alert encoderAlert = new Alert("Wrist encoder is disconnected", AlertType.kWarning);
 
   private final StatusSignal<Angle> position;
   private final StatusSignal<AngularVelocity> velocity;
@@ -50,10 +56,10 @@ public class WristIOTalonFX implements WristIO {
     // set Motion Magic settings
     var motionMagicConfigs = config.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity =
-        Units.degreesToRotations(720)
+        Units.degreesToRotations(900)
             * WristConstants.GEAR_RATIO; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        Units.degreesToRotations(720)
+        Units.degreesToRotations(900)
             * WristConstants.GEAR_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
     wristTalon.getConfigurator().apply(config);
 
@@ -66,8 +72,13 @@ public class WristIOTalonFX implements WristIO {
     wristTalon.optimizeBusUtilization();
 
     // encoder.setSettings(new CanandmagSettings());
+    encoderAlert.set(!encoder.isConnected());
+    Logger.recordOutput("pos", encoder.getAbsPosition());
+    Logger.recordOutput(
+        "posreset",
+        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations());
     wristTalon.setPosition(
-        Rotation2d.fromRotations(encoder.getAbsPosition()).plus(Rotation2d.kZero).getRotations()
+        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
   }
 
@@ -76,6 +87,10 @@ public class WristIOTalonFX implements WristIO {
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
 
     inputs.connected = status.isOK();
+    wristAlert.set(!inputs.connected);
+
+    encoderAlert.set(!encoder.isConnected());
+
     inputs.angle = position.getValue().in(Radian) / WristConstants.GEAR_RATIO;
     inputs.velocityRad = velocity.getValue().in(RadiansPerSecond) / WristConstants.GEAR_RATIO;
     inputs.appliedVolts = appliedVolts.getValueAsDouble();

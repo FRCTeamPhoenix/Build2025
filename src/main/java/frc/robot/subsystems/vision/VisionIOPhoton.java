@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.photon;
+package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,24 +25,24 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 /** IO implementation for real PhotonVision hardware. */
-public class PhotonIOReal implements PhotonIO {
+public class VisionIOPhoton implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
   List<PhotonPipelineResult> results;
 
   /**
-   * Creates a new VisionIOPhotonVision.
+   * Creates a new VisionIOPhoton.
    *
    * @param name The configured name of the camera.
    * @param rotationSupplier The 3D position of the camera relative to the robot.
    */
-  public PhotonIOReal(String name, Transform3d robotToCamera) {
+  public VisionIOPhoton(String name, Transform3d robotToCamera) {
     camera = new PhotonCamera(name);
     this.robotToCamera = robotToCamera;
   }
 
   @Override
-  public void updateInputs(PhotonIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs) {
     inputs.connected = camera.isConnected();
 
     // Read new camera observations
@@ -55,11 +55,9 @@ public class PhotonIOReal implements PhotonIO {
         inputs.latestTargetObservation =
             new TargetObservation(
                 Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
-                result.getBestTarget().bestCameraToTarget);
+                Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
       } else {
-        inputs.latestTargetObservation =
-            new TargetObservation(new Rotation2d(), new Rotation2d(), new Transform3d());
+        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
       }
 
       // Add pose observation

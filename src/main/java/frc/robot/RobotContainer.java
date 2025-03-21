@@ -17,12 +17,10 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -35,13 +33,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.AutoElevator;
 import frc.robot.commands.BranchAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
-import frc.robot.commands.ProcessorAlign;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.candle.CANdleIO;
 import frc.robot.subsystems.candle.CANdleIOReal;
+import frc.robot.subsystems.candle.CANdleIOSim;
 import frc.robot.subsystems.candle.CANdleSubsystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -52,12 +51,8 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOMapleSim;
+import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.photon.Photon;
-import frc.robot.subsystems.photon.PhotonIO;
-import frc.robot.subsystems.photon.PhotonIOReal;
-import frc.robot.subsystems.photon.PhotonIOSim;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.claw.Claw;
 import frc.robot.subsystems.superstructure.claw.ClawIO;
@@ -71,6 +66,11 @@ import frc.robot.subsystems.superstructure.wrist.Wrist;
 import frc.robot.subsystems.superstructure.wrist.WristIO;
 import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
@@ -88,7 +88,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Photon photon;
+  private final Vision vision;
   private final Claw claw;
   private final Elevator elevator;
   private final Visualizer visualizer;
@@ -111,6 +111,9 @@ public class RobotContainer {
           .withBumperSize(Inches.of(30), Inches.of(30));
 
   public SwerveDriveSimulation swerveSim;
+
+  private int selectedScore = 5;
+  private boolean manualScoreOverride = false;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -142,7 +145,7 @@ public class RobotContainer {
   private final Trigger operatorLeftPadTrigger = operatorController.povLeft();
   private final Trigger operatorRightPadTrigger = operatorController.povRight();
   private final Trigger operatorStartTrigger = operatorController.start();
-
+  private final Trigger operatorBackTrigger = operatorController.back();
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -158,21 +161,20 @@ public class RobotContainer {
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
-        photon =
-            new Photon(
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIOReal(
+                new VisionIOPhoton(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
-                new PhotonIOReal(
+                new VisionIOPhoton(
                     VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-                new PhotonIOReal(
-                    VisionConstants.LOW_BACK_CAMERA_NAME, VisionConstants.LOW_BACK_TRANSFORM));
+                new VisionIOLimelight(VisionConstants.LIMELIGHT_NAME, drive::getMegatagRotation));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        candle = new CANdleSubsystem(new CANdleIOReal());
+        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose, () -> selectedScore);
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -185,23 +187,23 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOSim(swerveSim.getGyroSimulation()),
-                new ModuleIOMapleSim(swerveSim.getModules()[0]),
-                new ModuleIOMapleSim(swerveSim.getModules()[1]),
-                new ModuleIOMapleSim(swerveSim.getModules()[2]),
-                new ModuleIOMapleSim(swerveSim.getModules()[3]));
-        photon =
-            new Photon(
+                new ModuleIOSim(swerveSim.getModules()[0]),
+                new ModuleIOSim(swerveSim.getModules()[1]),
+                new ModuleIOSim(swerveSim.getModules()[2]),
+                new ModuleIOSim(swerveSim.getModules()[3]));
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.RIGHT_CAMERA_NAME,
                     VisionConstants.FRONT_RIGHT_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose),
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.LEFT_CAMERA_NAME,
                     VisionConstants.FRONT_LEFT_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose),
-                new PhotonIOSim(
+                new VisionIOSim(
                     VisionConstants.LOW_BACK_CAMERA_NAME,
                     VisionConstants.LOW_BACK_TRANSFORM,
                     swerveSim::getSimulatedDriveTrainPose));
@@ -209,8 +211,7 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
-        candle = new CANdleSubsystem(new CANdleIO() {});
-
+        candle = new CANdleSubsystem(new CANdleIOSim(), drive::getPose, () -> selectedScore);
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -223,22 +224,22 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        photon =
-            new Photon(
+        vision =
+            new Vision(
                 drive::addVisionMeasurement,
                 drive::addReefVisionMeasurement,
-                new PhotonIO() {},
-                new PhotonIO() {},
-                new PhotonIO() {});
+                new VisionIO() {},
+                new VisionIO() {},
+                new VisionIO() {});
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
+        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose, () -> selectedScore);
         climber = new Climber(new ClimberIO() {});
-        candle = new CANdleSubsystem(new CANdleIO() {});
         break;
     }
 
-    visualizer = new Visualizer(elevator, wrist, climber);
+    visualizer = new Visualizer(elevator, wrist);
     superstructure = new Superstructure(elevator, wrist, drive::getPose);
 
     // Configure PathPlanner commands
@@ -247,9 +248,9 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    /*autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
     autoChooser.addOption(
@@ -266,7 +267,13 @@ public class RobotContainer {
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
 
-    SmartDashboard.putData("Home Elevator", Commands.runOnce(() -> superstructure.homeElevator()));
+    SmartDashboard.putData(
+        "Kill Superstructure",
+        Commands.runOnce(() -> superstructure.killSuperstructure(), superstructure));
+    SmartDashboard.putData(
+        "Revive Superstructure",
+        Commands.runOnce(() -> superstructure.reviveSuperstructure(), superstructure));
+    SmartDashboard.putData("Zero LimeLight Gyro", Commands.runOnce(() -> drive.resetMegatagGyro()));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -293,29 +300,65 @@ public class RobotContainer {
                 drive)
             .ignoringDisable(true));
 
+    // Backoff Command
+    driverATrigger.onTrue(
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
+            .withTimeout(0.2)
+            .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
+
     // Zonesnap
     driverRTTrigger.whileTrue(new ZoneSnap(drive));
 
     // Reef Branch alignment
-    driverLBTrigger.whileTrue(new BranchAlign(drive, false));
-    driverRBTrigger.whileTrue(new BranchAlign(drive, true));
+    driverLBTrigger.whileTrue(
+        new BranchAlign(drive, false)
+            .alongWith(
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    () -> manualScoreOverride)));
+    driverRBTrigger.whileTrue(
+        new BranchAlign(drive, true)
+            .alongWith(
+                new AutoElevator(
+                    drive::getReefPose,
+                    superstructure,
+                    () -> selectedScore,
+                    () -> manualScoreOverride)));
 
     // Player station alignment
     driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
     driverBTrigger.whileTrue(new DriveToPlayerStation(drive, true));
 
-    // Processor alignment
-    driverATrigger.whileTrue(new ProcessorAlign(drive));
-
-    // Levels
+    // Level select & manual
     operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
-    operatorBTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
-    operatorXTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
-    operatorYTrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
+    operatorBTrigger
+        .and(() -> manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
+    operatorXTrigger
+        .and(() -> manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
+    operatorYTrigger
+        .and(() -> manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
-    // Superstructure home
-    operatorDownPadTrigger.whileTrue(
-        Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    operatorBTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
+    operatorXTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> selectedScore = 3, superstructure));
+    operatorYTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
+
+    // Superstructure home and rehome
+    operatorDownPadTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    operatorBackTrigger.onTrue(
+        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
     // Intake function
     operatorLBTrigger
@@ -325,7 +368,7 @@ public class RobotContainer {
                 .until(claw::getSensor)
                 .andThen(
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                        .alongWith(claw.stopCommand())))
+                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
 
     // Claw controls
@@ -336,48 +379,50 @@ public class RobotContainer {
     operatorRBTrigger.whileTrue(Commands.runOnce(superstructure::algaeMode, superstructure));
 
     // Processor/Zero Mode
-    operatorUpPadTrigger.whileTrue(
-        Commands.runOnce(() -> superstructure.setState(8), superstructure));
+    operatorUpPadTrigger
+        .whileTrue(
+            Commands.run(() -> superstructure.setState(8), superstructure)
+                .alongWith(claw.runReverse())
+                .until(claw::getSensor)
+                .andThen(
+                    Commands.runOnce(() -> superstructure.setState(0), superstructure)
+                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
+        .onFalse(claw.stopCommand());
 
-    operatorLSTrigger.whileTrue(
-        Commands.run(
-            () -> superstructure.changeElevatorGoal(-operatorController.getLeftY() * 0.005),
-            superstructure));
+    // Manual control
+    operatorLSTrigger
+        .and(() -> manualScoreOverride)
+        .whileTrue(
+            Commands.run(
+                () -> superstructure.changeElevatorGoal(-operatorController.getLeftY() * 0.005),
+                superstructure));
+    operatorLSTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(
+            Commands.run(
+                () ->
+                    superstructure.changeElevatorGoalClamped(
+                        -operatorController.getLeftY() * 0.005),
+                superstructure));
+
     operatorRSTrigger.whileTrue(
         Commands.run(
             () -> superstructure.changeWristGoal(-operatorController.getRightY() * 0.01),
             superstructure));
 
+    // Manual override
+    operatorStartTrigger.onTrue(Commands.runOnce(() -> manualScoreOverride = !manualScoreOverride));
+
+    // Climber
     operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(3), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
     operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(-3), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(-6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
-
-    operatorStartTrigger.onTrue(
-        Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
   }
 
-  private void configureNamedCommands() {
-    NamedCommands.registerCommand(
-        "Superstructure L4",
-        Commands.run(() -> superstructure.setState(5), superstructure)
-            .until(() -> superstructure.atGoal()));
-    NamedCommands.registerCommand("Claw Outtake", claw.runForward());
-    NamedCommands.registerCommand("Claw Stop", claw.stopCommand());
-    NamedCommands.registerCommand(
-        "Stow Elevator",
-        Commands.run(() -> superstructure.setState(0), superstructure)
-            .until(() -> superstructure.atGoal()));
-  }
-
-  private void startCandle() {
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-    } else {
-    }
-  }
+  private void configureNamedCommands() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -392,8 +437,8 @@ public class RobotContainer {
     return drive;
   }
 
-  public Photon getPhoton() {
-    return photon;
+  public Vision getVision() {
+    return vision;
   }
 
   public Elevator getElevator() {
@@ -425,34 +470,34 @@ public class RobotContainer {
   }
 
   public Command[] getElevatorCommands() {
-    // L1, L2, L3, L4
+    // L1, L2, L3, L4, Home
     return new Command[] {
-      Commands.runOnce(() -> superstructure.setState(2), superstructure)
+      new AutoElevator(drive::getPose, superstructure, () -> 2, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(3), superstructure)
+          .andThen(new WaitCommand(0.0)),
+      new AutoElevator(drive::getPose, superstructure, () -> 3, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(4), superstructure)
+          .andThen(new WaitCommand(0.0)),
+      new AutoElevator(drive::getPose, superstructure, () -> 4, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(5), superstructure)
+          .andThen(new WaitCommand(0.0)),
+      new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.5)),
-      Commands.runOnce(() -> superstructure.setState(9), superstructure).andThen(new WaitCommand(1))
+          .andThen(new WaitCommand(0.0)),
+      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)
     };
   }
 
   public Command getScoringCommand() {
-    return new WaitCommand(0.5).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
+    return new WaitCommand(0.2).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(1), superstructure)
+    return Commands.run(() -> superstructure.setState(8), superstructure)
         .alongWith(claw.runReverse())
         .until(claw::getSensor)
         .andThen(
-            Commands.runOnce(() -> superstructure.setState(9), superstructure)
-                .alongWith(claw.stopCommand()));
+            Commands.runOnce(() -> superstructure.setState(0), superstructure)
+                .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand())));
   }
 }

@@ -14,6 +14,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -102,6 +103,8 @@ public class Robot extends LoggedRobot {
     PathfindingUtils.warmupCommand().schedule();
     Logger.recordOutput("PoseAlignment/AtGoal", false);
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+    SmartDashboard.putBoolean("Zero LimeLight Gyro", false);
   }
 
   /** This function is called periodically during all modes. */
@@ -141,6 +144,16 @@ public class Robot extends LoggedRobot {
 
     robotContainer.getSuperstructure().setState(0);
 
+    if (!robotContainer.getDrive().getOffsetDone()) {
+      robotContainer
+          .getDrive()
+          .setMegatagOffset(
+              robotContainer
+                  .getDrive()
+                  .getRotation()
+                  .minus(robotContainer.getDrive().getMegatagRotation()));
+    }
+
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
@@ -162,7 +175,25 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
 
-    robotContainer.getSuperstructure().setState(0);
+    robotContainer.getDrive().runVelocity(new ChassisSpeeds());
+    robotContainer
+        .getSuperstructure()
+        .setElevatorManualGoal(robotContainer.getSuperstructure().getElevatorHeight());
+    robotContainer
+        .getSuperstructure()
+        .setWristManualGoal(robotContainer.getSuperstructure().getWristAngle());
+    robotContainer.getClaw().stop();
+
+    if (!robotContainer.getDrive().getOffsetDone()) {
+      robotContainer
+          .getDrive()
+          .setMegatagOffset(
+              robotContainer
+                  .getDrive()
+                  .getRotation()
+                  .minus(robotContainer.getDrive().getMegatagRotation()));
+    }
+
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
   }

@@ -26,6 +26,6 @@ public class Climber extends SubsystemBase {
   }
 
   public double getAngle() {
-    return inputs.angle.getRadians();
+    return 0;
   }
 }

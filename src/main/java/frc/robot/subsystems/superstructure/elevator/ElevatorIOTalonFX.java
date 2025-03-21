@@ -14,6 +14,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ElevatorConstants;
 
@@ -21,6 +23,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private TalonFX elevatorTalon = new TalonFX(CANConstants.ELEVATOR_ID);
   private TalonFX followerTalon = new TalonFX(CANConstants.ELEVATOR_FOLLOWER_ID);
+  private final Alert mainMotorAlert =
+      new Alert(
+          "Elevator motor " + CANConstants.ELEVATOR_ID + " is disconnected", AlertType.kError);
+  private final Alert followerAlert =
+      new Alert(
+          "Elevator motor " + CANConstants.ELEVATOR_FOLLOWER_ID + " is disconnected",
+          AlertType.kError);
 
   private final StatusSignal<Angle> position;
   private final StatusSignal<AngularVelocity> velocity;
@@ -60,7 +69,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * ElevatorConstants.GEAR_RATIO
             / (2 * Math.PI * ElevatorConstants.MAGIC_NUMBER); // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        3
+        8
             * ElevatorConstants.GEAR_RATIO
             / (2
                 * Math.PI
@@ -86,11 +95,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    var status =
-        BaseStatusSignal.refreshAll(
-            position, velocity, appliedVolts, current, followerAppliedVolts, followerCurrent);
+    var mainStatus = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
+    var followerStatus = BaseStatusSignal.refreshAll(followerAppliedVolts, followerCurrent);
 
-    inputs.connected = status.isOK();
+    inputs.connected = mainStatus.isOK();
+    mainMotorAlert.set(!inputs.connected);
+    followerAlert.set(!followerStatus.isOK());
+
     inputs.heightMeters =
         position.getValueAsDouble()
             / ElevatorConstants.GEAR_RATIO

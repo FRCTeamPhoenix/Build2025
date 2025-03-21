@@ -3,8 +3,6 @@ package frc.robot.subsystems.superstructure.wrist;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.WristConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -15,8 +13,7 @@ public class Wrist {
   private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
   private Double setpoint = 0.0;
-
-  private final Alert wristAlert = new Alert("Wrist motor is disconnected", AlertType.kError);
+  private boolean killed = false;
 
   public Wrist(WristIO io) {
     this.io = io;
@@ -25,14 +22,17 @@ public class Wrist {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Wrist", inputs);
-    if (setpoint != null) {
-      Logger.recordOutput("Wrist/Setpoint", setpoint);
+    if (!killed) {
+      if (setpoint != null) {
+        Logger.recordOutput("Wrist/Setpoint", setpoint);
 
-      io.setPositionTarget(Rotation2d.fromRadians(setpoint));
+        io.setPositionTarget(Rotation2d.fromRadians(setpoint));
+      } else {
+        Logger.recordOutput("Wrist/Setpoint", -1);
+      }
     } else {
-      Logger.recordOutput("Wrist/Setpoint", -1);
+      io.setVoltage(0.0);
     }
-    wristAlert.set(!inputs.connected);
   }
 
   public void setSetpoint(double setpoint) {
@@ -57,7 +57,22 @@ public class Wrist {
     io.setVoltage(voltage);
   }
 
+  public void stop() {
+    io.setVoltage(0);
+    setpoint = null;
+  }
+
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.velocityRad);
+  }
+
+  public void kill() {
+    killed = true;
+    stop();
+  }
+
+  public void revive() {
+    killed = false;
+    setpoint = getAngle();
   }
 }

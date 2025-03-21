@@ -23,7 +23,7 @@ public class SimulatorCommands {
                 .addGamePieceProjectile(
                     new ReefscapeCoralOnFly(
                         sim.getSimulatedDriveTrainPose().getTranslation(),
-                        new Translation2d(0.35, 0),
+                        new Translation2d(0.41, 0),
                         sim.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
                         sim.getSimulatedDriveTrainPose().getRotation(),
                         Meters.of(height.getAsDouble() + ElevatorConstants.MIN_HEIGHT),
