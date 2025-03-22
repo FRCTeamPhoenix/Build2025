@@ -381,8 +381,8 @@ public final class Constants {
     public static final int[] BR_IDS = {4, 8, 12};
     public static final int[][] MODULE_IDS = {FL_IDS, FR_IDS, BL_IDS, BR_IDS};
 
-    public static final int ELEVATOR_ID = 15;
-    public static final int ELEVATOR_FOLLOWER_ID = 16;
+    public static final int ELEVATOR_ID = 16;
+    public static final int ELEVATOR_FOLLOWER_ID = 15;
     public static final int WRIST_ID = 17;
     public static final int WRIST_ENCODER_ID = 18;
     public static final int CLAW_ID = 19;

@@ -61,17 +61,17 @@ public class CANdleSubsystem extends SubsystemBase {
       }
     } else if (DriverStation.isAutonomousEnabled()) {
       hasEnabled = true;
-      candle.setMode(CANdleState.LarsonAnimation);
+      candle.setMode(CANdleState.OrangeLarson);
     } else {
       if (!hasEnabled) {
         if (DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-          candle.setMode(CANdleState.Red);
+          candle.setMode(CANdleState.RedLarson);
         } else {
-          candle.setMode(CANdleState.Blue);
+          candle.setMode(CANdleState.BlueLarson);
         }
       } else {
-        candle.setMode(CANdleState.LarsonAnimation);
+        candle.setMode(CANdleState.OrangeLarson);
       }
     }
   }

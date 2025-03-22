@@ -19,8 +19,13 @@ public class CANdleIOReal implements CANdleIO {
   private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.01, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
-  private LarsonAnimation larsonAnimation =
+  private LarsonAnimation blueLarsonAnimation =
+      new LarsonAnimation(0, 0, 255, 0, 0.02, 37, BounceMode.Front, 5, 0);
+      private LarsonAnimation redLarsonAnimation =
+      new LarsonAnimation(255, 0, 0, 0, 0.02, 37, BounceMode.Front, 5, 0);
+      private LarsonAnimation orangeLarsonAnimation =
       new LarsonAnimation(255, 30, 0, 0, 0.02, 37, BounceMode.Front, 5, 0);
+
 
   public CANdleIOReal() {
     candle.configAllSettings(new CANdleConfiguration());
@@ -49,8 +54,14 @@ public class CANdleIOReal implements CANdleIO {
       case RgbFadeAnimation:
         candle.animate(rgbFadeAnimation);
         break;
-      case LarsonAnimation:
-        candle.animate(larsonAnimation);
+      case OrangeLarson:
+        candle.animate(orangeLarsonAnimation);
+        break;
+        case RedLarson:
+        candle.animate(redLarsonAnimation);
+        break;
+        case BlueLarson:
+        candle.animate(blueLarsonAnimation);
         break;
       case Red:
         candle.setLEDs(255, 0, 0);
