@@ -53,7 +53,7 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    public static final String LIMELIGHT_NAME = "limelight-phoenix";
+    public static final String LIMELIGHT_NAME = "limelight";
 
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
