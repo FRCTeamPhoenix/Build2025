@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.candle.CANdleIO.CANdleState;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.PathfindingUtils;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -31,6 +32,11 @@ public class CANdleSubsystem extends SubsystemBase {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
 
+    if (DriverStation.isDisabled()) {
+      candle.setMode(CANdleState.Off);
+      return;
+    }
+
     if (DriverStation.isTeleopEnabled()) {
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
@@ -52,7 +58,7 @@ public class CANdleSubsystem extends SubsystemBase {
         }
       }
     } else {
-      candle.setMode(CANdleState.RgbFadeAnimation);
+      candle.setMode(CANdleState.RainbowAnimation);
     }
   }
 
