@@ -131,7 +131,7 @@ public final class Constants {
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
     public static final Transform2d REEF_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.1, 0, Rotation2d.k180deg);
+        new Transform2d(REEF_BUFFER + 0.2, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());

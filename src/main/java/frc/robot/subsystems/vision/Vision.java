@@ -137,11 +137,13 @@ public class Vision extends SubsystemBase {
           angularStdDev *= VisionConstants.CAMERA_STD_DEV_FACTORS[cameraIndex];
         }
 
-        // Send vision observation
-        consumer.accept(
-            observation.pose().toPose2d(),
-            observation.timestamp(),
-            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        if (cameraIndex < 2) {
+          // Send vision observation
+          consumer.accept(
+              observation.pose().toPose2d(),
+              observation.timestamp(),
+              VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+        }
 
         if (cameraIndex < 2) {
           reefConsumer.accept(

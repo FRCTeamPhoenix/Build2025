@@ -170,6 +170,7 @@ public class RobotContainer {
                 new VisionIOPhoton(
                     VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
                 new VisionIOLimelight(VisionConstants.LIMELIGHT_NAME, drive::getMegatagRotation));
+
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
