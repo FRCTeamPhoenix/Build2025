@@ -415,10 +415,10 @@ public class RobotContainer {
 
     // Climber
     operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(6), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(10), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
     operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(-6), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(-10), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
   }
 
