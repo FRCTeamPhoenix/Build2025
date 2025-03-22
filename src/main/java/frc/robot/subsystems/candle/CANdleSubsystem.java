@@ -52,7 +52,7 @@ public class CANdleSubsystem extends SubsystemBase {
         }
       }
     } else {
-      candle.setMode(CANdleState.RainbowAnimation);
+      candle.setMode(CANdleState.FireAnimation);
     }
   }
 
