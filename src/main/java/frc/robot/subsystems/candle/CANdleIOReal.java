@@ -27,13 +27,7 @@ public class CANdleIOReal implements CANdleIO {
       new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 10, 8);
 
   public CANdleIOReal() {
-    candle.configAllSettings(new CANdleConfiguration());
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-      setMode(CANdleState.Red);
-    } else {
-      setMode(CANdleState.Blue);
-    }
+    setMode(CANdleState.Orange);
   }
   // Set the RGBs for Phoenix Colors once Business Art gets them for us
   @Override
