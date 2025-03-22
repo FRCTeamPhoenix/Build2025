@@ -68,7 +68,6 @@ import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
@@ -168,9 +167,7 @@ public class RobotContainer {
                 new VisionIOPhoton(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new VisionIOPhoton(
-                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
-                new VisionIOLimelight(VisionConstants.LIMELIGHT_NAME, drive::getMegatagRotation));
-
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -412,7 +409,9 @@ public class RobotContainer {
             superstructure));
 
     // Manual override
-    operatorStartTrigger.onTrue(Commands.runOnce(() -> manualScoreOverride = !manualScoreOverride));
+    operatorStartTrigger
+        .whileTrue(Commands.runOnce(() -> manualScoreOverride = true))
+        .whileFalse(Commands.runOnce(() -> manualScoreOverride = false));
 
     // Climber
     operatorRightPadTrigger
