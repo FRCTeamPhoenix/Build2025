@@ -3,6 +3,7 @@ package frc.robot.subsystems.candle;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.candle.CANdleIO.CANdleState;
@@ -32,7 +33,7 @@ public class CANdleSubsystem extends SubsystemBase {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
 
-    if (DriverStation.isDisabled()) {
+    if (DriverStation.isEStopped()) {
       candle.setMode(CANdleState.Off);
       return;
     }
@@ -57,8 +58,15 @@ public class CANdleSubsystem extends SubsystemBase {
           candle.setMode(CANdleState.Orange);
         }
       }
-    } else {
+    } else if (DriverStation.isAutonomousEnabled()) {
       candle.setMode(CANdleState.RainbowAnimation);
+    } else {
+          if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+      candle.setMode(CANdleState.Red);
+    } else {
+      candle.setMode(CANdleState.Blue);
+    }
     }
   }
 
