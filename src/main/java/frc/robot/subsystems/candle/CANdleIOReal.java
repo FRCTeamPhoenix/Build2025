@@ -3,8 +3,11 @@ package frc.robot.subsystems.candle;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.RgbFadeAnimation;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.CANConstants;
@@ -17,6 +20,7 @@ public class CANdleIOReal implements CANdleIO {
   private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.01, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
+  private LarsonAnimation larsonAnimation = new LarsonAnimation(255, 30, 0, 0, 0.01, 37, BounceMode.Front, 0, 0);
 
   public CANdleIOReal() {
     candle.configAllSettings(new CANdleConfiguration());
@@ -44,6 +48,9 @@ public class CANdleIOReal implements CANdleIO {
         break;
       case RgbFadeAnimation:
         candle.animate(rgbFadeAnimation);
+        break;
+      case LarsonAnimation:
+        candle.animate(larsonAnimation);
         break;
       case Red:
         candle.setLEDs(255, 0, 0);

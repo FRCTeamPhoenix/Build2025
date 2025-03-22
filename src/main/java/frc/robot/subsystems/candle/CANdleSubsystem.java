@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.candle.CANdleIO.CANdleState;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.PathfindingUtils;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -61,12 +60,13 @@ public class CANdleSubsystem extends SubsystemBase {
     } else if (DriverStation.isAutonomousEnabled()) {
       candle.setMode(CANdleState.RainbowAnimation);
     } else {
-          if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-      candle.setMode(CANdleState.Red);
-    } else {
-      candle.setMode(CANdleState.Blue);
-    }
+      // if (DriverStation.getAlliance().isPresent()
+      //     && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+      //   candle.setMode(CANdleState.Red);
+      // } else {
+      //   candle.setMode(CANdleState.Blue);
+      // }
+      candle.setMode(CANdleState.LarsonAnimation);
     }
   }
 

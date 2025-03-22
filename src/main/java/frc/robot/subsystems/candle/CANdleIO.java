@@ -15,6 +15,7 @@ public interface CANdleIO {
     FireAnimation,
     RainbowAnimation,
     RgbFadeAnimation,
+    LarsonAnimation,
     Red,
     Blue,
     Green,
