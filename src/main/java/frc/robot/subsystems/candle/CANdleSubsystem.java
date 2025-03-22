@@ -31,7 +31,7 @@ public class CANdleSubsystem extends SubsystemBase {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
 
-    if (!DriverStation.isAutonomous()) {
+    if (DriverStation.isTeleopEnabled()) {
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
         if (reef != poseSupplier.get()) {
@@ -51,6 +51,8 @@ public class CANdleSubsystem extends SubsystemBase {
           candle.setMode(CANdleState.Orange);
         }
       }
+    } else {
+      candle.setMode(CANdleState.RainbowAnimation);
     }
   }
 
