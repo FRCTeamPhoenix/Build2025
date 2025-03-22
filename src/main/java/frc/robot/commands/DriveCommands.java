@@ -83,12 +83,7 @@ public class DriveCommands {
 
           double slowDown = 1;
           if (slowdownSupplier.getAsBoolean()) {
-            slowDown = 0.2;
-            drive.runVelocity(
-                new ChassisSpeeds(
-                    0,
-                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                    9));
+            slowDown = 0.5;
           } else {
             drive.runVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
