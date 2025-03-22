@@ -61,7 +61,7 @@ public class CANdleSubsystem extends SubsystemBase {
       }
     } else if (DriverStation.isAutonomousEnabled()) {
       hasEnabled = true;
-      candle.setMode(CANdleState.OrangeLarson);
+      candle.setMode(CANdleState.OrangeLarso);
     } else {
       if (!hasEnabled) {
         if (DriverStation.getAlliance().isPresent()
