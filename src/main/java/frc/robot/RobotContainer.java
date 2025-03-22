@@ -352,8 +352,8 @@ public class RobotContainer {
         .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
 
     // Superstructure home and rehome
-    operatorDownPadTrigger
-        .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    operatorDownPadTrigger.whileTrue(
+        Commands.runOnce(() -> superstructure.setState(0), superstructure));
     operatorBackTrigger.onTrue(
         Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
