@@ -20,7 +20,7 @@ public class CANdleIOReal implements CANdleIO {
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.01, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
   private LarsonAnimation larsonAnimation =
-      new LarsonAnimation(255, 30, 0, 0, 1, 37, BounceMode.Front, 5, 0);
+      new LarsonAnimation(255, 30, 0, 0, 0.01, 37, BounceMode.Front, 5, 0);
 
   public CANdleIOReal() {
     candle.configAllSettings(new CANdleConfiguration());
