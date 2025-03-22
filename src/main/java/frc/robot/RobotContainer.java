@@ -353,7 +353,6 @@ public class RobotContainer {
 
     // Superstructure home and rehome
     operatorDownPadTrigger
-        .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
     operatorBackTrigger.onTrue(
         Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
