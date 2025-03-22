@@ -83,9 +83,8 @@ public class DriveCommands {
 
           double slowDown = 1;
           if (slowdownSupplier.getAsBoolean()) {
-            slowDown = 0.5;
-          } else {
-            drive.runVelocity(
+            slowDown = 0.5;}
+          drive.runVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
                     linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
@@ -93,7 +92,7 @@ public class DriveCommands {
                     isFlipped
                         ? drive.getRotation().plus(new Rotation2d(Math.PI))
                         : drive.getRotation()));
-          }
+          
         },
         drive);
   }
