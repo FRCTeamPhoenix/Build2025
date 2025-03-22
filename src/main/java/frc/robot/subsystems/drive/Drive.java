@@ -338,6 +338,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetMegatagGyro() {
+    offsetDone = true;
     boolean isFlipped =
         DriverStation.getAlliance().isPresent()
             && DriverStation.getAlliance().get() == Alliance.Red;

@@ -16,6 +16,7 @@ public class CANdleSubsystem extends SubsystemBase {
   private final CANdleIO candle;
   private final CANdleIOInputsAutoLogged inputs = new CANdleIOInputsAutoLogged();
   private final Supplier<Pose2d> poseSupplier;
+  private boolean hasEnabled = false;
   private final IntSupplier stateSupplier;
   private CANdleState[] levelStates = {CANdleState.Blue, CANdleState.Cyan, CANdleState.Green};
 
@@ -38,6 +39,7 @@ public class CANdleSubsystem extends SubsystemBase {
     }
 
     if (DriverStation.isTeleopEnabled()) {
+      hasEnabled = true;
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
         if (reef != poseSupplier.get()) {
@@ -58,13 +60,18 @@ public class CANdleSubsystem extends SubsystemBase {
         }
       }
     } else if (DriverStation.isAutonomousEnabled()) {
+      hasEnabled = true;
       candle.setMode(CANdleState.LarsonAnimation);
     } else {
-      if (DriverStation.getAlliance().isPresent()
-          && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-        candle.setMode(CANdleState.Red);
+      if (!hasEnabled) {
+        if (DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+          candle.setMode(CANdleState.Red);
+        } else {
+          candle.setMode(CANdleState.Blue);
+        }
       } else {
-        candle.setMode(CANdleState.Blue);
+        candle.setMode(CANdleState.LarsonAnimation);
       }
     }
   }
