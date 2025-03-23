@@ -38,8 +38,10 @@ public class CANdleSubsystem extends SubsystemBase {
 
     if (DriverStation.isTeleopEnabled()) {
       if (DriverStation.getMatchTime() < 25) {
+        Logger.recordOutput("Endgame", true);
         candle.setEndgame(true);
       } else {
+        Logger.recordOutput("Endgame", false);
         candle.setEndgame(false);
       }
       if (!override) {
