@@ -39,6 +39,8 @@ public class CANdleSubsystem extends SubsystemBase {
     if (DriverStation.isTeleopEnabled()) {
       if (DriverStation.getMatchTime() < 25) {
         candle.setEndgame(true);
+      } else {
+        candle.setEndgame(false);
       }
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
