@@ -108,8 +108,6 @@ public class CANdleIOReal implements CANdleIO {
   @Override
   public void setEndgame(boolean endgame) {
     this.endgame = endgame;
-    if (endgame) {
-      setMode(state, true);
-    }
+    setMode(state, true);
   }
 }
