@@ -30,9 +30,7 @@ public class CANdleSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     candle.updateInputs(inputs);
-    candle.setEndgame(true);
     Logger.processInputs("CANdle", inputs);
-
     if (DriverStation.isEStopped()) {
       candle.setMode(CANdleState.Off);
       return;

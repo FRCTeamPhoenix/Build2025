@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
@@ -74,10 +73,6 @@ public class WristIOTalonFX implements WristIO {
 
     // encoder.setSettings(new CanandmagSettings());
     encoderAlert.set(!encoder.isConnected());
-    Logger.recordOutput("pos", encoder.getAbsPosition());
-    Logger.recordOutput(
-        "posreset",
-        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations());
     wristTalon.setPosition(
         Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
