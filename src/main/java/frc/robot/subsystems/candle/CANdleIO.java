@@ -19,15 +19,22 @@ public interface CANdleIO {
     RedLarson,
     BlueLarson,
     Red,
-    Blue,
-    Green,
     Orange,
     Yellow,
+    Blue,
+    Green,
     Cyan,
+    OrangeHalf,
+    BlueHalf,
+    GreenHalf,
+    CyanHalf,
+    MagentaTop,
     Off;
   }
 
   public default void updateInputs(CANdleIOInputs inputs) {}
 
   public default void setMode(CANdleState mode) {}
+
+  public default void setEndgame(boolean endgame) {}
 }

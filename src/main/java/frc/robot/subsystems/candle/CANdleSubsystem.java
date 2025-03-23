@@ -3,6 +3,7 @@ package frc.robot.subsystems.candle;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
@@ -38,6 +39,9 @@ public class CANdleSubsystem extends SubsystemBase {
     }
 
     if (DriverStation.isTeleopEnabled()) {
+      if (DriverStation.getMatchTime() < 25) {
+        candle.setEndgame(true);
+      }
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
         if (reef != poseSupplier.get()) {
