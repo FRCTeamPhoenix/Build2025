@@ -16,7 +16,7 @@ public class CANdleIOReal implements CANdleIO {
   private CANdleState state = CANdleState.Off;
 
   private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
-  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 37);
+  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.7, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
   private LarsonAnimation blueLarsonAnimation =
       new LarsonAnimation(0, 0, 255, 0, 0.02, 29, BounceMode.Front, 10, 8);
