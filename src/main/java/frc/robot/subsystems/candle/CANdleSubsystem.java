@@ -32,18 +32,11 @@ public class CANdleSubsystem extends SubsystemBase {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
     if (DriverStation.isEStopped()) {
-      candle.setMode(CANdleState.Off, true);
+      candle.setMode(CANdleState.Off, false);
       return;
     }
 
     if (DriverStation.isTeleopEnabled()) {
-      if (DriverStation.getMatchTime() < 25) {
-        Logger.recordOutput("Endgame", true);
-        candle.setEndgame(true);
-      } else {
-        Logger.recordOutput("Endgame", false);
-        candle.setEndgame(false);
-      }
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
         if (reef != poseSupplier.get()) {

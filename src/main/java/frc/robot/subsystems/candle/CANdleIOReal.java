@@ -12,7 +12,6 @@ public class CANdleIOReal implements CANdleIO {
   private CANdle candle = new CANdle(CANConstants.LEFT_CANDLE_ID);
 
   private CANdleState state = CANdleState.Off;
-  private boolean endgame = false;
 
   private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.95, 37);
@@ -30,7 +29,7 @@ public class CANdleIOReal implements CANdleIO {
 
   @Override
   public void setMode(CANdleState mode, boolean hardSet) {
-    if (state == mode && !hardSet) {
+    if (state == mode) {
       return;
     }
     candle.clearAnimation(0);
@@ -58,39 +57,19 @@ public class CANdleIOReal implements CANdleIO {
         candle.setLEDs(255, 0, 0);
         break;
       case Blue:
-        if (!endgame) {
           candle.setLEDs(0, 0, 255);
-        } else {
-          candle.setLEDs(0, 0, 255, 0, 0, 23);
-          candle.setLEDs(255, 0, 255, 0, 23, 15);
-        }
         break;
       case Green:
-        if (!endgame) {
           candle.setLEDs(0, 255, 0);
-        } else {
-          candle.setLEDs(0, 255, 0, 0, 0, 23);
-          candle.setLEDs(255, 0, 255, 0, 23, 15);
-        }
         break;
       case Orange:
-        if (!endgame) {
-          candle.setLEDs(255, 30, 0);
-        } else {
-          candle.setLEDs(255, 30, 0, 0, 0, 23);
-          candle.setLEDs(255, 0, 255, 0, 23, 15);
-        }
+        candle.setLEDs(255, 30, 0);
         break;
       case Yellow:
         candle.setLEDs(255, 69, 0);
         break;
       case Cyan:
-        if (!endgame) {
           candle.setLEDs(0, 255, 255);
-        } else {
-          candle.setLEDs(0, 255, 255, 0, 0, 23);
-          candle.setLEDs(255, 0, 255, 0, 23, 15);
-        }
         break;
       default:
         candle.setLEDs(0, 0, 0);
@@ -103,11 +82,5 @@ public class CANdleIOReal implements CANdleIO {
     inputs.mode = state;
     inputs.busVolts = new double[] {candle.getBusVoltage()};
     inputs.railVolts = new double[] {candle.get5VRailVoltage()};
-  }
-
-  @Override
-  public void setEndgame(boolean endgame) {
-    this.endgame = endgame;
-    setMode(state, true);
   }
 }
