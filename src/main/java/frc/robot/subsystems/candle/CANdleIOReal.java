@@ -24,8 +24,6 @@ public class CANdleIOReal implements CANdleIO {
       new LarsonAnimation(255, 0, 0, 0, 0.02, 29, BounceMode.Front, 10, 8);
   private LarsonAnimation orangeLarsonAnimation =
       new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 10, 8);
-  private ColorFlowAnimation flowAnimation =
-      new ColorFlowAnimation(255, 0, 0, 0, 0.02, 29, Direction.Forward, 8);
 
   public CANdleIOReal() {
     setMode(CANdleState.Orange);
@@ -52,7 +50,7 @@ public class CANdleIOReal implements CANdleIO {
         candle.animate(orangeLarsonAnimation);
         break;
       case RedLarson:
-        candle.animate(rainbowAnimation);
+        candle.animate(redLarsonAnimation);
         break;
       case BlueLarson:
         candle.animate(blueLarsonAnimation);
