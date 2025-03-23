@@ -30,7 +30,7 @@ public class CANdleIOReal implements CANdleIO {
   // Set the RGBs for Phoenix Colors once Business Art gets them for us
   @Override
   public void setMode(CANdleState mode) {
-    if (state == mode) {
+    if (state == mode && !endgame) {
       return;
     }
     candle.clearAnimation(0);
