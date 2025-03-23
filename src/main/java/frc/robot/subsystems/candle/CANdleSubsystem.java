@@ -61,11 +61,11 @@ public class CANdleSubsystem extends SubsystemBase {
       candle.setMode(CANdleState.RainbowAnimation);
     } else {
       if (DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-          candle.setMode(CANdleState.RedLarson);
-        } else {
-          candle.setMode(CANdleState.BlueLarson);
-        }
+          && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+        candle.setMode(CANdleState.RedLarson);
+      } else {
+        candle.setMode(CANdleState.BlueLarson);
+      }
     }
   }
 

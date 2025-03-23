@@ -1,8 +1,6 @@
 package frc.robot.subsystems.candle;
 
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.ColorFlowAnimation;
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
@@ -19,11 +17,11 @@ public class CANdleIOReal implements CANdleIO {
   private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.95, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
   private LarsonAnimation blueLarsonAnimation =
-      new LarsonAnimation(0, 0, 255, 0, 0.02, 29, BounceMode.Front, 10, 8);
+      new LarsonAnimation(0, 0, 255, 0, 0.02, 29, BounceMode.Front, 15, 8);
   private LarsonAnimation redLarsonAnimation =
-      new LarsonAnimation(255, 0, 0, 0, 0.02, 29, BounceMode.Front, 10, 8);
+      new LarsonAnimation(255, 0, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
   private LarsonAnimation orangeLarsonAnimation =
-      new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 10, 8);
+      new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
 
   public CANdleIOReal() {
     setMode(CANdleState.Orange);
