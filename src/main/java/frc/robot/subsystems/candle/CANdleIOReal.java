@@ -25,12 +25,12 @@ public class CANdleIOReal implements CANdleIO {
       new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
 
   public CANdleIOReal() {
-    setMode(CANdleState.Orange);
+    setMode(CANdleState.Orange, true);
   }
-  // Set the RGBs for Phoenix Colors once Business Art gets them for us
+
   @Override
-  public void setMode(CANdleState mode) {
-    if (state == mode && !endgame) {
+  public void setMode(CANdleState mode, boolean hardSet) {
+    if (state == mode && !hardSet) {
       return;
     }
     candle.clearAnimation(0);
@@ -108,5 +108,8 @@ public class CANdleIOReal implements CANdleIO {
   @Override
   public void setEndgame(boolean endgame) {
     this.endgame = endgame;
+    if (endgame) {
+      setMode(state, true);
+    }
   }
 }

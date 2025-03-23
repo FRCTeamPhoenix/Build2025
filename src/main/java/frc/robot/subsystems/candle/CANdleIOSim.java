@@ -9,14 +9,14 @@ public class CANdleIOSim implements CANdleIO {
   public CANdleIOSim() {
     if (DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-      setMode(CANdleState.Red);
+      setMode(CANdleState.Red, true);
     } else {
-      setMode(CANdleState.Blue);
+      setMode(CANdleState.Blue, true);
     }
   }
 
   @Override
-  public void setMode(CANdleState mode) {
+  public void setMode(CANdleState mode, boolean hardSet) {
     state = mode;
   }
 

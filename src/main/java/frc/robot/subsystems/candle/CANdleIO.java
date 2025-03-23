@@ -34,7 +34,7 @@ public interface CANdleIO {
 
   public default void updateInputs(CANdleIOInputs inputs) {}
 
-  public default void setMode(CANdleState mode) {}
+  public default void setMode(CANdleState mode, boolean hardSet) {}
 
   public default void setEndgame(boolean endgame) {}
 }

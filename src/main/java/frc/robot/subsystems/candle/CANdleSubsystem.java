@@ -32,7 +32,7 @@ public class CANdleSubsystem extends SubsystemBase {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
     if (DriverStation.isEStopped()) {
-      candle.setMode(CANdleState.Off);
+      candle.setMode(CANdleState.Off, true);
       return;
     }
 
@@ -50,29 +50,29 @@ public class CANdleSubsystem extends SubsystemBase {
                   .getX()
               > FieldConstants.REEF_BUFFER) {
             if (stateSupplier.getAsInt() - 3 < levelStates.length) {
-              candle.setMode(levelStates[stateSupplier.getAsInt() - 3]);
+              candle.setMode(levelStates[stateSupplier.getAsInt() - 3], false);
             }
           } else {
-            candle.setMode(CANdleState.Orange);
+            candle.setMode(CANdleState.Orange, false);
           }
         } else {
-          candle.setMode(CANdleState.Orange);
+          candle.setMode(CANdleState.Orange, false);
         }
       }
     } else if (DriverStation.isAutonomousEnabled()) {
-      candle.setMode(CANdleState.RainbowAnimation);
+      candle.setMode(CANdleState.RainbowAnimation, false);
     } else {
       if (DriverStation.getAlliance().isPresent()
           && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-        candle.setMode(CANdleState.RedLarson);
+        candle.setMode(CANdleState.RedLarson, false);
       } else {
-        candle.setMode(CANdleState.BlueLarson);
+        candle.setMode(CANdleState.BlueLarson, false);
       }
     }
   }
 
   public void setState(CANdleState state) {
     override = true;
-    candle.setMode(state);
+    candle.setMode(state, false);
   }
 }
