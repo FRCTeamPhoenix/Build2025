@@ -24,11 +24,11 @@ public class CANdleIOReal implements CANdleIO {
       new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
 
   public CANdleIOReal() {
-    setMode(CANdleState.Orange, true);
+    setMode(CANdleState.Orange);
   }
 
   @Override
-  public void setMode(CANdleState mode, boolean hardSet) {
+  public void setMode(CANdleState mode) {
     if (state == mode) {
       return;
     }
@@ -57,10 +57,10 @@ public class CANdleIOReal implements CANdleIO {
         candle.setLEDs(255, 0, 0);
         break;
       case Blue:
-          candle.setLEDs(0, 0, 255);
+        candle.setLEDs(0, 0, 255);
         break;
       case Green:
-          candle.setLEDs(0, 255, 0);
+        candle.setLEDs(0, 255, 0);
         break;
       case Orange:
         candle.setLEDs(255, 30, 0);
@@ -69,7 +69,7 @@ public class CANdleIOReal implements CANdleIO {
         candle.setLEDs(255, 69, 0);
         break;
       case Cyan:
-          candle.setLEDs(0, 255, 255);
+        candle.setLEDs(0, 255, 255);
         break;
       default:
         candle.setLEDs(0, 0, 0);
