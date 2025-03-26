@@ -1,12 +1,11 @@
 package frc.robot.subsystems.candle;
 
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.RgbFadeAnimation;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.CANConstants;
 
 public class CANdleIOReal implements CANdleIO {
@@ -15,19 +14,19 @@ public class CANdleIOReal implements CANdleIO {
   private CANdleState state = CANdleState.Off;
 
   private FireAnimation fireAnimation = new FireAnimation(1, 0.01, 37, 1, 0);
-  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.01, 37);
+  private RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 0.95, 37);
   private RgbFadeAnimation rgbFadeAnimation = new RgbFadeAnimation(1, 0.01, 37);
+  private LarsonAnimation blueLarsonAnimation =
+      new LarsonAnimation(0, 0, 255, 0, 0.02, 29, BounceMode.Front, 15, 8);
+  private LarsonAnimation redLarsonAnimation =
+      new LarsonAnimation(255, 0, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
+  private LarsonAnimation orangeLarsonAnimation =
+      new LarsonAnimation(255, 30, 0, 0, 0.02, 29, BounceMode.Front, 15, 8);
 
   public CANdleIOReal() {
-    candle.configAllSettings(new CANdleConfiguration());
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-      setMode(CANdleState.Red);
-    } else {
-      setMode(CANdleState.Blue);
-    }
+    setMode(CANdleState.Orange);
   }
-  // Set the RGBs for Phoenix Colors once Business Art gets them for us
+
   @Override
   public void setMode(CANdleState mode) {
     if (state == mode) {
@@ -44,6 +43,15 @@ public class CANdleIOReal implements CANdleIO {
         break;
       case RgbFadeAnimation:
         candle.animate(rgbFadeAnimation);
+        break;
+      case OrangeLarson:
+        candle.animate(orangeLarsonAnimation);
+        break;
+      case RedLarson:
+        candle.animate(redLarsonAnimation);
+        break;
+      case BlueLarson:
+        candle.animate(blueLarsonAnimation);
         break;
       case Red:
         candle.setLEDs(255, 0, 0);

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -21,7 +22,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.WristConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class WristIOTalonFX implements WristIO {
 
@@ -73,10 +73,6 @@ public class WristIOTalonFX implements WristIO {
 
     // encoder.setSettings(new CanandmagSettings());
     encoderAlert.set(!encoder.isConnected());
-    Logger.recordOutput("pos", encoder.getAbsPosition());
-    Logger.recordOutput(
-        "posreset",
-        Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations());
     wristTalon.setPosition(
         Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
             * WristConstants.GEAR_RATIO);
@@ -99,7 +95,7 @@ public class WristIOTalonFX implements WristIO {
 
   @Override
   public void setVoltage(double voltage) {
-    // wristTalon.setControl(new VoltageOut(voltage));
+    wristTalon.setControl(new VoltageOut(voltage));
   }
 
   @Override

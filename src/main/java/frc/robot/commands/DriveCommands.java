@@ -83,22 +83,16 @@ public class DriveCommands {
 
           double slowDown = 1;
           if (slowdownSupplier.getAsBoolean()) {
-            slowDown = 0.2;
-            drive.runVelocity(
-                new ChassisSpeeds(
-                    0,
-                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                    9));
-          } else {
-            drive.runVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
-                    omega * drive.getMaxAngularSpeedRadPerSec() * slowDown,
-                    isFlipped
-                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                        : drive.getRotation()));
+            slowDown = 0.3;
           }
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowDown,
+                  omega * drive.getMaxAngularSpeedRadPerSec() * slowDown,
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation()));
         },
         drive);
   }
