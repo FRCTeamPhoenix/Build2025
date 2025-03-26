@@ -24,11 +24,6 @@ public interface CANdleIO {
     Blue,
     Green,
     Cyan,
-    OrangeHalf,
-    BlueHalf,
-    GreenHalf,
-    CyanHalf,
-    MagentaTop,
     Off;
   }
 
