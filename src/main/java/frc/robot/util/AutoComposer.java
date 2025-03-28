@@ -18,6 +18,7 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class AutoComposer {
@@ -28,6 +29,8 @@ public class AutoComposer {
       Supplier<Command> scoringCommand,
       Supplier<Command> intakeCommand,
       Supplier<Command> stopIntakeCommand,
+      Supplier<Command> dropIntakeCommand,
+      BooleanSupplier intakeSensor,
       Drive drive) {
     Command returnCommand = Commands.none();
     List<Command> commandArray = new ArrayList<Command>();
@@ -53,7 +56,12 @@ public class AutoComposer {
         if (corrected[i].charAt(0) == 'r' || corrected[i].charAt(0) == 'l') {
           commandArray.add(
               intakingRoutine(
-                  corrected[i], intakeCommand, drive, corrected[i - 1].substring(0, 1)));
+                  corrected[i],
+                  intakeCommand,
+                  dropIntakeCommand,
+                  intakeSensor,
+                  drive,
+                  corrected[i - 1].substring(0, 1)));
         }
       }
     } catch (Exception e) {
@@ -90,18 +98,26 @@ public class AutoComposer {
       int reefFace = routineSplit[0] - '0';
       int level = routineSplit[2] - '0';
 
-      returnCommand =
-          AutoBuilder.pathfindToPose(
-                  reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER),
-                  AutoConstants.CONSTRAINTS,
-                  MetersPerSecond.of(3))
-              .alongWith(stopIntakeCommand.get());
       if (routineSplit[1] == 'a') {
+        returnCommand =
+            AutoBuilder.pathfindToPose(
+                    reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_LEFT_PATH_BUFFER),
+                    AutoConstants.CONSTRAINTS,
+                    MetersPerSecond.of(3))
+                .alongWith(stopIntakeCommand.get());
+
         returnCommand =
             returnCommand.andThen(
                 scoringCommands.get()[level - 1].alongWith(
                     new DeferredCommand(() -> new BranchAlign(drive, false), Set.of())));
       } else {
+        returnCommand =
+            AutoBuilder.pathfindToPose(
+                    reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_RIGHT_PATH_BUFFER),
+                    AutoConstants.CONSTRAINTS,
+                    MetersPerSecond.of(3))
+                .alongWith(stopIntakeCommand.get());
+
         returnCommand =
             returnCommand.andThen(
                 scoringCommands.get()[level - 1].alongWith(
@@ -125,7 +141,12 @@ public class AutoComposer {
   }
 
   public static Command intakingRoutine(
-      String routine, Supplier<Command> intakeCommand, Drive drive, String lastPosition) {
+      String routine,
+      Supplier<Command> intakeCommand,
+      Supplier<Command> dropIntakeCommand,
+      BooleanSupplier intakeSensor,
+      Drive drive,
+      String lastPosition) {
 
     Command returnCommand;
 
@@ -138,6 +159,8 @@ public class AutoComposer {
         returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "l"));
       }
       returnCommand = returnCommand.alongWith(intakeCommand.get());
+      returnCommand = returnCommand.until(intakeSensor);
+      returnCommand = returnCommand.andThen(dropIntakeCommand.get());
     } catch (Exception e) {
       System.out.println(e);
       System.out.println("Failed to generate intake command");

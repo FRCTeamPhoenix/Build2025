@@ -127,11 +127,6 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
-    public static final Transform2d REEF_BUFFER_TRANSFORM =
-        new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
-    public static final Transform2d REEF_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.3, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
@@ -172,6 +167,14 @@ public final class Constants {
         new Transform2d(BRANCH_BUFFER, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
         new Transform2d(BRANCH_BUFFER, BRANCH_STRAFE, Rotation2d.k180deg);
+
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
+    public static final Transform2d REEF_BUFFER_TRANSFORM =
+        new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
+    public static final Transform2d REEF_LEFT_PATH_BUFFER =
+        new Transform2d(REEF_BUFFER + 0.3, -BRANCH_STRAFE, Rotation2d.k180deg);
+    public static final Transform2d REEF_RIGHT_PATH_BUFFER =
+        new Transform2d(REEF_BUFFER + 0.3, BRANCH_STRAFE, Rotation2d.k180deg);
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
@@ -317,7 +320,7 @@ public final class Constants {
       0.1,
       0.1,
       1.065,
-      WristConstants.MAX_ANGLE - 0.1
+      WristConstants.MAX_ANGLE - 0.2
     };
     public static final String[] STATE_NAMES = {
       "STOWED",

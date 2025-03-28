@@ -483,7 +483,7 @@ public class RobotContainer {
       new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(0.5)
+      Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.5)
     };
   }
 
@@ -493,9 +493,11 @@ public class RobotContainer {
 
   public Command getIntakingCommand() {
     return Commands.run(() -> superstructure.setState(1), superstructure)
-        .alongWith(claw.runReverse())
-        .until(claw::getSensor)
-        .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+        .alongWith(claw.runReverse());
+  }
+
+  public Command getDropIntakeCommand() {
+    return Commands.runOnce(() -> superstructure.setState(9), superstructure);
   }
 
   public Command getStopIntakingCommand() {
