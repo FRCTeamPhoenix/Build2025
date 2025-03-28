@@ -98,6 +98,42 @@ public class PathfindingUtils {
     return targetPose;
   }
 
+  public static Pose2d getZoneReefPoseFuture(
+      Pose2d odometryPose, ChassisSpeeds speeds, double time, Transform2d buffer) {
+    boolean isRed =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
+
+    Pose2d targetPose = odometryPose;
+    Pose3d[] reefPoses =
+        isRed ? FieldConstants.ZONE_ALIGN_RED_POSES : FieldConstants.ZONE_ALIGN_BLUE_POSES;
+
+    Pose2d reefCenter = isRed ? FieldConstants.RED_REEF_CENTER : FieldConstants.BLUE_REEF_CENTER;
+
+    Transform2d translatedRobot = targetPose.minus(reefCenter);
+
+    if (Math.abs(translatedRobot.getX()) < FieldConstants.X_LIMIT
+        && Math.abs(translatedRobot.getY()) < FieldConstants.Y_LIMIT) {
+      translatedRobot = odometryPose.exp(speeds.toTwist2d(time)).minus(reefCenter);
+      double theta =
+          Units.radiansToDegrees(Math.atan2(translatedRobot.getY(), translatedRobot.getX()));
+      if (-30 <= theta && theta < 30) {
+        targetPose = reefPoses[0].toPose2d().plus(buffer);
+      } else if (-30 > theta && theta >= -90) {
+        targetPose = reefPoses[1].toPose2d().plus(buffer);
+      } else if (-90 > theta && theta >= -150) {
+        targetPose = reefPoses[2].toPose2d().plus(buffer);
+      } else if ((-150 > theta && theta >= -180) || (150 <= theta && theta <= 180)) {
+        targetPose = reefPoses[3].toPose2d().plus(buffer);
+      } else if (90 <= theta && theta < 150) {
+        targetPose = reefPoses[4].toPose2d().plus(buffer);
+      } else if (30 <= theta && theta < 90) {
+        targetPose = reefPoses[5].toPose2d().plus(buffer);
+      }
+    }
+    return targetPose;
+  }
+
   public static Pose2d getClosestPlayerStation(Pose2d odometryPose, Transform2d buffer) {
     boolean isRed =
         DriverStation.getAlliance().isPresent()

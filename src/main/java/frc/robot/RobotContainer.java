@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
@@ -34,7 +21,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoElevator;
-import frc.robot.commands.BranchAlign;
+import frc.robot.commands.BranchAlignFuture;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ZoneSnap;
@@ -309,7 +296,7 @@ public class RobotContainer {
 
     // Reef Branch alignment
     driverLBTrigger.whileTrue(
-        new BranchAlign(drive, false)
+        new BranchAlignFuture(drive, false)
             .alongWith(
                 new AutoElevator(
                     drive::getReefPose,
@@ -317,7 +304,7 @@ public class RobotContainer {
                     () -> selectedScore,
                     () -> manualScoreOverride)));
     driverRBTrigger.whileTrue(
-        new BranchAlign(drive, true)
+        new BranchAlignFuture(drive, true)
             .alongWith(
                 new AutoElevator(
                     drive::getReefPose,
