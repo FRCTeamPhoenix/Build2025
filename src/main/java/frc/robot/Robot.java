@@ -139,7 +139,10 @@ public class Robot extends LoggedRobot {
               robotContainer::getElevatorCommands,
               robotContainer::getScoringCommand,
               robotContainer::getIntakingCommand,
+              robotContainer::getStopIntakingCommand,
               robotContainer.getDrive());
+    } else {
+      autonomousCommand = robotContainer.getAutonomousCommand();
     }
 
     robotContainer.getSuperstructure().setState(0);

@@ -14,8 +14,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveToPose extends Command {
 
-  PIDController xController = new PIDController(3, 0, 0.2);
-  PIDController yController = new PIDController(3, 0, 0.2);
+  PIDController xController = new PIDController(4, 0, 0.2);
+  PIDController yController = new PIDController(4, 0, 0.2);
   ProfiledPIDController angleController =
       new ProfiledPIDController(2.5, 0, 0.08, AutoConstants.ANGLE_CONSTRAINTS);
 

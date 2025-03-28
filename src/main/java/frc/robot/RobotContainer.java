@@ -483,20 +483,22 @@ public class RobotContainer {
       new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)
+      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(0.5)
     };
   }
 
   public Command getScoringCommand() {
-    return new WaitCommand(0.2).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
+    return new WaitCommand(0.1).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {
     return Commands.run(() -> superstructure.setState(1), superstructure)
         .alongWith(claw.runReverse())
         .until(claw::getSensor)
-        .andThen(
-            Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand())));
+        .andThen(Commands.runOnce(() -> superstructure.setState(0), superstructure));
+  }
+
+  public Command getStopIntakingCommand() {
+    return Commands.waitSeconds(0.2).andThen(claw.stopCommand());
   }
 }

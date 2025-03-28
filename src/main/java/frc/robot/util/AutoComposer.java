@@ -1,5 +1,7 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -25,6 +27,7 @@ public class AutoComposer {
       Supplier<Command[]> elevatorCommands,
       Supplier<Command> scoringCommand,
       Supplier<Command> intakeCommand,
+      Supplier<Command> stopIntakeCommand,
       Drive drive) {
     Command returnCommand = Commands.none();
     List<Command> commandArray = new ArrayList<Command>();
@@ -43,6 +46,7 @@ public class AutoComposer {
                   corrected[i],
                   elevatorCommands,
                   scoringCommand,
+                  stopIntakeCommand,
                   drive,
                   corrected[i - 1].substring(0, 1)));
         }
@@ -69,6 +73,7 @@ public class AutoComposer {
       String routine,
       Supplier<Command[]> scoringCommands,
       Supplier<Command> shootCommand,
+      Supplier<Command> stopIntakeCommand,
       Drive drive,
       String lastPosition) {
     boolean isRed =
@@ -87,8 +92,10 @@ public class AutoComposer {
 
       returnCommand =
           AutoBuilder.pathfindToPose(
-              reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER),
-              AutoConstants.CONSTRAINTS);
+                  reefPoses[reefFace - 1].toPose2d().plus(FieldConstants.REEF_PATH_BUFFER),
+                  AutoConstants.CONSTRAINTS,
+                  MetersPerSecond.of(3))
+              .alongWith(stopIntakeCommand.get());
       if (routineSplit[1] == 'a') {
         returnCommand =
             returnCommand.andThen(
@@ -103,8 +110,8 @@ public class AutoComposer {
       returnCommand = returnCommand.andThen(shootCommand.get());
       returnCommand =
           returnCommand.andThen(
-              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
-                  .withTimeout(0.5)
+              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
+                  .withTimeout(0.2)
                   .alongWith(scoringCommands.get()[4]));
     } catch (Exception e) {
       System.out.println(lastPosition);
