@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -23,7 +24,6 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoElevator;
 import frc.robot.commands.BranchAlignFuture;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.candle.CANdleIO;
 import frc.robot.subsystems.candle.CANdleIOReal;
@@ -82,6 +82,8 @@ public class RobotContainer {
   private final Wrist wrist;
   private final Climber climber;
   private final CANdleSubsystem candle;
+
+  PIDController angleController = new PIDController(4, 0.0, 0.0);
 
   private final DriveTrainSimulationConfig driveSimConfig =
       DriveTrainSimulationConfig.Default()
@@ -159,7 +161,9 @@ public class RobotContainer {
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIOReal(), drive::getPose, () -> selectedScore, driverController.y());
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -196,7 +200,9 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
-        candle = new CANdleSubsystem(new CANdleIOSim(), drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIOSim(), drive::getPose, () -> selectedScore, driverController.y());
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -219,7 +225,9 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
-        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIO() {}, drive::getPose, () -> selectedScore, driverController.y());
         climber = new Climber(new ClimberIO() {});
         break;
     }
@@ -261,6 +269,7 @@ public class RobotContainer {
     SmartDashboard.putData("Zero LimeLight Gyro", Commands.runOnce(() -> drive.resetMegatagGyro()));
     // Configure the button bindings
     configureButtonBindings();
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   /**
@@ -313,8 +322,20 @@ public class RobotContainer {
                     () -> manualScoreOverride)));
 
     // Player station alignment
-    driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
-    driverBTrigger.whileTrue(new DriveToPlayerStation(drive, true));
+    driverXTrigger.whileTrue(
+        DriveCommands.driveNPoint(
+            drive,
+            Rotation2d.fromDegrees(126),
+            angleController,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX()));
+    driverBTrigger.whileTrue(
+        DriveCommands.driveNPoint(
+            drive,
+            Rotation2d.fromDegrees(-126),
+            angleController,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX()));
 
     // Level select & manual
     operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
@@ -470,7 +491,7 @@ public class RobotContainer {
       new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
           .andThen(new WaitCommand(0.0)),
-      Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.5)
+      Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3)
     };
   }
 
@@ -479,7 +500,7 @@ public class RobotContainer {
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(1), superstructure)
+    return Commands.run(() -> superstructure.setState(8), superstructure)
         .alongWith(claw.runReverse());
   }
 

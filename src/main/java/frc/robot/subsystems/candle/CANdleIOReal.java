@@ -71,6 +71,9 @@ public class CANdleIOReal implements CANdleIO {
       case Cyan:
         candle.setLEDs(0, 255, 255);
         break;
+      case White:
+        candle.setLEDs(255, 255, 255);
+        break;
       default:
         candle.setLEDs(0, 0, 0);
         break;

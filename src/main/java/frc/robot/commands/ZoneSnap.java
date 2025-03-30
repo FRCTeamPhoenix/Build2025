@@ -7,6 +7,8 @@ import frc.robot.util.PathfindingUtils;
 
 public class ZoneSnap extends DriveToPose {
 
+  double futureTime = 0.1;
+
   public ZoneSnap(Drive drive) {
     super(drive, new Pose2d(), drive::getPose);
   }
@@ -14,7 +16,9 @@ public class ZoneSnap extends DriveToPose {
   @Override
   public void initialize() {
     setNewTarget(
-        PathfindingUtils.getZoneReefPose(drive.getPose(), FieldConstants.REEF_BUFFER_TRANSFORM));
+        PathfindingUtils.getZoneReefPoseFuture(
+            drive.getPose(), drive.getSpeeds(), futureTime, FieldConstants.REEF_BUFFER_TRANSFORM));
+
     super.initialize();
   }
 }

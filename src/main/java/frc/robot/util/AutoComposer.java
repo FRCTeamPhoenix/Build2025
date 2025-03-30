@@ -109,7 +109,8 @@ public class AutoComposer {
         returnCommand =
             returnCommand.andThen(
                 scoringCommands.get()[level - 1].alongWith(
-                    new DeferredCommand(() -> new BranchAlign(drive, false), Set.of())));
+                    new DeferredCommand(() -> new BranchAlign(drive, false), Set.of())
+                        .withTimeout(1.2)));
       } else {
         returnCommand =
             AutoBuilder.pathfindToPose(
@@ -121,13 +122,14 @@ public class AutoComposer {
         returnCommand =
             returnCommand.andThen(
                 scoringCommands.get()[level - 1].alongWith(
-                    new DeferredCommand(() -> new BranchAlign(drive, true), Set.of())));
+                    new DeferredCommand(() -> new BranchAlign(drive, true), Set.of())
+                        .withTimeout(1.2)));
       }
       returnCommand = returnCommand.andThen(shootCommand.get());
       returnCommand =
           returnCommand.andThen(
               Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
-                  .withTimeout(0.2)
+                  .withTimeout(0.1)
                   .alongWith(scoringCommands.get()[4]));
     } catch (Exception e) {
       System.out.println(lastPosition);

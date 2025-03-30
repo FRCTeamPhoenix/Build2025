@@ -9,7 +9,7 @@ import frc.robot.util.PathfindingUtils;
 public class BranchAlignFuture extends DriveToPose {
 
   boolean alignToRight;
-  double futureTime = 0.25;
+  double futureTime = 0.1;
 
   public BranchAlignFuture(Drive drive, boolean alignToRight) {
     super(drive, new Pose2d(), drive::getReefPose);

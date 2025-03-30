@@ -159,9 +159,9 @@ public final class Constants {
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
     public static final Transform2d REEF_LEFT_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.3, -BRANCH_STRAFE, Rotation2d.k180deg);
+        new Transform2d(REEF_BUFFER + 0.23, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d REEF_RIGHT_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.3, BRANCH_STRAFE, Rotation2d.k180deg);
+        new Transform2d(REEF_BUFFER + 0.23, BRANCH_STRAFE, Rotation2d.k180deg);
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
@@ -219,8 +219,8 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS =
         new PathConstraints(
             DriveConstants.MAX_LINEAR_SPEED,
-            10.0,
-            Units.degreesToRadians(720),
+            11,
+            Units.degreesToRadians(900),
             Units.degreesToRadians(1080));
 
     public static final Constraints LINEAR_CONSTRAINTS =
@@ -295,18 +295,18 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.127, 0.257, 0.575, 1.002, 1.75, 0.17, 0.59, 0, 0.3
+      0, 0.127, 0.257, 0.575, 0.975, 1.75, 0.17, 0.59, 0.00, 0.127
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.2,
       1.165,
       -0.17,
-      -0.483,
-      -0.53,
+      -0.385,
+      -0.478,
       -0.795,
       0.1,
       0.1,
-      1.065,
+      1.165,
       WristConstants.MAX_ANGLE - 0.2
     };
     public static final String[] STATE_NAMES = {
