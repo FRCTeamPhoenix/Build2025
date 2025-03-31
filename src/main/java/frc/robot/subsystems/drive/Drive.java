@@ -60,8 +60,6 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
-  private Rotation2d megatagOffset = new Rotation2d();
-  private boolean offsetDone = false;
 
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
@@ -312,31 +310,6 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
-  }
-
-  @AutoLogOutput(key = "Vision/MegatagRotation")
-  public Rotation2d getMegatagRotation() {
-    return rawGyroRotation.plus(megatagOffset);
-  }
-
-  public void setMegatagOffset(Rotation2d offset) {
-    offsetDone = true;
-    this.megatagOffset = offset;
-  }
-
-  public boolean getOffsetDone() {
-    return offsetDone;
-  }
-
-  public void resetMegatagGyro() {
-    offsetDone = true;
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-    setMegatagOffset(
-        isFlipped
-            ? Rotation2d.kZero.minus(getMegatagRotation())
-            : Rotation2d.k180deg.minus(getMegatagRotation()));
   }
 
   /** Resets the current odometry pose. */

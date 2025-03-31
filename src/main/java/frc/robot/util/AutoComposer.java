@@ -6,8 +6,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -30,9 +28,13 @@ public class AutoComposer {
       Supplier<Command> intakeCommand,
       Supplier<Command> stopIntakeCommand,
       Supplier<Command> dropIntakeCommand,
+      Supplier<Command> dropElevatorCommand,
       BooleanSupplier intakeSensor,
-      Drive drive) {
+      Drive drive,
+      Boolean isRed) {
     Command returnCommand = Commands.none();
+    String allianceName = isRed ? ".red" : ".blue";
+    returnCommand.setName(routine + allianceName);
     List<Command> commandArray = new ArrayList<Command>();
 
     try {
@@ -46,12 +48,7 @@ public class AutoComposer {
         if (Character.isDigit(corrected[i].charAt(0)) && corrected[i].charAt(0) != '0') {
           commandArray.add(
               scoringRoutine(
-                  corrected[i],
-                  elevatorCommands,
-                  scoringCommand,
-                  stopIntakeCommand,
-                  drive,
-                  corrected[i - 1].substring(0, 1)));
+                  corrected[i], elevatorCommands, scoringCommand, stopIntakeCommand, drive, isRed));
         }
         if (corrected[i].charAt(0) == 'r' || corrected[i].charAt(0) == 'l') {
           commandArray.add(
@@ -59,9 +56,16 @@ public class AutoComposer {
                   corrected[i],
                   intakeCommand,
                   dropIntakeCommand,
+                  dropElevatorCommand,
                   intakeSensor,
                   drive,
                   corrected[i - 1].substring(0, 1)));
+        }
+        if (corrected[i].charAt(0) == 'b') {
+          commandArray.add(
+              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
+                  .withTimeout(0.1)
+                  .alongWith(dropElevatorCommand.get()));
         }
       }
     } catch (Exception e) {
@@ -83,11 +87,7 @@ public class AutoComposer {
       Supplier<Command> shootCommand,
       Supplier<Command> stopIntakeCommand,
       Drive drive,
-      String lastPosition) {
-    boolean isRed =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
-
+      Boolean isRed) {
     Command returnCommand;
 
     char[] routineSplit = routine.toLowerCase().toCharArray();
@@ -126,14 +126,7 @@ public class AutoComposer {
                         .withTimeout(1.2)));
       }
       returnCommand = returnCommand.andThen(shootCommand.get());
-      returnCommand =
-          returnCommand.andThen(
-              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
-                  .withTimeout(0.1)
-                  .alongWith(scoringCommands.get()[4]));
     } catch (Exception e) {
-      System.out.println(lastPosition);
-      System.out.println(lastPosition.getClass());
       System.out.println(e);
       System.out.println("Failed to generate scoring command");
       returnCommand = Commands.none();
@@ -146,11 +139,15 @@ public class AutoComposer {
       String routine,
       Supplier<Command> intakeCommand,
       Supplier<Command> dropIntakeCommand,
+      Supplier<Command> dropElevatorCommand,
       BooleanSupplier intakeSensor,
       Drive drive,
       String lastPosition) {
 
-    Command returnCommand;
+    Command returnCommand =
+        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
+            .withTimeout(0.1)
+            .alongWith(dropElevatorCommand.get());
 
     char[] routineSplit = routine.toLowerCase().toCharArray();
 

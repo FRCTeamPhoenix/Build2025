@@ -266,7 +266,6 @@ public class RobotContainer {
     SmartDashboard.putData(
         "Revive Superstructure",
         Commands.runOnce(() -> superstructure.reviveSuperstructure(), superstructure));
-    SmartDashboard.putData("Zero LimeLight Gyro", Commands.runOnce(() -> drive.resetMegatagGyro()));
     // Configure the button bindings
     configureButtonBindings();
     angleController.enableContinuousInput(-Math.PI, Math.PI);
@@ -468,6 +467,10 @@ public class RobotContainer {
     return superstructure;
   }
 
+  public CANdleSubsystem getCANdle() {
+    return candle;
+  }
+
   public CommandXboxController getDriverController() {
     return driverController;
   }
@@ -490,9 +493,12 @@ public class RobotContainer {
           .andThen(new WaitCommand(0.0)),
       new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.0)),
-      Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3)
+          .andThen(new WaitCommand(0.0))
     };
+  }
+
+  public Command getElevatorDropCommand() {
+    return Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3);
   }
 
   public Command getScoringCommand() {

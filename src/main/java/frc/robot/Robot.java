@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -120,32 +122,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     if (SmartDashboard.getBoolean("Use Auto Composer", false)) {
+      boolean isRed =
+          DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
       autonomousCommand =
-          AutoComposer.composeAuto(
-              SmartDashboard.getString("Composer Input", "1a4"),
-              robotContainer::getElevatorCommands,
-              robotContainer::getScoringCommand,
-              robotContainer::getIntakingCommand,
-              robotContainer::getStopIntakingCommand,
-              robotContainer::getDropIntakeCommand,
-              robotContainer.getClaw()::getSensor,
-              robotContainer.getDrive());
+          generateAutoRoutine(isRed, SmartDashboard.getString("Composer Input", "1a4"));
     } else {
       autonomousCommand = robotContainer.getAutonomousCommand();
     }
 
     robotContainer.getSuperstructure().setState(0);
-
-    if (!robotContainer.getDrive().getOffsetDone()) {
-      robotContainer
-          .getDrive()
-          .setMegatagOffset(
-              robotContainer
-                  .getDrive()
-                  .getReefPose()
-                  .getRotation()
-                  .minus(robotContainer.getDrive().getMegatagRotation()));
-    }
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -175,18 +161,7 @@ public class Robot extends LoggedRobot {
     robotContainer
         .getSuperstructure()
         .setWristManualGoal(robotContainer.getSuperstructure().getWristAngle());
-    robotContainer.getClaw().stop();
-
-    if (!robotContainer.getDrive().getOffsetDone()) {
-      robotContainer
-          .getDrive()
-          .setMegatagOffset(
-              robotContainer
-                  .getDrive()
-                  .getReefPose()
-                  .getRotation()
-                  .minus(robotContainer.getDrive().getMegatagRotation()));
-    }
+    robotContainer.getClaw().holdPosition();
 
     Logger.recordOutput("ZoneSnapping/ZoneMap", PathfindingUtils.generateZone());
     field.getObject("ZoneMap").setPoses(PathfindingUtils.generateZone());
@@ -225,5 +200,19 @@ public class Robot extends LoggedRobot {
       }
       Logger.recordOutput("Simulation/States", arr);
     }
+  }
+
+  public Command generateAutoRoutine(boolean isRed, String routine) {
+    return AutoComposer.composeAuto(
+        routine,
+        robotContainer::getElevatorCommands,
+        robotContainer::getScoringCommand,
+        robotContainer::getIntakingCommand,
+        robotContainer::getStopIntakingCommand,
+        robotContainer::getDropIntakeCommand,
+        robotContainer::getElevatorDropCommand,
+        robotContainer.getClaw()::getSensor,
+        robotContainer.getDrive(),
+        isRed);
   }
 }
