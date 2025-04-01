@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.AutoComposer;
 import frc.robot.util.PathfindingUtils;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -126,7 +125,8 @@ public class Robot extends LoggedRobot {
           DriverStation.getAlliance().isPresent()
               && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
       autonomousCommand =
-          generateAutoRoutine(isRed, SmartDashboard.getString("Composer Input", "1a4"));
+          robotContainer.generateAutoRoutine(
+              isRed, SmartDashboard.getString("Composer Input", "1a4"));
     } else {
       autonomousCommand = robotContainer.getAutonomousCommand();
     }
@@ -200,19 +200,5 @@ public class Robot extends LoggedRobot {
       }
       Logger.recordOutput("Simulation/States", arr);
     }
-  }
-
-  public Command generateAutoRoutine(boolean isRed, String routine) {
-    return AutoComposer.composeAuto(
-        routine,
-        robotContainer::getElevatorCommands,
-        robotContainer::getScoringCommand,
-        robotContainer::getIntakingCommand,
-        robotContainer::getStopIntakingCommand,
-        robotContainer::getDropIntakeCommand,
-        robotContainer::getElevatorDropCommand,
-        robotContainer.getClaw()::getSensor,
-        robotContainer.getDrive(),
-        isRed);
   }
 }

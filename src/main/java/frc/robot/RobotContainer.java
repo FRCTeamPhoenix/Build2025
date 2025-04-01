@@ -58,6 +58,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
+import frc.robot.util.AutoComposer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -241,8 +242,11 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption("RED 3 Piece Right", generateAutoRoutine(true, "2a4.b.r.3a4.b.r.3b4"));
+    autoChooser.addOption("RED 3 Piece Left", generateAutoRoutine(true, "6a4.l.r.5a4.b.l.5b4"));
+
+    // autoChooser.addOption(
+    //  "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
@@ -497,8 +501,10 @@ public class RobotContainer {
     };
   }
 
-  public Command getElevatorDropCommand() {
-    return Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3);
+  public Command getBackupCommand() {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
+        .withTimeout(0.1)
+        .alongWith(Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3));
   }
 
   public Command getScoringCommand() {
@@ -516,5 +522,19 @@ public class RobotContainer {
 
   public Command getStopIntakingCommand() {
     return Commands.waitSeconds(0.2).andThen(claw.stopCommand());
+  }
+
+  public Command generateAutoRoutine(boolean isRed, String routine) {
+    return AutoComposer.composeAuto(
+        routine,
+        this::getElevatorCommands,
+        this::getScoringCommand,
+        this::getIntakingCommand,
+        this::getStopIntakingCommand,
+        this::getDropIntakeCommand,
+        this::getBackupCommand,
+        this.getClaw()::getSensor,
+        this.getDrive(),
+        isRed);
   }
 }

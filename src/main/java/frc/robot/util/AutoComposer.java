@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -28,7 +27,7 @@ public class AutoComposer {
       Supplier<Command> intakeCommand,
       Supplier<Command> stopIntakeCommand,
       Supplier<Command> dropIntakeCommand,
-      Supplier<Command> dropElevatorCommand,
+      Supplier<Command> backupCommand,
       BooleanSupplier intakeSensor,
       Drive drive,
       Boolean isRed) {
@@ -56,16 +55,14 @@ public class AutoComposer {
                   corrected[i],
                   intakeCommand,
                   dropIntakeCommand,
-                  dropElevatorCommand,
+                  backupCommand,
                   intakeSensor,
                   drive,
                   corrected[i - 1].substring(0, 1)));
         }
         if (corrected[i].charAt(0) == 'b') {
-          commandArray.add(
-              Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
-                  .withTimeout(0.1)
-                  .alongWith(dropElevatorCommand.get()));
+          commandArray.add(backupCommand.get());
+          corrected[i] = corrected[i - 1];
         }
       }
     } catch (Exception e) {
@@ -144,10 +141,7 @@ public class AutoComposer {
       Drive drive,
       String lastPosition) {
 
-    Command returnCommand =
-        Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
-            .withTimeout(0.1)
-            .alongWith(dropElevatorCommand.get());
+    Command returnCommand;
 
     char[] routineSplit = routine.toLowerCase().toCharArray();
 
