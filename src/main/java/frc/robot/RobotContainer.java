@@ -244,6 +244,9 @@ public class RobotContainer {
 
     autoChooser.addOption("RED 3 Piece Right", generateAutoRoutine(true, "2a4.b.r.3a4.b.r.3b4"));
     autoChooser.addOption("RED 3 Piece Left", generateAutoRoutine(true, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("BLUE 3 Piece Right", generateAutoRoutine(false, "2a4.b.r.3a4.b.r.3b4"));
+    autoChooser.addOption("BLUE 3 Piece Left", generateAutoRoutine(false, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("Taxi Auto", getTaxiCommand());
 
     // autoChooser.addOption(
     //  "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -536,5 +539,9 @@ public class RobotContainer {
         this.getClaw()::getSensor,
         this.getDrive(),
         isRed);
+  }
+
+  public Command getTaxiCommand() {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0, 0)), drive).withTimeout(1).andThen(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds()), drive));
   }
 }
