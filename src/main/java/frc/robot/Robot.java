@@ -150,6 +150,7 @@ public class Robot extends LoggedRobot {
           .setMegatagOffset(
               robotContainer
                   .getDrive()
+                  .getReefPose()
                   .getRotation()
                   .minus(robotContainer.getDrive().getMegatagRotation()));
     }
@@ -190,6 +191,7 @@ public class Robot extends LoggedRobot {
           .setMegatagOffset(
               robotContainer
                   .getDrive()
+                  .getReefPose()
                   .getRotation()
                   .minus(robotContainer.getDrive().getMegatagRotation()));
     }

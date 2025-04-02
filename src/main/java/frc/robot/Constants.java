@@ -53,7 +53,7 @@ public final class Constants {
     public static final String LEFT_CAMERA_NAME = "left_arducam";
     public static final String RIGHT_CAMERA_NAME = "right_arducam";
 
-    public static final String LIMELIGHT_NAME = "limelight-phoenix";
+    public static final String LIMELIGHT_NAME = "limelight";
 
     public static final Transform3d FRONT_LEFT_TRANSFORM =
         new Transform3d(
@@ -131,7 +131,7 @@ public final class Constants {
     public static final Transform2d REEF_BUFFER_TRANSFORM =
         new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
     public static final Transform2d REEF_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.1, 0, Rotation2d.k180deg);
+        new Transform2d(REEF_BUFFER + 0.2, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
@@ -297,7 +297,7 @@ public final class Constants {
 
     // public static final double[] DEV_ENCODER_OFFSETS = {2.888, -2.246 + Math.PI, -2.976, -2.745};
     public static final double[] COMP_ENCODER_OFFSETS = {
-      0.815 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, -0.7 + Math.PI
+      0.815 + Math.PI, 2.481 + Math.PI, 0.82 + Math.PI, 2.429
     };
 
     public static final double[] ENCODER_OFFSETS = COMP_ENCODER_OFFSETS;
@@ -305,13 +305,13 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.122, 0.257, 0.575, 0.975, 1.7, 0.17, 0.59, 0, 0.3
+      0, 0.122, 0.257, 0.575, 1.002, 1.7, 0.17, 0.59, 0, 0.3
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.2,
       1.065,
       -0.17,
-      -0.53,
+      -0.483,
       -0.53,
       -0.692,
       0.1,
@@ -381,8 +381,8 @@ public final class Constants {
     public static final int[] BR_IDS = {4, 8, 12};
     public static final int[][] MODULE_IDS = {FL_IDS, FR_IDS, BL_IDS, BR_IDS};
 
-    public static final int ELEVATOR_ID = 15;
-    public static final int ELEVATOR_FOLLOWER_ID = 16;
+    public static final int ELEVATOR_ID = 16;
+    public static final int ELEVATOR_FOLLOWER_ID = 15;
     public static final int WRIST_ID = 17;
     public static final int WRIST_ENCODER_ID = 18;
     public static final int CLAW_ID = 19;
