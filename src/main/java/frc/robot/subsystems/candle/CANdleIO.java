@@ -15,26 +15,16 @@ public interface CANdleIO {
     FireAnimation,
     RainbowAnimation,
     RgbFadeAnimation,
-    OrangeLarson,
-    RedLarson,
-    BlueLarson,
     Red,
-    Orange,
-    Yellow,
     Blue,
     Green,
+    Orange,
+    Yellow,
     Cyan,
-    OrangeHalf,
-    BlueHalf,
-    GreenHalf,
-    CyanHalf,
-    MagentaTop,
     Off;
   }
 
   public default void updateInputs(CANdleIOInputs inputs) {}
 
   public default void setMode(CANdleState mode) {}
-
-  public default void setEndgame(boolean endgame) {}
 }

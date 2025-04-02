@@ -68,6 +68,7 @@ import frc.robot.subsystems.superstructure.wrist.WristIOSim;
 import frc.robot.subsystems.superstructure.wrist.WristIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
@@ -167,7 +168,8 @@ public class RobotContainer {
                 new VisionIOPhoton(
                     VisionConstants.RIGHT_CAMERA_NAME, VisionConstants.FRONT_RIGHT_TRANSFORM),
                 new VisionIOPhoton(
-                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM));
+                    VisionConstants.LEFT_CAMERA_NAME, VisionConstants.FRONT_LEFT_TRANSFORM),
+                new VisionIOLimelight(VisionConstants.LIMELIGHT_NAME, drive::getMegatagRotation));
         elevator = new Elevator(new ElevatorIOTalonFX());
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
@@ -352,8 +354,9 @@ public class RobotContainer {
         .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
 
     // Superstructure home and rehome
-    operatorDownPadTrigger.whileTrue(
-        Commands.runOnce(() -> superstructure.setState(0), superstructure));
+    operatorDownPadTrigger
+        .and(() -> !manualScoreOverride)
+        .whileTrue(Commands.runOnce(() -> superstructure.setState(0), superstructure));
     operatorBackTrigger.onTrue(
         Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
 
@@ -408,16 +411,14 @@ public class RobotContainer {
             superstructure));
 
     // Manual override
-    operatorStartTrigger
-        .whileTrue(Commands.runOnce(() -> manualScoreOverride = true))
-        .whileFalse(Commands.runOnce(() -> manualScoreOverride = false));
+    operatorStartTrigger.onTrue(Commands.runOnce(() -> manualScoreOverride = !manualScoreOverride));
 
     // Climber
     operatorRightPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(10), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
     operatorLeftPadTrigger
-        .whileTrue(Commands.run(() -> climber.runVoltage(-10), climber))
+        .whileTrue(Commands.run(() -> climber.runVoltage(-6), climber))
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
   }
 
@@ -492,7 +493,7 @@ public class RobotContainer {
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(1), superstructure)
+    return Commands.run(() -> superstructure.setState(8), superstructure)
         .alongWith(claw.runReverse())
         .until(claw::getSensor)
         .andThen(

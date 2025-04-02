@@ -3,7 +3,6 @@ package frc.robot.subsystems.candle;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.candle.CANdleIO.CANdleState;
@@ -31,12 +30,8 @@ public class CANdleSubsystem extends SubsystemBase {
   public void periodic() {
     candle.updateInputs(inputs);
     Logger.processInputs("CANdle", inputs);
-    if (DriverStation.isEStopped()) {
-      candle.setMode(CANdleState.Off);
-      return;
-    }
 
-    if (DriverStation.isTeleopEnabled()) {
+    if (!DriverStation.isAutonomous()) {
       if (!override) {
         Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
         if (reef != poseSupplier.get()) {
@@ -55,15 +50,6 @@ public class CANdleSubsystem extends SubsystemBase {
         } else {
           candle.setMode(CANdleState.Orange);
         }
-      }
-    } else if (DriverStation.isAutonomousEnabled()) {
-      candle.setMode(CANdleState.RainbowAnimation);
-    } else {
-      if (DriverStation.getAlliance().isPresent()
-          && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-        candle.setMode(CANdleState.RedLarson);
-      } else {
-        candle.setMode(CANdleState.BlueLarson);
       }
     }
   }
