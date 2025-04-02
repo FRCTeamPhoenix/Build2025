@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import com.pathplanner.lib.path.PathConstraints;
@@ -127,11 +114,6 @@ public final class Constants {
           VisionConstants.TAG_LAYOUT.getTagPose(9).orElse(new Pose3d()),
           VisionConstants.TAG_LAYOUT.getTagPose(8).orElse(new Pose3d())
         };
-    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
-    public static final Transform2d REEF_BUFFER_TRANSFORM =
-        new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
-    public static final Transform2d REEF_PATH_BUFFER =
-        new Transform2d(REEF_BUFFER + 0.2, 0, Rotation2d.k180deg);
 
     public static final Pose2d BLUE_REEF_CENTER = new Pose2d(4.489323, 4.0259, new Rotation2d());
     public static final Pose2d RED_REEF_CENTER = new Pose2d(13.058902, 4.0259, new Rotation2d());
@@ -172,6 +154,14 @@ public final class Constants {
         new Transform2d(BRANCH_BUFFER, -BRANCH_STRAFE, Rotation2d.k180deg);
     public static final Transform2d RIGHT_BRANCH =
         new Transform2d(BRANCH_BUFFER, BRANCH_STRAFE, Rotation2d.k180deg);
+
+    public static final double REEF_BUFFER = DriveConstants.DRIVE_BASE_RADIUS + 0.45;
+    public static final Transform2d REEF_BUFFER_TRANSFORM =
+        new Transform2d(REEF_BUFFER, 0, Rotation2d.k180deg);
+    public static final Transform2d REEF_LEFT_PATH_BUFFER =
+        new Transform2d(REEF_BUFFER + 0.23, -BRANCH_STRAFE, Rotation2d.k180deg);
+    public static final Transform2d REEF_RIGHT_PATH_BUFFER =
+        new Transform2d(REEF_BUFFER + 0.23, BRANCH_STRAFE, Rotation2d.k180deg);
 
     public static final Pose2d[] BLUE_PLAYER_STATIONS =
         new Pose2d[] {
@@ -229,8 +219,8 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS =
         new PathConstraints(
             DriveConstants.MAX_LINEAR_SPEED,
-            3.0,
-            Units.degreesToRadians(720),
+            11,
+            Units.degreesToRadians(900),
             Units.degreesToRadians(1080));
 
     public static final Constraints LINEAR_CONSTRAINTS =
@@ -279,7 +269,7 @@ public final class Constants {
 
   public static final class DriveConstants {
     public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
-    public static final double WHEEL_RADIUS = Units.inchesToMeters(1.941);
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(2.092);
     public static final double TRACK_WIDTH_X = Units.inchesToMeters(28.0 - (2.625 * 2));
     public static final double TRACK_WIDTH_Y = Units.inchesToMeters(28.0 - (2.625 * 2));
     public static final double DRIVE_BASE_RADIUS =
@@ -305,19 +295,19 @@ public final class Constants {
 
   public static final class SuperstructureConstants {
     public static final double[] ELEVATOR_STATES = {
-      0, 0.122, 0.257, 0.575, 1.002, 1.7, 0.17, 0.59, 0, 0.3
+      0, 0.127, 0.257, 0.575, 1.002, 1.75, 0.17, 0.59, 0.00, 0.127
     };
     public static final double[] WRIST_STATES = {
       WristConstants.MAX_ANGLE - 0.2,
-      1.065,
+      1.165,
       -0.17,
       -0.483,
       -0.53,
-      -0.692,
+      -0.795,
       0.1,
       0.1,
-      1.065,
-      WristConstants.MAX_ANGLE - 0.1
+      1.165,
+      WristConstants.MAX_ANGLE - 0.2
     };
     public static final String[] STATE_NAMES = {
       "STOWED",

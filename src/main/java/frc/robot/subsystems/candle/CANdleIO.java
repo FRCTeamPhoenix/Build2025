@@ -24,12 +24,11 @@ public interface CANdleIO {
     Blue,
     Green,
     Cyan,
+    White,
     Off;
   }
 
   public default void updateInputs(CANdleIOInputs inputs) {}
 
   public default void setMode(CANdleState mode) {}
-
-  public default void setEndgame(boolean endgame) {}
 }

@@ -1,22 +1,10 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,9 +22,8 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoElevator;
-import frc.robot.commands.BranchAlign;
+import frc.robot.commands.BranchAlignFuture;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToPlayerStation;
 import frc.robot.commands.ZoneSnap;
 import frc.robot.subsystems.candle.CANdleIO;
 import frc.robot.subsystems.candle.CANdleIOReal;
@@ -71,6 +58,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
+import frc.robot.util.AutoComposer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -95,6 +83,8 @@ public class RobotContainer {
   private final Wrist wrist;
   private final Climber climber;
   private final CANdleSubsystem candle;
+
+  PIDController angleController = new PIDController(4, 0.0, 0.0);
 
   private final DriveTrainSimulationConfig driveSimConfig =
       DriveTrainSimulationConfig.Default()
@@ -172,7 +162,9 @@ public class RobotContainer {
         claw = new Claw(new ClawIOTalonFX());
         wrist = new Wrist(new WristIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        candle = new CANdleSubsystem(new CANdleIOReal(), drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIOReal(), drive::getPose, () -> selectedScore, driverController.y());
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -209,7 +201,9 @@ public class RobotContainer {
         elevator = new Elevator(new ElevatorIOSim());
         wrist = new Wrist(new WristIOSim());
         climber = new Climber(new ClimberIOSim());
-        candle = new CANdleSubsystem(new CANdleIOSim(), drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIOSim(), drive::getPose, () -> selectedScore, driverController.y());
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -232,7 +226,9 @@ public class RobotContainer {
         claw = new Claw(new ClawIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         wrist = new Wrist(new WristIO() {});
-        candle = new CANdleSubsystem(new CANdleIO() {}, drive::getPose, () -> selectedScore);
+        candle =
+            new CANdleSubsystem(
+                new CANdleIO() {}, drive::getPose, () -> selectedScore, driverController.y());
         climber = new Climber(new ClimberIO() {});
         break;
     }
@@ -246,8 +242,14 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption("RED 3 Piece Right", generateAutoRoutine(true, "2a4.b.r.3a4.b.r.3b4"));
+    autoChooser.addOption("RED 3 Piece Left", generateAutoRoutine(true, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("BLUE 3 Piece Right", generateAutoRoutine(false, "2a4.b.r.3a4.b.r.3b4"));
+    autoChooser.addOption("BLUE 3 Piece Left", generateAutoRoutine(false, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("Taxi Auto", getTaxiCommand());
+
+    // autoChooser.addOption(
+    //  "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
@@ -271,9 +273,9 @@ public class RobotContainer {
     SmartDashboard.putData(
         "Revive Superstructure",
         Commands.runOnce(() -> superstructure.reviveSuperstructure(), superstructure));
-    SmartDashboard.putData("Zero LimeLight Gyro", Commands.runOnce(() -> drive.resetMegatagGyro()));
     // Configure the button bindings
     configureButtonBindings();
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   /**
@@ -309,7 +311,7 @@ public class RobotContainer {
 
     // Reef Branch alignment
     driverLBTrigger.whileTrue(
-        new BranchAlign(drive, false)
+        new BranchAlignFuture(drive, false)
             .alongWith(
                 new AutoElevator(
                     drive::getReefPose,
@@ -317,7 +319,7 @@ public class RobotContainer {
                     () -> selectedScore,
                     () -> manualScoreOverride)));
     driverRBTrigger.whileTrue(
-        new BranchAlign(drive, true)
+        new BranchAlignFuture(drive, true)
             .alongWith(
                 new AutoElevator(
                     drive::getReefPose,
@@ -326,8 +328,20 @@ public class RobotContainer {
                     () -> manualScoreOverride)));
 
     // Player station alignment
-    driverXTrigger.whileTrue(new DriveToPlayerStation(drive, false));
-    driverBTrigger.whileTrue(new DriveToPlayerStation(drive, true));
+    driverXTrigger.whileTrue(
+        DriveCommands.driveNPoint(
+            drive,
+            Rotation2d.fromDegrees(126),
+            angleController,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX()));
+    driverBTrigger.whileTrue(
+        DriveCommands.driveNPoint(
+            drive,
+            Rotation2d.fromDegrees(-126),
+            angleController,
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX()));
 
     // Level select & manual
     operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
@@ -365,7 +379,7 @@ public class RobotContainer {
                 .until(claw::getSensor)
                 .andThen(
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
+                        .alongWith(Commands.waitSeconds(0.75).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
 
     // Claw controls
@@ -460,6 +474,10 @@ public class RobotContainer {
     return superstructure;
   }
 
+  public CANdleSubsystem getCANdle() {
+    return candle;
+  }
+
   public CommandXboxController getDriverController() {
     return driverController;
   }
@@ -482,21 +500,62 @@ public class RobotContainer {
           .andThen(new WaitCommand(0.0)),
       new AutoElevator(drive::getPose, superstructure, () -> 5, () -> false)
           .andThen(Commands.waitUntil(superstructure::atGoal))
-          .andThen(new WaitCommand(0.0)),
-      Commands.run(() -> superstructure.setState(0), superstructure).withTimeout(1)
+          .andThen(new WaitCommand(0.0))
     };
   }
 
+  public Command getBackupCommand() {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.4, 0, 0)), drive)
+        .withTimeout(0.3)
+        .alongWith(Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3));
+  }
+
   public Command getScoringCommand() {
-    return new WaitCommand(0.2).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
+    return new WaitCommand(0.1).deadlineFor(claw.runForward()).andThen(claw.stopCommand());
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(1), superstructure)
-        .alongWith(claw.runReverse())
-        .until(claw::getSensor)
-        .andThen(
-            Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand())));
+    return Commands.run(() -> superstructure.setState(8), superstructure)
+        .alongWith(claw.runReverse());
+  }
+
+  public Command getDropIntakeCommand() {
+    return Commands.runOnce(() -> superstructure.setState(9), superstructure);
+  }
+
+  public Command getStopIntakingCommand() {
+    return Commands.waitSeconds(0.75).andThen(claw.stopCommand());
+  }
+
+  public Command generateAutoRoutine(boolean isRed, String routine) {
+    return AutoComposer.composeAuto(
+        routine,
+        this::getElevatorCommands,
+        this::getScoringCommand,
+        this::getIntakingCommand,
+        this::getStopIntakingCommand,
+        this::getDropIntakeCommand,
+        this::getBackupCommand,
+        this::alignToIntakeLeft,
+        this::alignToIntakeRight,
+        this.getClaw()::getSensor,
+        this.getDrive(),
+        isRed);
+  }
+
+  public Command getTaxiCommand() {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0, 0)), drive)
+        .withTimeout(1)
+        .andThen(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds()), drive));
+  }
+
+  public Command alignToIntakeLeft() {
+    return DriveCommands.driveNPoint(
+        drive, Rotation2d.fromDegrees(126), angleController, () -> 0, () -> 0);
+  }
+
+  public Command alignToIntakeRight() {
+    return DriveCommands.driveNPoint(
+        drive, Rotation2d.fromDegrees(-126), angleController, () -> 0, () -> 0);
   }
 }

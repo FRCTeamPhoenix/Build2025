@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
@@ -73,8 +60,6 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = new Rotation2d();
-  private Rotation2d megatagOffset = new Rotation2d();
-  private boolean offsetDone = false;
 
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
@@ -108,7 +93,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(3.0, 0.0, 0.0), new PIDConstants(3.0, 0.0, 0.0)),
+            new PIDConstants(6.0, 0.0, 0.0), new PIDConstants(8.0, 0.0, 0.1)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red,
         this);
@@ -287,6 +272,10 @@ public class Drive extends SubsystemBase {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  public ChassisSpeeds getSpeeds() {
+    return getChassisSpeeds();
+  }
+
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
@@ -321,31 +310,6 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
-  }
-
-  @AutoLogOutput(key = "Vision/MegatagRotation")
-  public Rotation2d getMegatagRotation() {
-    return rawGyroRotation.plus(megatagOffset);
-  }
-
-  public void setMegatagOffset(Rotation2d offset) {
-    offsetDone = true;
-    this.megatagOffset = offset;
-  }
-
-  public boolean getOffsetDone() {
-    return offsetDone;
-  }
-
-  public void resetMegatagGyro() {
-    offsetDone = true;
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-    setMegatagOffset(
-        isFlipped
-            ? Rotation2d.kZero.minus(getMegatagRotation())
-            : Rotation2d.k180deg.minus(getMegatagRotation()));
   }
 
   /** Resets the current odometry pose. */

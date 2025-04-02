@@ -53,8 +53,9 @@ public class Elevator {
   }
 
   public void homeElevator() {
-    offset = inputs.heightMeters;
-    setpoint = offset;
+    // offset = inputs.heightMeters;
+    // setpoint = offset;
+    io.rehomeElevator();
   }
 
   public void runCharacterization(double volts) {
