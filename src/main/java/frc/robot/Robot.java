@@ -1,5 +1,9 @@
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.MathShared;
+import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -7,11 +11,18 @@ import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.PathfindingUtils;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -30,6 +41,8 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
   private final Field2d field = new Field2d();
+
+  private static final double loopOverrunWarningTimeout = 0.2;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -83,6 +96,61 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit logger
     Logger.start();
+
+    try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(loopOverrunWarningTimeout);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
+    }
+    CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
+
+    // Silence Rotation2d warnings
+    var mathShared = MathSharedStore.getMathShared();
+    MathSharedStore.setMathShared(
+        new MathShared() {
+          @Override
+          public void reportError(String error, StackTraceElement[] stackTrace) {
+            if (error.startsWith("x and y components of Rotation2d are zero")) {
+              return;
+            }
+            mathShared.reportError(error, stackTrace);
+          }
+
+          @Override
+          public void reportUsage(MathUsageId id, int count) {
+            mathShared.reportUsage(id, count);
+          }
+
+          @Override
+          public double getTimestamp() {
+            return mathShared.getTimestamp();
+          }
+        });
+
+    // Log active commands
+    Map<String, Integer> commandCounts = new HashMap<>();
+    BiConsumer<Command, Boolean> logCommandFunction =
+        (Command command, Boolean active) -> {
+          String name = command.getName();
+          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+          commandCounts.put(name, count);
+          Logger.recordOutput(
+              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
+          Logger.recordOutput("CommandsAll/" + name, count > 0);
+        };
+
+    RobotController.setBrownoutVoltage(6.0);
+    SignalLogger.enableAutoLogging(false);
+
+    CommandScheduler.getInstance()
+        .onCommandInitialize((Command command) -> logCommandFunction.accept(command, true));
+    CommandScheduler.getInstance()
+        .onCommandFinish((Command command) -> logCommandFunction.accept(command, false));
+    CommandScheduler.getInstance()
+        .onCommandInterrupt((Command command) -> logCommandFunction.accept(command, false));
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.

@@ -28,6 +28,8 @@ public class AutoComposer {
       Supplier<Command> stopIntakeCommand,
       Supplier<Command> dropIntakeCommand,
       Supplier<Command> backupCommand,
+      Supplier<Command> getStationAlignLeft,
+      Supplier<Command> getStationAlignRight,
       BooleanSupplier intakeSensor,
       Drive drive,
       Boolean isRed) {
@@ -56,6 +58,8 @@ public class AutoComposer {
                   intakeCommand,
                   dropIntakeCommand,
                   backupCommand,
+                  getStationAlignLeft,
+                  getStationAlignRight,
                   intakeSensor,
                   drive,
                   corrected[i - 1].substring(0, 1)));
@@ -137,6 +141,8 @@ public class AutoComposer {
       Supplier<Command> intakeCommand,
       Supplier<Command> dropIntakeCommand,
       Supplier<Command> dropElevatorCommand,
+      Supplier<Command> alignStationLeft,
+      Supplier<Command> alignStationRight,
       BooleanSupplier intakeSensor,
       Drive drive,
       String lastPosition) {
@@ -148,8 +154,10 @@ public class AutoComposer {
     try {
       if (routineSplit[0] == 'r') {
         returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "r"));
+        returnCommand = returnCommand.andThen(alignStationRight.get());
       } else {
         returnCommand = AutoBuilder.followPath(PathPlannerPath.fromPathFile(lastPosition + "l"));
+        returnCommand = returnCommand.andThen(alignStationLeft.get());
       }
       returnCommand = returnCommand.alongWith(intakeCommand.get());
       returnCommand = returnCommand.until(intakeSensor);

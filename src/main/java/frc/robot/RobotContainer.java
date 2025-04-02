@@ -379,7 +379,7 @@ public class RobotContainer {
                 .until(claw::getSensor)
                 .andThen(
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
-                        .alongWith(Commands.waitSeconds(0.5).andThen(claw.stopCommand()))))
+                        .alongWith(Commands.waitSeconds(0.75).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
 
     // Claw controls
@@ -505,8 +505,8 @@ public class RobotContainer {
   }
 
   public Command getBackupCommand() {
-    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.7, 0, 0)), drive)
-        .withTimeout(0.1)
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.4, 0, 0)), drive)
+        .withTimeout(0.3)
         .alongWith(Commands.run(() -> superstructure.setState(9), superstructure).withTimeout(0.3));
   }
 
@@ -524,7 +524,7 @@ public class RobotContainer {
   }
 
   public Command getStopIntakingCommand() {
-    return Commands.waitSeconds(0.2).andThen(claw.stopCommand());
+    return Commands.waitSeconds(0.75).andThen(claw.stopCommand());
   }
 
   public Command generateAutoRoutine(boolean isRed, String routine) {
@@ -536,12 +536,26 @@ public class RobotContainer {
         this::getStopIntakingCommand,
         this::getDropIntakeCommand,
         this::getBackupCommand,
+        this::alignToIntakeLeft,
+        this::alignToIntakeRight,
         this.getClaw()::getSensor,
         this.getDrive(),
         isRed);
   }
 
   public Command getTaxiCommand() {
-    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0, 0)), drive).withTimeout(1).andThen(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds()), drive));
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1, 0, 0)), drive)
+        .withTimeout(1)
+        .andThen(Commands.runOnce(() -> drive.runVelocity(new ChassisSpeeds()), drive));
+  }
+
+  public Command alignToIntakeLeft() {
+    return DriveCommands.driveNPoint(
+        drive, Rotation2d.fromDegrees(126), angleController, () -> 0, () -> 0);
+  }
+
+  public Command alignToIntakeRight() {
+    return DriveCommands.driveNPoint(
+        drive, Rotation2d.fromDegrees(-126), angleController, () -> 0, () -> 0);
   }
 }
