@@ -19,6 +19,9 @@ public class CANdleSubsystem extends SubsystemBase {
   private final Supplier<Pose2d> poseSupplier;
   private final IntSupplier stateSupplier;
   private final BooleanSupplier hpLight;
+  private final BooleanSupplier hasTags;
+  private boolean hasEnabled = false;
+
   private CANdleState[] levelStates = {CANdleState.Blue, CANdleState.Cyan, CANdleState.Green};
 
   private boolean override = false;
@@ -27,10 +30,12 @@ public class CANdleSubsystem extends SubsystemBase {
       CANdleIO io,
       Supplier<Pose2d> poseSupplier,
       IntSupplier stateSupplier,
-      BooleanSupplier hpLight) {
+      BooleanSupplier hpLight,
+      BooleanSupplier hasTags) {
     this.candle = io;
     this.poseSupplier = poseSupplier;
     this.stateSupplier = stateSupplier;
+    this.hasTags = hasTags;
     this.hpLight = hpLight;
   }
 
@@ -44,6 +49,7 @@ public class CANdleSubsystem extends SubsystemBase {
     }
 
     if (DriverStation.isTeleopEnabled()) {
+      hasEnabled = true;
       if (!override) {
         if (!hpLight.getAsBoolean()) {
           Pose2d reef = PathfindingUtils.getZoneReefPose(poseSupplier.get(), new Transform2d());
@@ -68,13 +74,27 @@ public class CANdleSubsystem extends SubsystemBase {
         }
       }
     } else if (DriverStation.isAutonomousEnabled()) {
+      hasEnabled = true;
       candle.setMode(CANdleState.RainbowAnimation);
     } else {
-      if (DriverStation.getAlliance().isPresent()
-          && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
-        candle.setMode(CANdleState.RedLarson);
+      if (hasEnabled) {
+        if (DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+          candle.setMode(CANdleState.RedLarson);
+        } else {
+          candle.setMode(CANdleState.BlueLarson);
+        }
       } else {
-        candle.setMode(CANdleState.BlueLarson);
+        if (hasTags.getAsBoolean()) {
+          candle.setMode(CANdleState.White);
+        } else {
+          if (DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red) {
+            candle.setMode(CANdleState.RedLarson);
+          } else {
+            candle.setMode(CANdleState.BlueLarson);
+          }
+        }
       }
     }
   }
