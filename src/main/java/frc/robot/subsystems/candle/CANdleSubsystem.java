@@ -85,7 +85,7 @@ public class CANdleSubsystem extends SubsystemBase {
           candle.setMode(CANdleState.BlueLarson);
         }
       } else {
-        if (hasTags.getAsBoolean()) {
+        if (!hasTags.getAsBoolean()) {
           candle.setMode(CANdleState.White);
         } else {
           if (DriverStation.getAlliance().isPresent()
