@@ -40,7 +40,7 @@ public class CANdleSubsystem extends SubsystemBase {
     this.stateSupplier = stateSupplier;
     this.hasTags = hasTags;
     this.hpLight = hpLight;
-    visionDebouncer = new Debouncer(0.5, DebounceType.kFalling);
+    visionDebouncer = new Debouncer(0.5, DebounceType.kBoth);
   }
 
   @Override
