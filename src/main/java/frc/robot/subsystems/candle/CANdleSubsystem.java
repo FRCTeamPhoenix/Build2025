@@ -1,5 +1,6 @@
 package frc.robot.subsystems.candle;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,6 +22,7 @@ public class CANdleSubsystem extends SubsystemBase {
   private final BooleanSupplier hpLight;
   private final BooleanSupplier hasTags;
   private boolean hasEnabled = false;
+  private Debouncer visionDebouncer;
 
   private CANdleState[] levelStates = {CANdleState.Blue, CANdleState.Cyan, CANdleState.Green};
 
@@ -37,6 +39,7 @@ public class CANdleSubsystem extends SubsystemBase {
     this.stateSupplier = stateSupplier;
     this.hasTags = hasTags;
     this.hpLight = hpLight;
+    visionDebouncer = new Debouncer(0.5);
   }
 
   @Override
@@ -85,7 +88,7 @@ public class CANdleSubsystem extends SubsystemBase {
           candle.setMode(CANdleState.BlueLarson);
         }
       } else {
-        if (!hasTags.getAsBoolean()) {
+        if (!        visionDebouncer.calculate(hasTags.getAsBoolean())        ) {
           candle.setMode(CANdleState.White);
         } else {
           if (DriverStation.getAlliance().isPresent()
