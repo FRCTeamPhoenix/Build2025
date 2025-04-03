@@ -260,8 +260,8 @@ public class RobotContainer {
     autoChooser.addOption("BLUE 3 Piece Left", generateAutoRoutine(false, "6a4.b.l.5a4.b.l.5b4"));
     autoChooser.addOption("Taxi Auto", getTaxiCommand());
 
-    // autoChooser.addOption(
-    //  "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+     autoChooser.addOption(
+      "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
