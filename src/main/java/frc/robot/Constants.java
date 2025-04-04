@@ -219,7 +219,7 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS =
         new PathConstraints(
             DriveConstants.MAX_LINEAR_SPEED,
-            11,
+            3,
             Units.degreesToRadians(900),
             Units.degreesToRadians(1080));
 
