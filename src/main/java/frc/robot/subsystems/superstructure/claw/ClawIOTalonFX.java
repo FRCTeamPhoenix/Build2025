@@ -1,6 +1,5 @@
 package frc.robot.subsystems.superstructure.claw;
 
-import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -16,6 +15,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ClawConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ClawIOTalonFX implements ClawIO {
 
@@ -39,9 +39,8 @@ public class ClawIOTalonFX implements ClawIO {
     try {
       sensorAlert.set(false);
       laserCan.setRangingMode(LaserCan.RangingMode.SHORT);
-      laserCan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       laserCan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-    } catch (ConfigurationFailedException e) {
+    } catch (Exception e) {
       sensorAlert.set(true);
       System.err.println("Configuration failed: " + e.getMessage());
     }

@@ -385,6 +385,7 @@ public class RobotContainer {
 
     // Intake function
     operatorLBTrigger
+        .and(() -> !manualScoreOverride)
         .whileTrue(
             Commands.run(() -> superstructure.setState(1), superstructure)
                 .alongWith(claw.runReverse())
@@ -393,6 +394,9 @@ public class RobotContainer {
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
                         .alongWith(Commands.waitSeconds(0.75).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
+    operatorLBTrigger
+        .and(() -> manualScoreOverride)
+        .onTrue(Commands.runOnce(() -> superstructure.setState(1), superstructure));
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
