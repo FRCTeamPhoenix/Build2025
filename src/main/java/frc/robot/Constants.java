@@ -279,7 +279,7 @@ public final class Constants {
     public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112);
     public static final double ROBOT_MOI = 5.278;
     public static final double WHEEL_COF = 1.2;
-    public static final double SLIP_CURRENT = 40;
+    public static final double SLIP_CURRENT = 60;
 
     // Gear ratios for SDS MK4i L2, adjust as necessary
     public static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
