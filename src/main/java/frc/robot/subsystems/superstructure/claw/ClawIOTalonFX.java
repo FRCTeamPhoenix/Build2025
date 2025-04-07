@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.ClawConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class ClawIOTalonFX implements ClawIO {
 
