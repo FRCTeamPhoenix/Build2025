@@ -164,7 +164,11 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOTalonFX());
         candle =
             new CANdleSubsystem(
-                new CANdleIOReal(), drive::getPose, () -> selectedScore, driverController.y());
+                new CANdleIOReal(),
+                drive::getPose,
+                () -> selectedScore,
+                driverController.y(),
+                vision::hasTags);
 
         LoggedPowerDistribution.getInstance(CANConstants.PDH_ID, ModuleType.kRev);
         break;
@@ -203,7 +207,11 @@ public class RobotContainer {
         climber = new Climber(new ClimberIOSim());
         candle =
             new CANdleSubsystem(
-                new CANdleIOSim(), drive::getPose, () -> selectedScore, driverController.y());
+                new CANdleIOSim(),
+                drive::getPose,
+                () -> selectedScore,
+                driverController.y(),
+                vision::hasTags);
         drive.setPose(new Pose2d(3, 3, Rotation2d.kZero));
         break;
 
@@ -228,7 +236,11 @@ public class RobotContainer {
         wrist = new Wrist(new WristIO() {});
         candle =
             new CANdleSubsystem(
-                new CANdleIO() {}, drive::getPose, () -> selectedScore, driverController.y());
+                new CANdleIO() {},
+                drive::getPose,
+                () -> selectedScore,
+                driverController.y(),
+                vision::hasTags);
         climber = new Climber(new ClimberIO() {});
         break;
     }
@@ -243,13 +255,13 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     autoChooser.addOption("RED 3 Piece Right", generateAutoRoutine(true, "2a4.b.r.3a4.b.r.3b4"));
-    autoChooser.addOption("RED 3 Piece Left", generateAutoRoutine(true, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("RED 3 Piece Left", generateAutoRoutine(true, "6b4.b.l.5a4.b.l.5b4"));
     autoChooser.addOption("BLUE 3 Piece Right", generateAutoRoutine(false, "2a4.b.r.3a4.b.r.3b4"));
-    autoChooser.addOption("BLUE 3 Piece Left", generateAutoRoutine(false, "6a4.l.r.5a4.b.l.5b4"));
+    autoChooser.addOption("BLUE 3 Piece Left", generateAutoRoutine(false, "6b4.b.l.5a4.b.l.5b4"));
     autoChooser.addOption("Taxi Auto", getTaxiCommand());
 
-    // autoChooser.addOption(
-    //  "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     /*autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     // Set up SysId routines
@@ -373,6 +385,7 @@ public class RobotContainer {
 
     // Intake function
     operatorLBTrigger
+        .and(() -> !manualScoreOverride)
         .whileTrue(
             Commands.run(() -> superstructure.setState(1), superstructure)
                 .alongWith(claw.runReverse())
@@ -381,6 +394,9 @@ public class RobotContainer {
                     Commands.runOnce(() -> superstructure.setState(0), superstructure)
                         .alongWith(Commands.waitSeconds(0.75).andThen(claw.stopCommand()))))
         .onFalse(claw.stopCommand());
+    operatorLBTrigger
+        .and(() -> manualScoreOverride)
+        .onTrue(Commands.runOnce(() -> superstructure.setState(1), superstructure));
 
     // Claw controls
     operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
