@@ -68,7 +68,7 @@ public final class Constants {
 
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout TAG_LAYOUT =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     // Basic filtering thresholds
     public static final double MAX_AMBIGUITY = 0.1;
