@@ -3,7 +3,11 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.Set;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +26,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoElevator;
+import frc.robot.commands.BranchAlign;
 import frc.robot.commands.BranchAlignFuture;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ZoneSnap;
@@ -275,6 +280,10 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+
+    NamedCommands.registerCommand("L4R", Commands.defer(() -> new BranchAlign(drive, true).alongWith(getElevatorCommands()[3]).withTimeout(1.2).andThen(getScoringCommand()), Set.of(drive, superstructure)));
+
+    NamedCommands.registerCommand("BK", getBackupCommand());
 
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
