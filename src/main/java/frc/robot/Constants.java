@@ -301,7 +301,7 @@ public final class Constants {
       WristConstants.MAX_ANGLE - 0.15,
       1.165,
       -0.17,
-      -0.478,
+      -0.42,
       -0.515,
       -0.725,
       0.1,
