@@ -38,6 +38,7 @@ public class WristIOTalonFX implements WristIO {
 
   private final boolean isInverted = true;
   private final boolean brakeMode = true;
+  private boolean hasReset = false;
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public WristIOTalonFX() {
@@ -80,6 +81,13 @@ public class WristIOTalonFX implements WristIO {
 
   @Override
   public void updateInputs(WristIOInputs inputs) {
+    if (!hasReset) {
+      wristTalon.setPosition(
+          Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
+              * WristConstants.GEAR_RATIO);
+      hasReset = true;
+    }
+
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
 
     inputs.connected = status.isOK();

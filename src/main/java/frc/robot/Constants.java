@@ -307,7 +307,7 @@ public final class Constants {
       0.1,
       0.1,
       1.165,
-      WristConstants.MAX_ANGLE - 0.2
+      WristConstants.MAX_ANGLE - 0.15
     };
     public static final String[] STATE_NAMES = {
       "STOWED",
