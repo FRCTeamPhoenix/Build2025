@@ -36,7 +36,7 @@ public class WristIOTalonFX implements WristIO {
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
 
-  private final boolean isInverted = true;
+  private final boolean isInverted = false;
   private final boolean brakeMode = true;
   private boolean hasReset = false;
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
