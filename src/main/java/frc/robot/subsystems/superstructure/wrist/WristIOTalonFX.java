@@ -60,7 +60,7 @@ public class WristIOTalonFX implements WristIO {
         Units.degreesToRotations(1260)
             * WristConstants.GEAR_RATIO; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        Units.degreesToRotations(1260)
+        Units.degreesToRotations(1350)
             * WristConstants.GEAR_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
     wristTalon.getConfigurator().apply(config);
 
