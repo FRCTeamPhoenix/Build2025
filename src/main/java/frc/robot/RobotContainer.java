@@ -3,11 +3,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.Set;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -64,6 +61,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
 import frc.robot.util.AutoComposer;
+import java.util.Set;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -281,7 +279,15 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
 
-    NamedCommands.registerCommand("L4R", Commands.defer(() -> new BranchAlign(drive, true).alongWith(getElevatorCommands()[3]).withTimeout(1.2).andThen(getScoringCommand()), Set.of(drive, superstructure)));
+    NamedCommands.registerCommand(
+        "L4R",
+        Commands.defer(
+            () ->
+                new BranchAlign(drive, true)
+                    .alongWith(getElevatorCommands()[3])
+                    .withTimeout(1.2)
+                    .andThen(getScoringCommand()),
+            Set.of(drive, superstructure)));
 
     NamedCommands.registerCommand("BK", getBackupCommand());
 
