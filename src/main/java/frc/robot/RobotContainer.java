@@ -466,7 +466,6 @@ public class RobotContainer {
             Set.of(drive, superstructure)));
 
     NamedCommands.registerCommand("BK", getBackupCommand());
-
   }
 
   /**
@@ -547,7 +546,7 @@ public class RobotContainer {
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(8), superstructure)
+    return Commands.run(() -> superstructure.setState(1), superstructure)
         .alongWith(claw.runReverse());
   }
 
