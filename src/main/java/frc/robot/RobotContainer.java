@@ -279,18 +279,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
 
-    NamedCommands.registerCommand(
-        "L4R",
-        Commands.defer(
-            () ->
-                new BranchAlign(drive, true)
-                    .alongWith(getElevatorCommands()[3])
-                    .withTimeout(1.2)
-                    .andThen(getScoringCommand()),
-            Set.of(drive, superstructure)));
-
-    NamedCommands.registerCommand("BK", getBackupCommand());
-
     SmartDashboard.putString("Composer Input", "1a4");
     SmartDashboard.putBoolean("Use Auto Composer", false);
 
@@ -466,7 +454,20 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
   }
 
-  private void configureNamedCommands() {}
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand(
+        "L4R",
+        Commands.defer(
+            () ->
+                new BranchAlign(drive, true)
+                    .alongWith(getElevatorCommands()[3])
+                    .withTimeout(1.2)
+                    .andThen(getScoringCommand()),
+            Set.of(drive, superstructure)));
+
+    NamedCommands.registerCommand("BK", getBackupCommand());
+
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
