@@ -36,8 +36,9 @@ public class WristIOTalonFX implements WristIO {
   private final StatusSignal<Voltage> appliedVolts;
   private final StatusSignal<Current> current;
 
-  private final boolean isInverted = true;
+  private final boolean isInverted = false;
   private final boolean brakeMode = true;
+  private boolean hasReset = false;
   final MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public WristIOTalonFX() {
@@ -56,10 +57,10 @@ public class WristIOTalonFX implements WristIO {
     // set Motion Magic settings
     var motionMagicConfigs = config.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity =
-        Units.degreesToRotations(900)
+        Units.degreesToRotations(1260)
             * WristConstants.GEAR_RATIO; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        Units.degreesToRotations(900)
+        Units.degreesToRotations(1080)
             * WristConstants.GEAR_RATIO; // Target acceleration of 160 rps/s (0.5 seconds)
     wristTalon.getConfigurator().apply(config);
 
@@ -80,6 +81,13 @@ public class WristIOTalonFX implements WristIO {
 
   @Override
   public void updateInputs(WristIOInputs inputs) {
+    if (!hasReset) {
+      wristTalon.setPosition(
+          Rotation2d.fromRotations(encoder.getAbsPosition()).minus(Rotation2d.kZero).getRotations()
+              * WristConstants.GEAR_RATIO);
+      hasReset = true;
+    }
+
     var status = BaseStatusSignal.refreshAll(position, velocity, appliedVolts, current);
 
     inputs.connected = status.isOK();

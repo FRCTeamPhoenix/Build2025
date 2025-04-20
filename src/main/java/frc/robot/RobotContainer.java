@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +23,7 @@ import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoElevator;
+import frc.robot.commands.BranchAlign;
 import frc.robot.commands.BranchAlignFuture;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ZoneSnap;
@@ -59,6 +61,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.visualizer.Visualizer;
 import frc.robot.util.AutoComposer;
+import java.util.Set;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -451,7 +454,19 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(() -> climber.runVoltage(0)));
   }
 
-  private void configureNamedCommands() {}
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand(
+        "L4R",
+        Commands.defer(
+            () ->
+                new BranchAlign(drive, true)
+                    .alongWith(getElevatorCommands()[3])
+                    .withTimeout(1.2)
+                    .andThen(getScoringCommand()),
+            Set.of(drive, superstructure)));
+
+    NamedCommands.registerCommand("BK", getBackupCommand());
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -531,7 +546,7 @@ public class RobotContainer {
   }
 
   public Command getIntakingCommand() {
-    return Commands.run(() -> superstructure.setState(8), superstructure)
+    return Commands.run(() -> superstructure.setState(1), superstructure)
         .alongWith(claw.runReverse());
   }
 

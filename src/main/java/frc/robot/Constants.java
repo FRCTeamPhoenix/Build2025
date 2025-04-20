@@ -298,16 +298,16 @@ public final class Constants {
       0, 0.127, 0.257, 0.575, 1.002, 1.75, 0.17, 0.59, 0.00, 0.127
     };
     public static final double[] WRIST_STATES = {
-      WristConstants.MAX_ANGLE - 0.2,
+      WristConstants.MAX_ANGLE - 0.15,
       1.165,
       -0.17,
-      -0.483,
-      -0.53,
-      -0.755,
+      -0.42,
+      -0.515,
+      -0.737,
       0.1,
       0.1,
       1.165,
-      WristConstants.MAX_ANGLE - 0.2
+      WristConstants.MAX_ANGLE - 0.15
     };
     public static final String[] STATE_NAMES = {
       "STOWED",
