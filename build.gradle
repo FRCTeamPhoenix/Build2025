@@ -92,7 +92,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // ...
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 }
@@ -136,6 +135,48 @@ gversion {
     indent       = "  "
 }
 
+// Spotless formatting
+project.compileJava.dependsOn(spotlessApply)
+spotless {
+    java {
+        target fileTree(".") {
+            include "**/*.java"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree(".") {
+            include "**/*.gradle"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    json {
+        target fileTree(".") {
+            include "**/*.json"
+            exclude "**/build/**", "**/build-*/**", "**/calibrations/**"
+        }
+        gson().indentWithSpaces(2)
+    }
+    format "misc", {
+        target fileTree(".") {
+            include "**/*.md", "**/.gitignore"
+            exclude "**/build/**", "**/build-*/**"
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+
 task(eventDeploy) {
     doLast {
         if (project.gradle.startParameter.taskNames.any({ it.toLowerCase().contains("deploy") })) {
@@ -167,38 +208,3 @@ task(eventDeploy) {
     }
 }
 createVersionFile.dependsOn(eventDeploy)
-
-// Spotless formatting
-project.compileJava.dependsOn(spotlessApply)
-spotless {
-    java {
-        target fileTree(".") {
-            include "**/*.java"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        toggleOffOn()
-        googleJavaFormat()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    groovyGradle {
-        target fileTree(".") {
-            include "**/*.gradle"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        greclipse()
-        indentWithSpaces(4)
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    format "misc", {
-        target fileTree(".") {
-            include "**/*.md", "**/.gitignore"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
-        endWithNewline()
-    }
-}
