@@ -115,6 +115,7 @@ public class RobotContainer {
   private final Trigger driverATrigger = driverController.a();
   private final Trigger driverBTrigger = driverController.b();
   private final Trigger driverXTrigger = driverController.x();
+  private final Trigger driverYTrigger = driverController.y();
   private final Trigger driverLBTrigger = driverController.leftBumper();
   private final Trigger driverRBTrigger = driverController.rightBumper();
   private final Trigger driverLTTrigger = driverController.leftTrigger();
@@ -307,22 +308,22 @@ public class RobotContainer {
             () -> -driverController.getLeftY(),
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX(),
-            () -> driverLTTrigger.getAsBoolean()));
-    driverLeftPadTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driverDownPadTrigger.onTrue(
+            () -> false));
+    //driverLeftPadTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverLeftPadTrigger.onTrue(
         Commands.runOnce(
                 () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                 drive)
             .ignoringDisable(true));
 
     // Backoff Command
-    driverATrigger.onTrue(
+    /*driverATrigger.onTrue(
         Commands.run(() -> drive.runVelocity(new ChassisSpeeds(-0.5, 0, 0)), drive)
             .withTimeout(0.2)
-            .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));
+            .alongWith(Commands.runOnce(() -> superstructure.setState(0), superstructure)));*/
 
     // Zonesnap
-    driverRTTrigger.whileTrue(new ZoneSnap(drive));
+    //driverRTTrigger.whileTrue(new ZoneSnap(drive));
 
     // Reef Branch alignment
     driverLBTrigger.whileTrue(
@@ -343,7 +344,7 @@ public class RobotContainer {
                     () -> manualScoreOverride)));
 
     // Player station alignment
-    driverXTrigger.whileTrue(
+    /*driverXTrigger.whileTrue(
         DriveCommands.driveNPoint(
             drive,
             Rotation2d.fromDegrees(126),
@@ -356,32 +357,32 @@ public class RobotContainer {
             Rotation2d.fromDegrees(-126),
             angleController,
             () -> -driverController.getLeftY(),
-            () -> -driverController.getLeftX()));
+            () -> -driverController.getLeftX()));*/
 
     // Level select & manual
-    operatorATrigger.whileTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
-    operatorBTrigger
+    driverATrigger.onTrue(Commands.runOnce(() -> superstructure.setState(2), superstructure));
+    driverBTrigger
         .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(4), superstructure));
-    operatorXTrigger
+    driverXTrigger
         .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(3), superstructure));
-    operatorYTrigger
+    driverYTrigger
         .and(() -> manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> superstructure.setState(5), superstructure));
 
-    operatorBTrigger
+        driverBTrigger
         .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 4, superstructure));
-    operatorXTrigger
+        driverXTrigger
         .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 3, superstructure));
-    operatorYTrigger
+        driverYTrigger
         .and(() -> !manualScoreOverride)
         .whileTrue(Commands.runOnce(() -> selectedScore = 5, superstructure));
 
     // Superstructure home and rehome
-    operatorDownPadTrigger.whileTrue(
+    driverDownPadTrigger.whileTrue(
         Commands.runOnce(() -> superstructure.setState(0), superstructure));
     operatorBackTrigger.onTrue(
         Commands.runOnce(() -> superstructure.homeElevator(), superstructure));
@@ -402,8 +403,8 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> superstructure.setState(1), superstructure));
 
     // Claw controls
-    operatorLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
-    operatorRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
+    driverLTTrigger.whileTrue(claw.runReverse()).onFalse(claw.stopCommand());
+    driverRTTrigger.whileTrue(claw.runForward()).onFalse(claw.stopCommand());
 
     // Algae mode
     operatorRBTrigger.whileTrue(Commands.runOnce(superstructure::algaeMode, superstructure));
